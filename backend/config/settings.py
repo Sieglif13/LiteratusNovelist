@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Aplicaciones de terceros
     'rest_framework',   # API REST
+    'rest_framework_simplejwt', # Autenticación de Standard JWT
     'drf_spectacular',  # Documentación OpenAPI/Swagger (Clean API Docs)
     'corsheaders',      # Manejo de CORS para conectar con el frontend
     'django_filters',   # django-filter app
@@ -208,6 +209,7 @@ CORS_ALLOWED_ORIGINS = [
 REST_FRAMEWORK = {
     # Autenticación y permisos por defecto (se expandirán en futuros pasos)
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
@@ -226,7 +228,26 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'Documentación oficial de la API de Literatus Novelist.',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
-    # Otras configuraciones de Clean Code para documentación (oculta endpoints inútiles, etc.)
+    # Añadimos detección explícita para que el candado aparezca en la Interfaz:
+    'SECURITY': [{'jwtAuth': []}],
+    'COMPONENT_SPLIT_REQUEST': True
+}
+
+from datetime import timedelta
+
+# ---------------------------------------------------------------------------
+# SimpleJWT Configuración de Caducidad y Manejo
+# ---------------------------------------------------------------------------
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1), # Rotaremos Access dinámicamente frente al usuario
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': True, # Interesante estadística nativa de autenticación
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
 # ---------------------------------------------------------------------------
