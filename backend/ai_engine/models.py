@@ -64,6 +64,19 @@ class AIAvatar(TimeStampedModel):
         null=True,
         blank=True
     )
+    # INMERSIÓN COMPLETA (Nuevos campos)
+    greeting_message = models.TextField(
+        default="Hola, viajero.",
+        help_text="Mensaje introductorio fijo que arranca la sesión. Actúa como ancla."
+    )
+    behavioral_context = models.TextField(
+        blank=True,
+        help_text="Motivaciones secretas, situación emocional actual de este personaje."
+    )
+    sample_dialogues = models.TextField(
+        blank=True,
+        help_text="Bloques literales de la obra (o inventados) que le dicen a la IA cómo contestar."
+    )
 
     class Meta:
         verbose_name = 'AI Avatar'
