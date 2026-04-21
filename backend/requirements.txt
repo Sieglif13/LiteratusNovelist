@@ -3,3 +3,6 @@ djangorestframework
 django-environ
 psycopg2-binary
 django-cors-headers
+Pillow
+django_filters
+drf-spectacular

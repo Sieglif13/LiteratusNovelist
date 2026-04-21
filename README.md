@@ -118,6 +118,17 @@ El servidor estará disponible en: `http://127.0.0.1:8000/`
 
 ---
 
+## 🏗 Arquitectura de Base de Datos
+
+El diseño de la base de datos está construido pensando en la seguridad, escalabilidad y facilidad de mantenimiento. Para entender cómo funciona, aquí están sus bases explicadas de manera sencilla:
+
+- **Estructura Modular:** En lugar de tener todo mezclado, dividimos el sistema en 5 áreas lógicas: `users` (cuentas y perfiles), `catalog` (autores y libros), `finance` (compras y transacciones), `library` (biblioteca digital del usuario) y `ai_engine` (historial de chats con los personajes).
+- **Identificadores Seguros:** En lugar de usar números del 1 en adelante para enumerar los libros o usuarios (ej. el usuario 5, el libro 12), usamos códigos criptográficos únicos llamados **UUID**. Esto significa que nadie puede "adivinar" cuántos elementos existen ni descargar información usando patrones secuenciales.
+- **Borrado Seguro (Papelera de Reciclaje oculta):** Si borras un archivo o una cuenta, **nunca se destruye realmente de la base de datos**. El sistema simplemente lo "oculta". A esto se le conoce como *Soft Delete*. Se hace así por seguridad contable: si eliminas un libro del catálogo, tu recibo de compra antiguo no se romperá ni desaparecerá, pues el historial debe ser inmutable.
+- **Descargas Protegidas:** ¡Tus libros no son enlaces públicos! Los PDFs y ePUBs se almacenan en una bóveda privada. Para descargar un libro, el sistema revisará antes la base de datos y si corrobora que la compra es legítima, te enviará dinámicamente el archivo.
+
+---
+
 ## 📈 Registro de Avance del Proyecto
 
 ### Hito 1 — Inicialización del Monorepo *(Paso 1)*

@@ -57,8 +57,20 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Aplicaciones de terceros
     'rest_framework',   # API REST
+    'drf_spectacular',  # Documentación OpenAPI/Swagger (Clean API Docs)
     'corsheaders',      # Manejo de CORS para conectar con el frontend
+    'django_filters',   # django-filter app
+    # Aplicaciones propias
+    'core',
+    'users.apps.UsersConfig',
+    'catalog.apps.CatalogConfig',
+    'finance.apps.FinanceConfig',
+    'library.apps.LibraryConfig',
+    'ai_engine.apps.AiEngineConfig',
 ]
+
+# Modelo de usuario personalizado
+AUTH_USER_MODEL = 'users.User'
 
 # ---------------------------------------------------------------------------
 # Middleware
@@ -152,10 +164,32 @@ USE_I18N = True
 USE_TZ = True
 
 # ---------------------------------------------------------------------------
-# Archivos estáticos
+# Archivos estáticos y media
 # ---------------------------------------------------------------------------
 
 STATIC_URL = 'static/'
+
+# MEDIA_ROOT: directorio físico donde Django guarda los archivos subidos.
+# Los archivos en MEDIA_ROOT son accesibles vía MEDIA_URL (públicos).
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# ---------------------------------------------------------------------------
+# PROTECCIÓN DE ARCHIVOS DIGITALES (PDFs, EPUBs, Audiolibros)
+# ---------------------------------------------------------------------------
+# PRIVATE_MEDIA_ROOT: directorio para assets protegidos.
+# CRÍTICO: este directorio NO está bajo MEDIA_URL. Django (ni Nginx en prod.)
+# nunca sirve estos archivos directamente desde una URL pública.
+#
+# Flujo de acceso correcto:
+#   1. Cliente hace GET /api/library/editions/{id}/download/
+#   2. La view verifica JWT + UserInventory.objects.filter(user, edition).exists()
+#   3. Solo si el usuario ES dueño: devuelve FileResponse (dev) o
+#      X-Accel-Redirect (Nginx en prod.) para que el servidor sirva eficientemente.
+#
+# En 'catalog/models.py', Edition.file usa upload_to='protected/book_files/'
+# que resuelve a este directorio, no al MEDIA_ROOT público.
+PRIVATE_MEDIA_ROOT = BASE_DIR / 'private_media'
 
 # ---------------------------------------------------------------------------
 # CORS (Cross-Origin Resource Sharing) — necesario para el frontend
@@ -179,10 +213,26 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
+    # Para documentación Swagger automatizada (OpenAPI 3.0)
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+# ---------------------------------------------------------------------------
+# Configuración de drf-spectacular (Swagger UI)
+# ---------------------------------------------------------------------------
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Literatus Novelist API',
+    'DESCRIPTION': 'Documentación oficial de la API de Literatus Novelist.',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    # Otras configuraciones de Clean Code para documentación (oculta endpoints inútiles, etc.)
 }
 
 # ---------------------------------------------------------------------------
 # Tipo de campo de clave primaria por defecto para nuevos modelos
 # ---------------------------------------------------------------------------
-
+# Nota: nuestros modelos propios heredan TimeStampedModel y usan UUIDField
+# como PK explícita. BigAutoField aplica SOLO a modelos de terceros (ej.
+# django.contrib.sessions) que NO declaran su propio campo pk.
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
