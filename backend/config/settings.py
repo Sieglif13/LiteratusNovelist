@@ -200,7 +200,10 @@ PRIVATE_MEDIA_ROOT = BASE_DIR / 'private_media'
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://localhost:5173',
+    'http://localhost:4200',
 ]
+
+CORS_ALLOW_CREDENTIALS = True
 
 # ---------------------------------------------------------------------------
 # Configuración de Django REST Framework
