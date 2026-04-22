@@ -1,0 +1,104 @@
+.glass-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border);
+  padding: 1rem 0;
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 1px;
+}
+
+.literatus {
+  color: var(--text-main);
+}
+
+.novelist {
+  color: var(--glow-accent);
+}
+
+.nav-links {
+  display: flex;
+  gap: 30px;
+  list-style: none;
+  align-items: center;
+}
+
+.nav-links a, .nav-links li.logout {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 400;
+  transition: color 0.3s;
+  cursor: pointer;
+}
+
+.nav-links a:hover, .nav-links li.logout:hover {
+  color: var(--text-main);
+}
+
+.auth-btn a {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--glass-border);
+}
+
+.auth-btn.highlight a {
+  background: var(--glow-accent);
+  color: white;
+  border: none;
+}
+
+/* --- Menu Hamburguesa (Mobile First) --- */
+.menu-icon {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.bar {
+  width: 25px;
+  height: 3px;
+  background-color: var(--text-main);
+  transition: 0.3s;
+  border-radius: 5px;
+}
+
+@media (max-width: 768px) {
+  .menu-icon {
+    display: flex;
+  }
+  
+  .nav-links {
+    position: absolute;
+    top: 70px;
+    right: -100%;
+    flex-direction: column;
+    background: var(--bg-color);
+    width: 100%;
+    padding: 20px 0;
+    transition: 0.3s ease-in-out;
+    border-bottom: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px);
+  }
+
+  .nav-links.active {
+    right: 0;
+  }
+}

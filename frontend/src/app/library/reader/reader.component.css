@@ -1,0 +1,46 @@
+.reader-container {
+  max-width: 800px;
+  margin: 40px auto;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--glass-border);
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 16px 16px 0 0;
+}
+
+.title {
+  font-weight: 600;
+  color: var(--glow-accent);
+}
+
+.canvas-viewer {
+  flex-grow: 1;
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: var(--text-muted);
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+  border-top: 1px solid var(--glass-border);
+}
+
+.btn-sm {
+  width: auto;
+  padding: 8px 30px;
+}

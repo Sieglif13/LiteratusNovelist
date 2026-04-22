@@ -1,0 +1,35 @@
+<div class="chat-wrapper">
+  
+  <!-- Selector de Modo -->
+  <div class="mode-selector glass-panel">
+    <button [class.active]="activeMode === 'roleplay'" (click)="setMode('roleplay')">🎭 Roleplay Pura</button>
+    <button [class.active]="activeMode === 'tutor'" (click)="setMode('tutor')">🎓 Tutor Académico</button>
+    <button [class.active]="activeMode === 'critical'" (click)="setMode('critical')">👁️ Lector Crítico</button>
+  </div>
+
+  <!-- Ventana de Chat Inmersiva -->
+  <div class="chat-window glass-panel">
+    <div class="message-feed">
+      
+      <div *ngFor="let msg of messages" 
+           class="chat-bubble" 
+           [ngClass]="msg.sender === 'user' ? 'user-bubble' : 'ai-bubble'">
+        {{ msg.text }}
+      </div>
+
+      <div *ngIf="isWriting" class="chat-bubble ai-bubble typing">
+        El Avatar está meditando...
+      </div>
+      
+    </div>
+
+    <!-- Input inferior -->
+    <div class="input-area">
+      <input type="text" class="glass-input chat-input" 
+             placeholder="Habla con tu obra literaria..." 
+             [(ngModel)]="newMessage" 
+             (keyup.enter)="sendMessage()">
+      <button class="send-btn glass-btn" (click)="sendMessage()">Enviar</button>
+    </div>
+  </div>
+</div>
