@@ -1,0 +1,14 @@
+<div class="reader-container glass-panel">
+  <div class="header">
+    <div class="title">{{ chapterTitle }}</div>
+    <div class="stats">Capítulo {{ currentPage }} de {{ totalPages }}</div>
+  </div>
+  
+  <div class="canvas-viewer html-reader" [innerHTML]="safeChapterHtml">
+  </div>
+
+  <div class="controls">
+    <button class="glass-btn btn-sm" (click)="previousPage()" [disabled]="currentPage <= 1">« Anterior</button>
+    <button class="glass-btn btn-sm" (click)="nextPage()" [disabled]="currentPage >= totalPages">Siguiente »</button>
+  </div>
+</div>
