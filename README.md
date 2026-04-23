@@ -1,4 +1,4 @@
-# 📚 Literatus Novelist
+#  Literatus Novelist
 
 > Plataforma de lectura inteligente con extracción de personajes, análisis narrativo y chat contextual basado en IA.
 
@@ -16,7 +16,7 @@
 
 ---
 
-## 📁 Estructura del Repositorio
+##  Estructura del Repositorio
 
 ```
 LiteratusNovelist/
@@ -37,7 +37,7 @@ LiteratusNovelist/
 
 ---
 
-## ⚙️ Guía de Instalación — Backend
+##  Guía de Instalación — Backend
 
 ### Prerrequisitos
 - **Python** 3.10 o superior
@@ -118,7 +118,7 @@ El servidor estará disponible en: `http://127.0.0.1:8000/`
 
 ---
 
-## 🏗 Arquitectura de Base de Datos
+##  Arquitectura de Base de Datos
 
 El diseño de la base de datos está construido pensando en la seguridad, escalabilidad y facilidad de mantenimiento. Para entender cómo funciona, aquí están sus bases explicadas de manera sencilla:
 
@@ -129,7 +129,7 @@ El diseño de la base de datos está construido pensando en la seguridad, escala
 
 ---
 
-## 📈 Registro de Avance del Proyecto
+##  Registro de Avance del Proyecto
 
 ### Hito 1 — Inicialización del Monorepo *(Paso 1)*
 - ✅ Estructura de monorepo creada (`/backend`, `/frontend`)
@@ -143,7 +143,7 @@ El diseño de la base de datos está construido pensando en la seguridad, escala
 
 ---
 
-## 🧑‍💻 Estándares de Desarrollo
+##  Estándares de Desarrollo
 
 - **PEP 8** aplicado estrictamente en todo el código Python
 - **Comentarios en español** en clases, funciones y bloques lógicos
@@ -153,6 +153,6 @@ El diseño de la base de datos está construido pensando en la seguridad, escala
 
 ---
 
-## 📄 Licencia
+##  Licencia
 
 Proyecto académico — Universidad *(año académico 2025-2026)*
