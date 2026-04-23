@@ -1,16 +1,10 @@
 <div class="reader-container glass-panel">
   <div class="header">
-    <div class="title">Borges: Obra Completa</div>
-    <div class="stats">Página {{ currentPage }} de {{ totalPages }}</div>
+    <div class="title">{{ chapterTitle }}</div>
+    <div class="stats">Capítulo {{ currentPage }} de {{ totalPages }}</div>
   </div>
   
-  <div class="canvas-viewer">
-    <p class="mock-text">
-      ... Aquí iría el renderizador del lienzo PDF virtual.<br><br>
-      Haz clic en los botones de abajo repetidamente y observa la consola.
-      El sistema guardará tu progreso (RxJS Debounce) solo cuando dejes de presionar botones durante 3 segundos.
-      El servidor DRF te lo agradecerá profundamente.
-    </p>
+  <div class="canvas-viewer html-reader" [innerHTML]="safeChapterHtml">
   </div>
 
   <div class="controls">

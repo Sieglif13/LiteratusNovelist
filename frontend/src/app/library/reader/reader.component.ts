@@ -3,6 +3,7 @@ import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { ApiService } from '../../core/services/api.service';
 import { ActivatedRoute } from '@angular/router';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-reader',
@@ -12,10 +13,14 @@ import { ActivatedRoute } from '@angular/router';
 export class ReaderComponent implements OnInit {
   private api = inject(ApiService);
   private route = inject(ActivatedRoute);
+  private sanitizer = inject(DomSanitizer);
 
   inventoryId: string = '';
   currentPage: number = 1;
-  totalPages: number = 200; // Mock until real PDF parser length hooks
+  totalPages: number = 1;
+  chapters: any[] = [];
+  safeChapterHtml: SafeHtml = '';
+  chapterTitle: string = 'Cargando libro...';
   
   // Subject rx.js que actúa como el gatillo disparador del guardado
   private saveProgressSubject = new Subject<number>();
@@ -29,11 +34,42 @@ export class ReaderComponent implements OnInit {
     ).subscribe(pageNumber => {
       this.syncProgressToBackend(pageNumber);
     });
+
+    this.loadChapters();
+  }
+
+  loadChapters() {
+    this.api.get(`library/inventory/${this.inventoryId}/chapters/`).subscribe({
+      next: (res: any) => {
+        if (res && res.length > 0) {
+          this.chapters = res;
+          this.totalPages = res.length;
+          this.renderCurrentChapter();
+        } else {
+          this.chapterTitle = "Sin contenido";
+          this.safeChapterHtml = this.sanitizer.bypassSecurityTrustHtml('<p>El libro no tiene capítulos procesados.</p>');
+        }
+      },
+      error: (err) => {
+        console.error('Error al cargar capítulos', err);
+        this.chapterTitle = 'Error';
+        this.safeChapterHtml = this.sanitizer.bypassSecurityTrustHtml('<p>Hubo un error cargando el contenido.</p>');
+      }
+    });
+  }
+
+  renderCurrentChapter() {
+    const chapter = this.chapters[this.currentPage - 1];
+    if (chapter) {
+      this.chapterTitle = chapter.title || `Capítulo ${this.currentPage}`;
+      this.safeChapterHtml = this.sanitizer.bypassSecurityTrustHtml(chapter.content_html);
+    }
   }
 
   nextPage() {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
+      this.renderCurrentChapter();
       this.saveProgressSubject.next(this.currentPage);
     }
   }
@@ -41,20 +77,22 @@ export class ReaderComponent implements OnInit {
   previousPage() {
     if (this.currentPage > 1) {
       this.currentPage--;
+      this.renderCurrentChapter();
       this.saveProgressSubject.next(this.currentPage);
     }
   }
 
   private syncProgressToBackend(page: number) {
-    // El PATCH actualiza selectivamente {current_page} del ReadingProgress
-    // Notarás que el backend recibe la solicitud si dejas de darle 'click' a next durante 3 segundos.
     console.log(`📡 [Debounce Cumplido] Salvando silenciosamente página ${page} en Backend DRF...`);
-    // Descomentar para producción final asumiendo endpoint progress/
-    /*
-    this.api.patch(`library/progress/${this.inventoryId}/`, { current_page: page }).subscribe({
-      next: () => console.log('Progreso guardado correctamente'),
-      error: (err) => console.error('Error al guardar el progreso', err)
+    this.api.get(`library/inventory/${this.inventoryId}/`).subscribe({
+      next: (inventory: any) => {
+        if (inventory && inventory.progress && inventory.progress.id) {
+            this.api.patch(`library/progress/${inventory.progress.id}/`, { current_page: page }).subscribe({
+              next: () => console.log('Progreso guardado correctamente'),
+              error: (err) => console.error('Error al guardar el progreso', err)
+            });
+        }
+      }
     });
-    */
   }
 }

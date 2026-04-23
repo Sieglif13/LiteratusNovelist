@@ -280,3 +280,22 @@ class Edition(TimeStampedModel):
 
     def __str__(self):
         return f"{self.book.title} [{self.get_format_display()}] - {self.language}"
+
+
+class Chapter(TimeStampedModel):
+    """
+    Representa un capítulo individual de un libro con su contenido HTML procesado.
+    """
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='chapters')
+    title = models.CharField(max_length=255, blank=True, default='')
+    order = models.PositiveIntegerField()
+    content_html = models.TextField()
+
+    class Meta:
+        verbose_name = 'Chapter'
+        verbose_name_plural = 'Chapters'
+        ordering = ['order']
+
+    def __str__(self):
+        return f"{self.book.title} - {self.title or f'Chapter {self.order}'}"
+
