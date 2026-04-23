@@ -4,6 +4,7 @@ import { debounceTime } from 'rxjs/operators';
 import { ApiService } from '../../core/services/api.service';
 import { ActivatedRoute } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-reader',
@@ -62,7 +63,17 @@ export class ReaderComponent implements OnInit {
     const chapter = this.chapters[this.currentPage - 1];
     if (chapter) {
       this.chapterTitle = chapter.title || `Capítulo ${this.currentPage}`;
-      this.safeChapterHtml = this.sanitizer.bypassSecurityTrustHtml(chapter.content_html);
+      
+      // Corregir rutas de imágenes para que apunten al backend
+      let html = chapter.content_html;
+      const backendUrl = environment.apiUrl.replace('/api/v1/', ''); // Obtener base http://localhost:8000
+      html = html.replace(/src="\/media\//g, `src="${backendUrl}/media/`);
+      
+      this.safeChapterHtml = this.sanitizer.bypassSecurityTrustHtml(html);
+      
+      // Scroll al inicio cada vez que cambiamos capítulo
+      const viewer = document.querySelector('.canvas-viewer');
+      if (viewer) viewer.scrollTop = 0;
     }
   }
 
