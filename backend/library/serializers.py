@@ -29,8 +29,9 @@ class UserInventorySerializer(serializers.ModelSerializer):
     """
     edition = EditionSerializer(read_only=True)
     progress = ReadingProgressSerializer(read_only=True)
+    book_id = serializers.ReadOnlyField(source='edition.book.id')
 
     class Meta:
         model = UserInventory
-        fields = ['id', 'edition', 'acquired_at', 'progress']
-        read_only_fields = ['id', 'edition', 'acquired_at', 'progress']
+        fields = ['id', 'book_id', 'edition', 'acquired_at', 'progress']
+        read_only_fields = ['id', 'book_id', 'edition', 'acquired_at', 'progress']

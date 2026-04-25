@@ -43,11 +43,14 @@ class AIAvatar(TimeStampedModel):
         related_name='avatars'
     )
     name = models.CharField(max_length=100)
-    # Instrucciones base para el LLM. Define quién es el avatar y cómo debe responder.
-    # Ejemplo: "Eres Quijote, habla en español del siglo XVII, nunca salgas de personaje."
+    # Descripción breve para mostrar en la ficha del personaje en el lector.
+    description = models.TextField(
+        blank=True,
+        default='',
+        help_text="Descripción breve del personaje para mostrar en su ficha de perfil."
+    )
+    # Instrucciones base para el LLM.
     system_prompt = models.TextField()
-    # temperature controla la creatividad del LLM (0.0 = determinista, 1.0 = muy creativo).
-    # CheckConstraint garantiza valores fuera del rango [0,1] no lleguen a la API del LLM.
     temperature = models.DecimalField(
         max_digits=3,
         decimal_places=2,
@@ -56,18 +59,29 @@ class AIAvatar(TimeStampedModel):
     )
     model_name = models.CharField(
         max_length=50,
-        default='gemini-1.5-flash',
-        help_text="Identificador del modelo LLM (e.g. 'gemini-1.5-flash', 'gpt-4o')."
+        default='gemini-2.5-flash',
+        help_text="Identificador del modelo LLM (e.g. 'gemini-2.5-flash', 'gpt-4o')."
     )
     avatar_image = models.ImageField(
         upload_to='ai_avatars/',
         null=True,
         blank=True
     )
-    # INMERSIÓN COMPLETA (Nuevos campos)
+    # SISTEMA DE DESBLOQUEO POR PROGRESO
+    # El avatar se activa cuando el usuario llega a este capítulo (índice base-0).
+    # unlock_at_chapter=0 significa disponible desde el inicio.
+    unlock_at_chapter = models.PositiveIntegerField(
+        default=0,
+        help_text="Capítulo (base 0) a partir del cual el usuario puede chatear con este personaje."
+    )
+    is_major_character = models.BooleanField(
+        default=True,
+        help_text="Si es un personaje principal, aparece destacado en el panel."
+    )
+    # INMERSIÓN COMPLETA
     greeting_message = models.TextField(
         default="Hola, viajero.",
-        help_text="Mensaje introductorio fijo que arranca la sesión. Actúa como ancla."
+        help_text="Mensaje introductorio fijo que arranca la sesión."
     )
     behavioral_context = models.TextField(
         blank=True,
@@ -75,7 +89,7 @@ class AIAvatar(TimeStampedModel):
     )
     sample_dialogues = models.TextField(
         blank=True,
-        help_text="Bloques literales de la obra (o inventados) que le dicen a la IA cómo contestar."
+        help_text="Bloques literales de la obra para guiar el estilo de respuesta."
     )
 
     class Meta:

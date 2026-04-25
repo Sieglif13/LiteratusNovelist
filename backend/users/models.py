@@ -76,6 +76,12 @@ class Profile(TimeStampedModel):
     bio = models.TextField(blank=True, default='')
     country = models.CharField(max_length=100, blank=True, default='')
     preferred_language = models.CharField(max_length=10, default='es')
+    # SISTEMA DE TINTA: Recurso de energía para limitar el uso del chat con IA.
+    # Cada mensaje enviado consume 1 tinta. Los administradores pueden recargar.
+    ink_balance = models.PositiveIntegerField(
+        default=50,
+        help_text="Tokens de energía (Tinta) disponibles para chatear con personajes de IA."
+    )
 
     class Meta:
         verbose_name = 'Profile'

@@ -259,4 +259,9 @@ SIMPLE_JWT = {
 # Nota: nuestros modelos propios heredan TimeStampedModel y usan UUIDField
 # como PK explícita. BigAutoField aplica SOLO a modelos de terceros (ej.
 # django.contrib.sessions) que NO declaran su propio campo pk.
+# ---------------------------------------------------------------------------
+# Configuración de Inteligencia Artificial (Gemini)
+# ---------------------------------------------------------------------------
+GOOGLE_API_KEY = env('GOOGLE_API_KEY', default=None)
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
