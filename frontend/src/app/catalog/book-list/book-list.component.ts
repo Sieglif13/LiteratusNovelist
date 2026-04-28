@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 export interface Book {
   id: string;
   title: string;
+  slug: string;
   synopsis: string;
   is_featured: boolean;
   cover_image: string | null;
@@ -53,30 +54,6 @@ export class BookListComponent implements OnInit {
         this.errorMsg = 'No pudimos cargar la biblioteca. Por favor, revisa tu conexión.';
         this.isLoading = false;
       }
-    });
-  }
-
-  openReader(bookId: string) {
-    // Buscamos el inventario del usuario para este libro
-    this.api.get<any>('library/inventory/').subscribe({
-      next: (res: any) => {
-        // Manejamos si viene como array directo o paginado con .results
-        const inventoryList = Array.isArray(res) ? res : (res.results || []);
-        
-        // Encontramos el item de inventario que corresponde al libro clickeado
-        const invItem = inventoryList.find((item: any) => 
-          item.book_id === bookId || 
-          (item.edition && item.edition.book && item.edition.book.id === bookId)
-        );
-
-        if (invItem) {
-          this.router.navigate(['/reader', invItem.id]);
-        } else {
-          console.warn('El usuario no posee este libro en su inventario.');
-          alert('Debes adquirir esta obra para leerla.');
-        }
-      },
-      error: (err) => console.error('Error verificando inventario', err)
     });
   }
 }

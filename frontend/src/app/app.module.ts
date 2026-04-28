@@ -16,6 +16,8 @@ import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HomeComponent } from './home/home.component';
+import { BookDetailPageComponent } from './catalog/book-detail-page/book-detail-page.component';
+import { TavernComponent } from './library/tavern/tavern.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +27,9 @@ import { HomeComponent } from './home/home.component';
     BookListComponent,
     ReaderComponent,
     AiChatComponent,
-    HomeComponent
+    HomeComponent,
+    BookDetailPageComponent,
+    TavernComponent
   ],
   imports: [
     BrowserModule,

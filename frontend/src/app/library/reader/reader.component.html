@@ -24,7 +24,7 @@
 
     <!-- Derecha: Fuente + Temas + TOC -->
     <div class="reader-settings">
-      <div class="ink-counter" title="Tinta disponible">
+      <div class="ink-counter" title="Ir a la Taberna (Recargar Tinta)" routerLink="/tavern">
         <span class="ink-icon">✒</span>
         <span class="ink-number">{{ inkBalance }}</span>
       </div>
@@ -252,7 +252,8 @@
       </button>
     </div>
     <div class="ink-warning" *ngIf="inkBalance <= 0">
-      ✒ Sin tinta — No puedes enviar más mensajes por ahora.
+      ✒ Sin tinta — 
+      <a routerLink="/tavern" class="tavern-link">Recargar en la Taberna</a>
     </div>
   </div>
 

@@ -41,62 +41,62 @@ class AIAvatar(TimeStampedModel):
         Edition,
         on_delete=models.CASCADE,
         related_name='avatars'
-    )
-    name = models.CharField(max_length=100)
+    ) # Referencia a la edición del libro a la que pertenece este avatar IA.
+    name = models.CharField(max_length=100) # Nombre del personaje o IA.
     # Descripción breve para mostrar en la ficha del personaje en el lector.
     description = models.TextField(
         blank=True,
         default='',
         help_text="Descripción breve del personaje para mostrar en su ficha de perfil."
-    )
+    ) # Descripción que los usuarios ven sobre el personaje antes de chatear.
     # Instrucciones base para el LLM.
-    system_prompt = models.TextField()
+    system_prompt = models.TextField() # El "Prompt del Sistema" que define la personalidad y conocimiento de la IA.
     temperature = models.DecimalField(
         max_digits=3,
         decimal_places=2,
         default=0.70,
         help_text="Creatividad del LLM. 0.0 = determinista, 1.0 = máxima creatividad."
-    )
+    ) # Controla qué tan creativas (o erráticas) son las respuestas de la IA.
     model_name = models.CharField(
         max_length=50,
         default='gemini-2.5-flash',
         help_text="Identificador del modelo LLM (e.g. 'gemini-2.5-flash', 'gpt-4o')."
-    )
+    ) # Especifica el modelo subyacente que responderá (ej. gemini, gpt).
     avatar_image = models.ImageField(
         upload_to='ai_avatars/',
         null=True,
         blank=True
-    )
+    ) # Imagen visual del avatar mostrada en la interfaz.
     # SISTEMA DE DESBLOQUEO POR PROGRESO
     # El avatar se activa cuando el usuario llega a este capítulo (índice base-0).
     # unlock_at_chapter=0 significa disponible desde el inicio.
     unlock_at_chapter = models.PositiveIntegerField(
         default=0,
         help_text="Capítulo (base 0) a partir del cual el usuario puede chatear con este personaje."
-    )
+    ) # Define en qué momento de la lectura se vuelve accesible este avatar.
     is_major_character = models.BooleanField(
         default=True,
         help_text="Si es un personaje principal, aparece destacado en el panel."
-    )
+    ) # Destaca a este personaje sobre los secundarios en la UI.
     # AUTOR: avatar del autor real de la obra (aparece en sección propia en el panel)
     # Siempre disponible desde el inicio (unlock_at_chapter=0 se ignora si is_author=True).
     is_author = models.BooleanField(
         default=False,
         help_text="Si True, este avatar representa al autor de la obra y aparece en sección propia."
-    )
+    ) # Identifica si la IA toma el rol del Autor (ej. Gabriel García Márquez).
     # INMERSIÓN COMPLETA
     greeting_message = models.TextField(
         default="Hola, viajero.",
         help_text="Mensaje introductorio fijo que arranca la sesión."
-    )
+    ) # El primer mensaje que envía el avatar al abrir un chat nuevo.
     behavioral_context = models.TextField(
         blank=True,
         help_text="Motivaciones secretas, situación emocional actual de este personaje."
-    )
+    ) # Contexto adicional oculto para que el LLM entienda el estado actual del personaje.
     sample_dialogues = models.TextField(
         blank=True,
         help_text="Bloques literales de la obra para guiar el estilo de respuesta."
-    )
+    ) # Ejemplos de cómo habla el personaje para que el LLM imite su estilo de escritura.
 
     class Meta:
         verbose_name = 'AI Avatar'
@@ -121,9 +121,9 @@ class ChatSession(TimeStampedModel):
     Sesión de conversación entre un usuario y un AIAvatar.
     Agrupa mensajes con un título para identificar el hilo de conversación.
     """
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='chat_sessions')
-    avatar = models.ForeignKey(AIAvatar, on_delete=models.CASCADE, related_name='sessions')
-    title = models.CharField(max_length=255, blank=True, default='Nueva Conversación')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='chat_sessions') # Referencia al usuario dueño del chat.
+    avatar = models.ForeignKey(AIAvatar, on_delete=models.CASCADE, related_name='sessions') # Referencia al Avatar de IA con el que se chatea.
+    title = models.CharField(max_length=255, blank=True, default='Nueva Conversación') # Título automático o personalizado para el historial.
 
     class Meta:
         verbose_name = 'Chat Session'
@@ -153,10 +153,10 @@ class ChatMessage(TimeStampedModel):
         ASSISTANT = 'assistant', 'Assistant'
         SYSTEM = 'system', 'System'
 
-    session = models.ForeignKey(ChatSession, on_delete=models.CASCADE, related_name='messages')
+    session = models.ForeignKey(ChatSession, on_delete=models.CASCADE, related_name='messages') # Referencia a la sesión a la que pertenece este mensaje.
     # role sigue el estándar de la API de OpenAI/Gemini para compatibilidad directa.
-    role = models.CharField(max_length=20, choices=RoleChoices.choices)
-    content = models.TextField()
+    role = models.CharField(max_length=20, choices=RoleChoices.choices) # Indica si el mensaje es del usuario o del asistente (IA).
+    content = models.TextField() # El contenido del texto real intercambiado.
 
     class Meta:
         verbose_name = 'Chat Message'

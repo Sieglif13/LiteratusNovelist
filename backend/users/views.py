@@ -1,7 +1,9 @@
 """
 users/views.py — Vistas para Autenticación (SimpleJWT), Registro y Gestión de Perfil.
 """
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
 from .models import Profile
 from .serializers import UserWriteSerializer, UserReadSerializer, ProfileSerializer
@@ -53,3 +55,23 @@ class ProfileView(generics.RetrieveUpdateAPIView):
         # Asegura que siempre devolvemos el perfil del usuario logueado
         profile, _ = Profile.objects.get_or_create(user=self.request.user)
         return profile
+
+class AddInkView(APIView):
+    """
+    Endpoint POST /users/me/add_ink/
+    Agrega tinta al usuario tras ver un anuncio.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        # En una app real aquí se validaría un token de recompensa del anuncio
+        amount = int(request.data.get('amount', 10))
+        
+        profile = request.user.profile
+        profile.ink_balance += amount
+        profile.save()
+        
+        return Response({
+            'message': f'¡Has ganado {amount} de Tinta!',
+            'ink_balance': profile.ink_balance
+        }, status=status.HTTP_200_OK)

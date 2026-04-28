@@ -45,14 +45,14 @@ class Order(TimeStampedModel):
         CANCELLED = 'cancelled', 'Cancelled'
         REFUNDED = 'refunded', 'Refunded'
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders') # Referencia al usuario que realizó la compra.
     status = models.CharField(
         max_length=20,
         choices=StatusChoices.choices,
         default=StatusChoices.PENDING
-    )
+    ) # Estado actual del pedido (Pendiente, Pagado, Cancelado, etc).
     # Snapshot del total al momento de la compra. Ver justificación en el docstring del módulo.
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2) # Monto total cobrado por todo el pedido, inmutable tras el pago.
 
     class Meta:
         verbose_name = 'Order'
@@ -79,15 +79,15 @@ class OrderItem(TimeStampedModel):
     Línea de pedido. Cada item corresponde a una Edition específica.
     'unit_price' es un snapshot inmutable — ver justificación en docstring del módulo.
     """
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items') # Referencia a la orden general.
     # PROTECT: no permitir borrar una Edition si hay OrderItems que la referencian.
     # Garantiza integridad del historial de ventas.
-    edition = models.ForeignKey(Edition, on_delete=models.PROTECT, related_name='order_items')
+    edition = models.ForeignKey(Edition, on_delete=models.PROTECT, related_name='order_items') # Referencia a la Edición específica adquirida.
 
     # Snapshot del precio en el momento de la compra.
     # NUNCA modificar post-creación. Ver justificación en docstring del módulo.
-    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
-    quantity = models.PositiveIntegerField(default=1)
+    unit_price = models.DecimalField(max_digits=10, decimal_places=2) # Precio pagado por esta edición exacta, congelado en el tiempo.
+    quantity = models.PositiveIntegerField(default=1) # Cantidad comprada de esta edición.
 
     class Meta:
         verbose_name = 'Order Item'
@@ -123,21 +123,21 @@ class Transaction(TimeStampedModel):
         FAILED = 'failed', 'Failed'
         PENDING = 'pending', 'Pending'
 
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='transactions')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='transactions') # Referencia al pedido que se intentó pagar.
     # Nombre de la pasarela de pago (Webpay, MercadoPago, etc.)
-    provider = models.CharField(max_length=50)
+    provider = models.CharField(max_length=50) # El nombre del proveedor de pagos utilizado.
     status = models.CharField(
         max_length=20,
         choices=StatusChoices.choices,
         default=StatusChoices.PENDING
-    )
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    ) # Estado de este intento de pago específico.
+    amount = models.DecimalField(max_digits=10, decimal_places=2) # Monto procesado en esta transacción.
     # Token único de la transacción devuelto por la pasarela. Necesario para
     # confirmar o revertir el pago con la API del proveedor.
-    token = models.CharField(max_length=255, unique=True)
+    token = models.CharField(max_length=255, unique=True) # Identificador de transacción de la pasarela de pago (ej. Token Webpay).
     # Log crudo de la respuesta de la pasarela (para auditoría y debugging).
     # JSONField→ flexible, no requiere migración si el proveedor cambia su respuesta.
-    metadata = models.JSONField(blank=True, default=dict)
+    metadata = models.JSONField(blank=True, default=dict) # Registro de datos técnicos entregados por la pasarela de pago para auditoría.
 
     class Meta:
         verbose_name = 'Transaction'

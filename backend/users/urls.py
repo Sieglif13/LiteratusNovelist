@@ -6,7 +6,7 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-from .views import RegisterUserView, UserMeView, ProfileView
+from .views import RegisterUserView, UserMeView, ProfileView, AddInkView
 
 urlpatterns = [
     # ---- JWT Authentication ----
@@ -18,5 +18,6 @@ urlpatterns = [
     # ---- Registro y Cuentas ----
     path('register/', RegisterUserView.as_view(), name='register'),
     path('me/', UserMeView.as_view(), name='me'),
+    path('me/add_ink/', AddInkView.as_view(), name='add_ink'),
     path('profile/', ProfileView.as_view(), name='profile'),
 ]

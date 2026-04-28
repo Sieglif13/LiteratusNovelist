@@ -38,6 +38,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
   chapters: any[] = [];
   safeChapterHtml: SafeHtml = '';
   chapterTitle: string = 'Cargando libro...';
+  progressId: number | null = null;
 
   // ── UX ───────────────────────────────────────────────────────────
   fontSize: number = 18;
@@ -79,10 +80,27 @@ export class ReaderComponent implements OnInit, OnDestroy {
       this.syncProgressToBackend(pageNumber);
     });
 
-    this.loadChapters();
+    this.loadInitialData();
     this.applyTheme();
     this.applyFontSize();
     this.loadInkBalance();
+  }
+
+  loadInitialData() {
+    // 1. Cargar metadatos e inventario para obtener el progreso guardado
+    this.api.get<any>(`library/inventory/${this.inventoryId}/`).subscribe({
+      next: (inventory) => {
+        if (inventory && inventory.progress) {
+          this.currentPage = inventory.progress.current_page || 1;
+          this.progressId = inventory.progress.id;
+        }
+        this.loadChapters();
+      },
+      error: (err) => {
+        console.error('Error cargando inventario', err);
+        this.router.navigate(['/catalog']);
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -302,15 +320,16 @@ export class ReaderComponent implements OnInit, OnDestroy {
   }
 
   private syncProgressToBackend(page: number) {
-    this.api.get(`library/inventory/${this.inventoryId}/`).subscribe({
-      next: (inventory: any) => {
-        if (inventory && inventory.progress && inventory.progress.id) {
-          this.api.patch(`library/progress/${inventory.progress.id}/`, { current_page: page }).subscribe({
-            next: () => console.log('✅ Progreso guardado'),
-            error: (err) => console.error('Error guardando progreso', err)
-          });
-        }
-      }
+    if (!this.progressId || this.totalPages === 0) return;
+
+    const percentage = Math.round((page / this.totalPages) * 100);
+
+    this.api.patch(`library/progress/${this.progressId}/`, { 
+      current_page: page,
+      completion_percentage: percentage
+    }).subscribe({
+      next: () => console.log(`✅ Progreso guardado: ${page} (${percentage}%)`),
+      error: (err) => console.error('Error guardando progreso', err)
     });
   }
 }

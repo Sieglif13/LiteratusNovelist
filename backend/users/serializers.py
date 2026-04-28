@@ -37,5 +37,5 @@ class UserWriteSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data) # Hash automático de pass
-        Profile.objects.create(user=user) # Garantía OneToOne (perfil por defecto)
+        # Perfil se crea vía señal en users/signals.py para asegurar ink_balance = 150
         return user

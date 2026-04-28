@@ -33,12 +33,12 @@ class UserInventory(TimeStampedModel):
     Registro de la propiedad digital de un usuario sobre una edición.
     Actúa como tabla puente entre User y Edition con metadatos adicionales.
     """
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='inventory')
-    edition = models.ForeignKey(Edition, on_delete=models.CASCADE, related_name='owners')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='inventory') # Referencia al usuario dueño.
+    edition = models.ForeignKey(Edition, on_delete=models.CASCADE, related_name='owners') # Referencia a la edición que posee el usuario.
     # Timestamp explícito de adquisición. Distinto de created_at (TimeStampedModel)
     # porque en el futuro podría haber un delay entre la creación del registro y
     # la confirmación real del pago (acquired_at = cuando se confirma).
-    acquired_at = models.DateTimeField(auto_now_add=True)
+    acquired_at = models.DateTimeField(auto_now_add=True) # Fecha y hora exacta en la que se adquirió la propiedad del libro.
 
     class Meta:
         verbose_name = 'User Inventory'
@@ -70,7 +70,7 @@ class ReadingProgress(TimeStampedModel):
         UserInventory,
         on_delete=models.CASCADE,
         related_name='progress'
-    )
+    ) # Relación 1:1 con el inventario. Asegura un único progreso por libro adquirido.
     # CFI (Canonical Fragment Identifier): estándar EPUB para indicar posición exacta.
     # Formato: "epubcfi(/6/4[chap01ref]!/4[body01]/10[para05]/3:10)"
     current_cfi = models.CharField(
@@ -78,14 +78,14 @@ class ReadingProgress(TimeStampedModel):
         blank=True,
         default='',
         help_text="EPUB CFI: puntero de posición estándar EPUB/W3C."
-    )
+    ) # Posición de lectura guardada en formato estándar de EPUB.
     # Para formatos no-EPUB (PDF, audio por página/minuto).
-    current_page = models.PositiveIntegerField(default=0)
+    current_page = models.PositiveIntegerField(default=0) # Número de página actual para formatos como PDF.
     completion_percentage = models.DecimalField(
         max_digits=5,
         decimal_places=2,
         default=0.00
-    )
+    ) # Porcentaje de avance de la lectura (0.00 a 100.00).
 
     class Meta:
         verbose_name = 'Reading Progress'
@@ -121,11 +121,11 @@ class UserBookmark(TimeStampedModel):
         UserInventory,
         on_delete=models.CASCADE,
         related_name='bookmarks'
-    )
-    position_cfi = models.CharField(max_length=255)
-    note = models.TextField(blank=True, default='')
+    ) # Referencia al inventario del usuario para asegurar que es dueño del libro.
+    position_cfi = models.CharField(max_length=255) # Ubicación exacta del marcador dentro del libro electrónico.
+    note = models.TextField(blank=True, default='') # Texto opcional del usuario (Nota al margen).
     # Color en hex para UI (subrayado, resaltado, etc.)
-    color = models.CharField(max_length=7, default='#FFFF00')
+    color = models.CharField(max_length=7, default='#FFFF00') # Color del resaltado o marcador para renderizar en la interfaz.
 
     class Meta:
         verbose_name = 'User Bookmark'

@@ -7,4 +7,5 @@ Pillow
 django_filters
 drf-spectacular
 djangorestframework-simplejwt
-google-generativeai
+google-genai
+django-extensions

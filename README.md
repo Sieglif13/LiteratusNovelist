@@ -1,6 +1,6 @@
 # 📚 Literatus Novelist
 
-> Plataforma de lectura inteligente con extracción de personajes, análisis narrativo y chat contextual basado en IA.
+> Plataforma de lectura inteligente con extracción de personajes, análisis narrativo y chat contextual basado en IA. Una experiencia inmersiva que fusiona la literatura clásica con la tecnología generativa.
 
 ---
 
@@ -8,11 +8,11 @@
 
 | Capa       | Tecnología                                      |
 |------------|-------------------------------------------------|
-| Backend    | Python 3.13, Django 6.x, Django REST Framework  |
-| Base de datos | PostgreSQL                                   |
-| IA / NLP   | Google Gemini API (google-generativeai)         |
-| Frontend   | *(por definir — Paso 2)*                        |
-| DevOps     | Git + Monorepo                                  |
+| **Backend** | Python 3.13, Django 6.x, Django REST Framework  |
+| **Base de datos** | PostgreSQL (Arquitectura 3NF con UUIDs)      |
+| **IA / NLP** | Google Gemini 2.0 Flash (`google-genai`)        |
+| **Frontend** | Angular 18+, TypeScript, Vanilla CSS (Glassmorphism) |
+| **Diseño**  | Estética Premium Dark Mode & Bento Grid         |
 
 ---
 
@@ -20,139 +20,78 @@
 
 ```
 LiteratusNovelist/
-├── backend/                 # Proyecto Django (API REST)
-│   ├── config/              # Configuración central del proyecto
-│   │   ├── settings.py      # Ajustes con variables de entorno
-│   │   ├── urls.py          # Rutas raíz
-│   │   └── wsgi.py
-│   ├── .env                 # Variables de entorno locales (NO subir)
-│   ├── .env.example         # Plantilla de variables de entorno
-│   ├── manage.py
-│   └── requirements.txt
-├── frontend/                # Proyecto web (por implementar)
-│   └── .gitkeep
-├── .gitignore
+├── backend/                 # API REST (Django)
+│   ├── catalog/             # Gestión de libros, autores y reseñas
+│   ├── users/               # Perfiles y Economía de Tinta
+│   ├── library/             # Inventario del usuario y progreso
+│   ├── ai_engine/           # Lógica de Chat e IA (Gemini 2.0)
+│   └── config/              # Configuración central
+├── frontend/                # Aplicación Web (Angular)
+│   ├── src/app/catalog/     # Vistas de catálogo y detalle
+│   ├── src/app/library/     # Lector EPUB y Taberna de Tinta
+│   ├── src/app/auth/        # Autenticación reactiva
+│   └── src/app/core/        # Servicios y Guardias
 └── README.md
 ```
 
 ---
 
-## ⚙️ Guía de Instalación — Backend
+## ✨ Características Principales
 
-### Prerrequisitos
-- **Python** 3.10 o superior
-- **PostgreSQL** instalado y corriendo
-- **Git**
-
-### Pasos
-
-**1. Clona el repositorio**
-```bash
-git clone https://github.com/tu-usuario/LiteratusNovelist.git
-cd LiteratusNovelist
-```
-
-**2. Navega al backend y crea el entorno virtual**
-```bash
-cd backend
-python -m venv .venv
-```
-
-**3. Activa el entorno virtual**
-```bash
-# Windows
-.\.venv\Scripts\activate
-
-# macOS / Linux
-source .venv/bin/activate
-```
-
-**4. Instala las dependencias**
-```bash
-pip install -r requirements.txt
-```
-
-**5. Configura las variables de entorno**
-```bash
-# Copia la plantilla y edita con tus credenciales locales
-copy .env.example .env   # Windows
-cp .env.example .env     # macOS / Linux
-```
-
-Edita el archivo `.env`:
-```env
-DEBUG=True
-SECRET_KEY=tu-clave-secreta-aqui
-DATABASE_URL=postgres://usuario:contraseña@localhost:5432/literatus_db
-ALLOWED_HOSTS=localhost,127.0.0.1
-```
-
-**6. Crea la base de datos en PostgreSQL**
-```sql
-CREATE DATABASE literatus_db;
-```
-
-**7. Aplica las migraciones**
-```bash
-python manage.py migrate
-```
-
-**8. Inicia el servidor de desarrollo**
-```bash
-python manage.py runserver
-```
-
-El servidor estará disponible en: `http://127.0.0.1:8000/`
+- **Catálogo Inmersivo:** Navegación fluida por obras clásicas con filtros por dificultad y género.
+- **Detalle de Obra Full-Page:** Vista completa con sinopsis, reseñas de la comunidad y avatares interactivos.
+- **Chat Contextual con IA:** Charla con personajes de los libros (ej. El Principito, El Zorro) con una IA que conoce su historia y personalidad.
+- **Economía de Tinta:** 
+  - Bono de bienvenida de **150 de Tinta**.
+  - **La Taberna:** Sistema de recarga mediante visualización de anuncios y compra de cofres.
+  - Mercado interno para adquirir nuevas obras.
+- **Lector Integrado:** Experiencia de lectura fluida con soporte para archivos EPUB y guardado de progreso automático.
 
 ---
 
-## 📋 Dependencias del Backend
+## ⚙️ Guía de Inicio Rápido
 
-| Paquete               | Propósito                                   |
-|-----------------------|---------------------------------------------|
-| `django`              | Framework web principal                     |
-| `djangorestframework` | Construcción de APIs REST                   |
-| `django-environ`      | Gestión de variables de entorno             |
-| `psycopg2-binary`     | Adaptador PostgreSQL para Python            |
-| `django-cors-headers` | Manejo de CORS para conexión con el frontend|
+### Backend
+1. `cd backend`
+2. `python -m venv .venv`
+3. `.\.venv\Scripts\activate` (Windows)
+4. `pip install -r requirements.txt`
+5. `python manage.py migrate`
+6. `python manage.py runserver`
 
----
-
-## 🏗 Arquitectura de Base de Datos
-
-El diseño de la base de datos está construido pensando en la seguridad, escalabilidad y facilidad de mantenimiento. Para entender cómo funciona, aquí están sus bases explicadas de manera sencilla:
-
-- **Estructura Modular:** En lugar de tener todo mezclado, dividimos el sistema en 5 áreas lógicas: `users` (cuentas y perfiles), `catalog` (autores y libros), `finance` (compras y transacciones), `library` (biblioteca digital del usuario) y `ai_engine` (historial de chats con los personajes).
-- **Identificadores Seguros:** En lugar de usar números del 1 en adelante para enumerar los libros o usuarios (ej. el usuario 5, el libro 12), usamos códigos criptográficos únicos llamados **UUID**. Esto significa que nadie puede "adivinar" cuántos elementos existen ni descargar información usando patrones secuenciales.
-- **Borrado Seguro (Papelera de Reciclaje oculta):** Si borras un archivo o una cuenta, **nunca se destruye realmente de la base de datos**. El sistema simplemente lo "oculta". A esto se le conoce como *Soft Delete*. Se hace así por seguridad contable: si eliminas un libro del catálogo, tu recibo de compra antiguo no se romperá ni desaparecerá, pues el historial debe ser inmutable.
-- **Descargas Protegidas:** ¡Tus libros no son enlaces públicos! Los PDFs y ePUBs se almacenan en una bóveda privada. Para descargar un libro, el sistema revisará antes la base de datos y si corrobora que la compra es legítima, te enviará dinámicamente el archivo.
+### Frontend
+1. `cd frontend`
+2. `npm install`
+3. `npm start`
+4. Acceder a `http://localhost:4200`
 
 ---
 
-## 📈 Registro de Avance del Proyecto
+## 🏗 Arquitectura de Datos
+El sistema utiliza una arquitectura modular y segura:
+- **UUIDs:** Identificadores únicos para prevenir scraping y ataques secuenciales.
+- **Soft Delete:** Integridad de datos contables y de biblioteca.
+- **DBML:** Esquema visualizable en `dbdiagram.io` (ver archivo `backend/literatus_schema.dbml`).
 
-### Hito 1 — Inicialización del Monorepo *(Paso 1)*
-- ✅ Estructura de monorepo creada (`/backend`, `/frontend`)
-- ✅ Entorno virtual (`.venv`) configurado en `/backend`
-- ✅ Dependencias instaladas vía `requirements.txt`
-- ✅ Proyecto Django inicializado bajo el nombre `config`
-- ✅ `settings.py` configurado con `django-environ` y PostgreSQL
-- ✅ `.gitignore` configurado (excluye `.venv`, `.env`, `*.sqlite3`)
-- ✅ Plantilla `.env.example` disponible para colaboradores
-- ✅ `python manage.py check` — **0 errores**
+---
+
+## 📈 Registro de Avance (Hitos)
+
+- **Fase 1-5:** Cimientos, API REST y Frontend Base.
+- **Fase 6:** Integración con Gemini 2.0 y Chat de Personajes.
+- **Fase 7:** Migración a Vista Detalle Full-Page y Rediseño Glassmorphism.
+- **Fase 8:** Implementación de Economía de Tinta, La Taberna y Estabilización de Sesión. ✅
 
 ---
 
 ## 🧑‍💻 Estándares de Desarrollo
 
-- **PEP 8** aplicado estrictamente en todo el código Python
-- **Comentarios en español** en clases, funciones y bloques lógicos
-- **Clean Code**: funciones cortas, nombres descriptivos, sin duplicación
-- **Variables de entorno** para toda configuración sensible (nunca en el código)
-- **Commits atómicos** con mensajes descriptivos en español
+- **Clean Code & PEP 8:** Código legible y documentado en español.
+- **Reactividad Angular:** Uso de `BehaviorSubject` para estados globales (Auth, Tinta).
+- **Seguridad:** JWT para autenticación y transacciones atómicas para la economía.
 
 ---
 
 ## 📄 Licencia
 
-Proyecto académico — Universidad *(año académico 2025-2026)*
+Proyecto académico — Universidad *(Año académico 2025-2026)*

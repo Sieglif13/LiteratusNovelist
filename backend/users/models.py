@@ -38,12 +38,12 @@ class User(AbstractUser, TimeStampedModel):
     # db_index=True en EmailField es redundante con unique=True (Django crea
     # el índice automáticamente), pero lo declaramos explícitamente en Meta
     # para evidencia en migraciones y documentación.
-    email = models.EmailField(unique=True, db_index=True)
+    email = models.EmailField(unique=True, db_index=True) # Correo electrónico único. Se usa como identificador principal para iniciar sesión.
     role = models.CharField(
         max_length=20,
         choices=RoleChoices.choices,
         default=RoleChoices.READER
-    )
+    ) # Rol del usuario en el sistema (Lector, Autor, Administrador). Define los permisos de acceso y acciones permitidas.
 
     class Meta:
         verbose_name = 'User'
@@ -71,17 +71,17 @@ class Profile(TimeStampedModel):
         User,
         on_delete=models.CASCADE,
         related_name='profile'
-    )
-    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
-    bio = models.TextField(blank=True, default='')
-    country = models.CharField(max_length=100, blank=True, default='')
-    preferred_language = models.CharField(max_length=10, default='es')
+    ) # Relación 1:1 con el modelo User. Vincula los datos extendidos del perfil a la cuenta principal.
+    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True) # Imagen de perfil del usuario. Almacena la ruta del archivo subido.
+    bio = models.TextField(blank=True, default='') # Biografía o descripción corta escrita por el usuario.
+    country = models.CharField(max_length=100, blank=True, default='') # País de origen o residencia del usuario. Útil para métricas.
+    preferred_language = models.CharField(max_length=10, default='es') # Idioma preferido del usuario en la plataforma (ej. 'es' para español).
     # SISTEMA DE TINTA: Recurso de energía para limitar el uso del chat con IA.
     # Cada mensaje enviado consume 1 tinta. Los administradores pueden recargar.
     ink_balance = models.PositiveIntegerField(
         default=50,
         help_text="Tokens de energía (Tinta) disponibles para chatear con personajes de IA."
-    )
+    ) # Saldo actual de "Tinta" del usuario. Funciona como moneda virtual para interactuar con la IA o adquirir contenido.
 
     class Meta:
         verbose_name = 'Profile'
