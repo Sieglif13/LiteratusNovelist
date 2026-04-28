@@ -140,6 +140,13 @@ class Book(TimeStampedModel):
     title = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True, blank=True)
     synopsis = models.TextField(blank=True, default='')
+    
+    # Campo para destacar libros en la Landing Page
+    is_featured = models.BooleanField(
+        default=False,
+        help_text="Marcar como True para destacar este libro en la Landing Page."
+    )
+    
     cover_image = models.ImageField(
         upload_to='book_covers/',
         null=True,

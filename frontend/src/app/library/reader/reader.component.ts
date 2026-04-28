@@ -50,6 +50,14 @@ export class ReaderComponent implements OnInit, OnDestroy {
   selectedAvatar: any = null;
   showCharProfile: boolean = false;
 
+  // Getters para separar autor de personajes en el panel
+  get authorAvatar(): any {
+    return this.avatars.find(a => a.is_author) || null;
+  }
+  get characterAvatars(): any[] {
+    return this.avatars.filter(a => !a.is_author);
+  }
+
   // Chat
   isChatOpen: boolean = false;
   chatSession: any = null;

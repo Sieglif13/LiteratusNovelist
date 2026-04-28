@@ -268,6 +268,57 @@
   overflow-y: auto;
 }
 
+/* ETIQUETAS DE SECCIÓN */
+.section-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.5;
+  margin-bottom: 0.6rem;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* SECCIÓN AUTOR */
+.author-section {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 200, 70, 0.2);
+}
+
+/* SECCIÓN PERSONAJES */
+.characters-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ITEM DEL AUTOR: styling especial dorado */
+.author-item {
+  border: 1px solid rgba(255, 200, 70, 0.35) !important;
+  background: rgba(255, 200, 70, 0.05) !important;
+  border-radius: 14px;
+}
+
+.author-item:hover {
+  background: rgba(255, 200, 70, 0.12) !important;
+  border-color: rgba(255, 200, 70, 0.6) !important;
+  box-shadow: 0 0 15px rgba(255, 200, 70, 0.15);
+}
+
+.author-item .avatar-pic img {
+  border: 2px solid rgba(255, 200, 70, 0.6);
+  box-shadow: 0 0 12px rgba(255, 200, 70, 0.3);
+}
+
+.author-item .avatar-status {
+  color: #fbbf24 !important;
+  opacity: 1 !important;
+}
+
+
+
 .avatar-item {
   display: flex;
   align-items: center;
@@ -664,8 +715,8 @@
 }
 
 .chat-avatar-thumb {
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   background: linear-gradient(135deg, #a855f7, #3b82f6);
   display: flex;
@@ -674,6 +725,24 @@
   font-weight: 700;
   font-size: 1rem;
   color: white;
+  overflow: hidden;
+  border: 2px solid rgba(168, 85, 247, 0.6);
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.3);
+  flex-shrink: 0;
+}
+
+.chat-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.chat-avatar-initial {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  font-family: 'Outfit', sans-serif;
 }
 
 .chat-name {
@@ -700,10 +769,41 @@
 
 .chat-bubble-row {
   display: flex;
+  align-items: flex-end;
+  gap: 8px;
 }
 
 .user-row { justify-content: flex-end; }
 .ai-row   { justify-content: flex-start; }
+
+/* Mini-avatar junto a burbuja de IA */
+.bubble-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a855f7, #3b82f6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1.5px solid rgba(168, 85, 247, 0.5);
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.25);
+}
+
+.bubble-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.bubble-avatar-initial {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: white;
+  font-family: 'Outfit', sans-serif;
+}
 
 .bubble {
   max-width: 78%;

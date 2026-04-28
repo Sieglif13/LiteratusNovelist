@@ -15,6 +15,7 @@ import { HttpClientModule, provideHttpClient, withInterceptors } from '@angular/
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { HomeComponent } from './home/home.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { RouterModule } from '@angular/router';
     RegisterComponent,
     BookListComponent,
     ReaderComponent,
-    AiChatComponent
+    AiChatComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,

@@ -78,6 +78,12 @@ class AIAvatar(TimeStampedModel):
         default=True,
         help_text="Si es un personaje principal, aparece destacado en el panel."
     )
+    # AUTOR: avatar del autor real de la obra (aparece en sección propia en el panel)
+    # Siempre disponible desde el inicio (unlock_at_chapter=0 se ignora si is_author=True).
+    is_author = models.BooleanField(
+        default=False,
+        help_text="Si True, este avatar representa al autor de la obra y aparece en sección propia."
+    )
     # INMERSIÓN COMPLETA
     greeting_message = models.TextField(
         default="Hola, viajero.",

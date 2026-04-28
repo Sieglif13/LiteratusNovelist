@@ -60,35 +60,63 @@
       <button class="close-btn" (click)="toggleCharPanel()">✕</button>
     </div>
 
-    <!-- Lista de avatares -->
+    <!-- Lista de avatares: AUTOR + PERSONAJES separados -->
     <div *ngIf="!showCharProfile" class="avatar-list">
-      <div *ngIf="avatars.length === 0" class="empty-hint">
-        <p>Este libro no tiene personajes de IA configurados aún.</p>
-      </div>
-      <div *ngFor="let avatar of avatars"
-           class="avatar-item"
-           [class.unlocked]="avatar.is_unlocked"
-           [class.locked]="!avatar.is_unlocked"
-           (click)="openCharProfile(avatar)">
-        <div class="avatar-pic">
-          <img *ngIf="avatar.avatar_image_url" [src]="avatar.avatar_image_url" [alt]="avatar.name">
-          <div *ngIf="!avatar.avatar_image_url" class="avatar-placeholder">
-            {{ avatar.name.charAt(0) }}
+
+      <!-- ── SECCIÓN AUTOR ─────────────────────────────── -->
+      <div *ngIf="authorAvatar" class="author-section">
+        <span class="section-label">✍️ El Autor</span>
+        <div class="avatar-item author-item unlocked"
+             (click)="openCharProfile(authorAvatar)">
+          <div class="avatar-pic">
+            <img *ngIf="authorAvatar.avatar_image_url"
+                 [src]="authorAvatar.avatar_image_url"
+                 [alt]="authorAvatar.name">
+            <div *ngIf="!authorAvatar.avatar_image_url" class="avatar-placeholder">
+              {{ authorAvatar.name.charAt(0) }}
+            </div>
           </div>
-          <span class="lock-badge" *ngIf="!avatar.is_unlocked">🔒</span>
-        </div>
-        <div class="avatar-meta">
-          <span class="avatar-name">{{ avatar.name }}</span>
-          <span class="avatar-status" [class.unlocked]="avatar.is_unlocked">
-            {{ avatar.is_unlocked ? 'Disponible' : 'Cap. ' + avatar.unlock_at_chapter }}
-          </span>
+          <div class="avatar-meta">
+            <span class="avatar-name">{{ authorAvatar.name }}</span>
+            <span class="avatar-status unlocked">Siempre disponible</span>
+          </div>
         </div>
       </div>
+
+      <!-- ── SECCIÓN PERSONAJES ─────────────────────────── -->
+      <div class="characters-section">
+        <span class="section-label">🎭 Personajes</span>
+        <div *ngIf="characterAvatars.length === 0" class="empty-hint">
+          <p>Este libro no tiene personajes de IA configurados aún.</p>
+        </div>
+        <div *ngFor="let avatar of characterAvatars"
+             class="avatar-item"
+             [class.unlocked]="avatar.is_unlocked"
+             [class.locked]="!avatar.is_unlocked"
+             (click)="openCharProfile(avatar)">
+          <div class="avatar-pic">
+            <img *ngIf="avatar.avatar_image_url" [src]="avatar.avatar_image_url" [alt]="avatar.name">
+            <div *ngIf="!avatar.avatar_image_url" class="avatar-placeholder">
+              {{ avatar.name.charAt(0) }}
+            </div>
+            <span class="lock-badge" *ngIf="!avatar.is_unlocked">🔒</span>
+          </div>
+          <div class="avatar-meta">
+            <span class="avatar-name">{{ avatar.name }}</span>
+            <span class="avatar-status" [class.unlocked]="avatar.is_unlocked">
+              {{ avatar.is_unlocked ? 'Disponible' : 'Cap. ' + avatar.unlock_at_chapter }}
+            </span>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- Ficha del Personaje -->
     <div *ngIf="showCharProfile && selectedAvatar" class="char-profile">
-      <button class="back-link" (click)="closeCharProfile()">← Personajes</button>
+      <button class="back-link" (click)="closeCharProfile()">
+        ← {{ selectedAvatar?.is_author ? 'El Autor' : 'Personajes' }}
+      </button>
 
       <div class="profile-avatar-big">
         <img *ngIf="selectedAvatar.avatar_image_url" [src]="selectedAvatar.avatar_image_url" [alt]="selectedAvatar.name">
@@ -152,10 +180,18 @@
     <!-- Header del chat -->
     <div class="chat-header">
       <div class="chat-avatar-info">
-        <div class="chat-avatar-thumb">{{ selectedAvatar?.name?.charAt(0) }}</div>
+        <div class="chat-avatar-thumb">
+          <img *ngIf="selectedAvatar?.avatar_image_url"
+               [src]="selectedAvatar.avatar_image_url"
+               [alt]="selectedAvatar.name"
+               class="chat-avatar-img">
+          <span *ngIf="!selectedAvatar?.avatar_image_url" class="chat-avatar-initial">
+            {{ selectedAvatar?.name?.charAt(0) }}
+          </span>
+        </div>
         <div>
           <span class="chat-name">{{ selectedAvatar?.name }}</span>
-          <span class="chat-mode-label">Modo: {{ chatMode }}</span>
+          <span class="chat-mode-label">Modo: {{ chatMode | titlecase }}</span>
         </div>
       </div>
       <button class="close-btn" (click)="closeChat()">✕</button>
@@ -167,11 +203,30 @@
            class="chat-bubble-row"
            [class.user-row]="msg.role === 'user'"
            [class.ai-row]="msg.role === 'assistant'">
+        <!-- Mini-avatar del personaje en burbujas de IA -->
+        <div *ngIf="msg.role === 'assistant'" class="bubble-avatar">
+          <img *ngIf="selectedAvatar?.avatar_image_url"
+               [src]="selectedAvatar.avatar_image_url"
+               [alt]="selectedAvatar?.name"
+               class="bubble-avatar-img">
+          <span *ngIf="!selectedAvatar?.avatar_image_url" class="bubble-avatar-initial">
+            {{ selectedAvatar?.name?.charAt(0) }}
+          </span>
+        </div>
         <div class="bubble" [class.user-bubble]="msg.role === 'user'" [class.ai-bubble]="msg.role === 'assistant'">
           {{ msg.content }}
         </div>
       </div>
       <div *ngIf="isSendingMessage" class="chat-bubble-row ai-row">
+        <div class="bubble-avatar">
+          <img *ngIf="selectedAvatar?.avatar_image_url"
+               [src]="selectedAvatar.avatar_image_url"
+               [alt]="selectedAvatar?.name"
+               class="bubble-avatar-img">
+          <span *ngIf="!selectedAvatar?.avatar_image_url" class="bubble-avatar-initial">
+            {{ selectedAvatar?.name?.charAt(0) }}
+          </span>
+        </div>
         <div class="bubble ai-bubble typing-indicator">
           <span></span><span></span><span></span>
         </div>

@@ -1,8 +1,12 @@
 <div class="catalog-wrapper">
   
-  <div class="catalog-header">
+  <div class="catalog-header" *ngIf="!isHome">
     <h1 class="glow-text">Explora el Catálogo</h1>
     <p class="subtitle">Descubre tu próxima aventura inmersiva.</p>
+  </div>
+
+  <div class="home-grid-header" *ngIf="isHome">
+    <h2>Títulos destacados para tu próxima aventura</h2>
   </div>
 
   <!-- Loading State (Skeleton) -->
@@ -33,7 +37,7 @@
       <!-- Se asume imagen default si Django retorna null en la cubierta -->
       <div class="card-image" 
            [style.backgroundImage]="'url(' + (book.cover_image || 'assets/default_cover.jpg') + ')'">
-        <!-- Placeholder visual colorizado en CSS si asset falla -->
+        <div class="featured-badge" *ngIf="book.is_featured">★ Destacado</div>
       </div>
       
       <div class="card-content">

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, Input, inject } from '@angular/core';
 import { ApiService } from '../../core/services/api.service';
 import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -8,6 +8,7 @@ export interface Book {
   id: string;
   title: string;
   synopsis: string;
+  is_featured: boolean;
   cover_image: string | null;
   created_at: string;
 }
@@ -27,6 +28,8 @@ interface PaginatedResponse {
 export class BookListComponent implements OnInit {
   private api = inject(ApiService);
   private router = inject(Router);
+
+  @Input() isHome: boolean = false;
 
   books: Book[] = [];
   isLoading = true;

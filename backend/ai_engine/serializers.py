@@ -14,11 +14,14 @@ class AIAvatarListSerializer(serializers.ModelSerializer):
         model = AIAvatar
         fields = [
             'id', 'name', 'description', 'avatar_image_url',
-            'unlock_at_chapter', 'is_major_character', 'is_unlocked',
-            'greeting_message',
+            'unlock_at_chapter', 'is_major_character', 'is_author',
+            'is_unlocked', 'greeting_message',
         ]
 
     def get_is_unlocked(self, obj):
+        # El autor siempre está disponible para chatear
+        if obj.is_author:
+            return True
         # El contexto 'current_chapter' es inyectado por la vista
         current_chapter = self.context.get('current_chapter', 0)
         return current_chapter >= obj.unlock_at_chapter

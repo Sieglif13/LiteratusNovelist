@@ -8,14 +8,16 @@ import { ReaderComponent } from './library/reader/reader.component';
 import { AiChatComponent } from './library/ai-chat/ai-chat.component';
 import { authGuard } from './core/guards/auth.guard';
 
+import { HomeComponent } from './home/home.component';
+
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'catalog', component: BookListComponent },
   { path: 'reader/:id', component: ReaderComponent, canActivate: [authGuard] },
   { path: 'chat/:session_id', component: AiChatComponent, canActivate: [authGuard] },
-  { path: '', redirectTo: '/catalog', pathMatch: 'full' },
-  { path: '**', redirectTo: '/catalog' }
+  { path: '', component: HomeComponent, pathMatch: 'full' },
+  { path: '**', redirectTo: '' }
 ];
 
 @NgModule({
