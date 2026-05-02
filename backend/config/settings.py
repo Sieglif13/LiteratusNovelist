@@ -200,7 +200,10 @@ PRIVATE_MEDIA_ROOT = BASE_DIR / 'private_media'
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://localhost:5173',
+    'http://localhost:4200',
 ]
+
+CORS_ALLOW_CREDENTIALS = True
 
 # ---------------------------------------------------------------------------
 # Configuración de Django REST Framework
@@ -256,4 +259,20 @@ SIMPLE_JWT = {
 # Nota: nuestros modelos propios heredan TimeStampedModel y usan UUIDField
 # como PK explícita. BigAutoField aplica SOLO a modelos de terceros (ej.
 # django.contrib.sessions) que NO declaran su propio campo pk.
+# ---------------------------------------------------------------------------
+# Configuración de Inteligencia Artificial (Gemini)
+# ---------------------------------------------------------------------------
+GOOGLE_API_KEY = env('GOOGLE_API_KEY', default=None)
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Webpay Config
+WEBPAY_COMMERCE_CODE = env('WEBPAY_COMMERCE_CODE', default='597055555532')
+WEBPAY_API_KEY = env('WEBPAY_API_KEY', default='579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C')
+WEBPAY_ENVIRONMENT = env('WEBPAY_ENVIRONMENT', default='INTEGRACION')
+WEBPAY_RETURN_URL = env('WEBPAY_RETURN_URL', default='http://localhost:8000/api/v1/finance/confirm/')
+FRONTEND_URL = env('FRONTEND_URL', default='http://localhost:63235')
+ELEVENLABS_API_KEY = env('ELEVENLABS_API_KEY', default='PLACEHOLDER_KEY')

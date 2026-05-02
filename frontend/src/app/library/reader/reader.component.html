@@ -1,0 +1,453 @@
+<div class="workbench-container" [ngClass]="'theme-' + currentTheme">
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- TOOLBAR SUPERIOR (FIJO)                                         -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <header class="toolbar glass-panel">
+
+    <!-- Izquierda: Volver + Info + Personajes -->
+    <div class="toolbar-left">
+      <button class="back-btn" routerLink="/catalog" title="Volver al catálogo">
+        <span class="icon">✕</span>
+      </button>
+      <div class="book-info">
+        <span class="chapter-label">{{ chapterTitle }}</span>
+        <span class="progress-label">{{ currentPage - 1 > 0 ? 'Capítulo ' + (currentPage - 1) : 'Prólogo' }} · {{ currentPage }} de {{ totalPages }}</span>
+      </div>
+      <!-- Trigger Panel de Personajes (izquierda) -->
+      <button class="char-trigger-btn" (click)="toggleCharPanel()" title="Personajes IA"
+              [class.active]="isCharPanelOpen">
+        <span class="icon">🎭</span>
+        <span class="ink-badge" *ngIf="inkBalance <= 10" title="Tinta baja">{{ inkBalance }}</span>
+      </button>
+    </div>
+
+    <!-- Derecha: Fuente + Temas + TOC -->
+    <div class="reader-settings">
+      <div class="ink-counter" title="Ir a la Taberna (Recargar Tinta)" routerLink="/tavern">
+        <span class="ink-icon">✒</span>
+        <span class="ink-number">{{ inkBalance }}</span>
+      </div>
+      <div class="font-controls">
+        <button (click)="changeFontSize(-2)" title="Disminuir letra">A-</button>
+        <button (click)="changeFontSize(2)" title="Aumentar letra">A+</button>
+      </div>
+      <div class="theme-selector">
+        <button class="theme-btn dark"  (click)="setTheme('dark')"  [class.active]="currentTheme === 'dark'"></button>
+        <button class="theme-btn light" (click)="setTheme('light')" [class.active]="currentTheme === 'light'"></button>
+        <button class="theme-btn sepia" (click)="setTheme('sepia')" [class.active]="currentTheme === 'sepia'"></button>
+      </div>
+      <button class="toc-trigger-btn" (click)="toggleAudioPanel()" title="Narración AI" [class.active]="isAudioPanelOpen">
+        <span class="icon">🔊</span>
+      </button>
+      <button class="toc-trigger-btn" (click)="toggleToc()" title="Índice de capítulos" [class.active]="isTocOpen">
+        <span class="icon">☰</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- OVERLAY COMPARTIDO (click fuera cierra cualquier panel)         -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div class="panel-overlay"
+       *ngIf="isTocOpen || isCharPanelOpen"
+       (click)="isTocOpen = false; isCharPanelOpen = false; showCharProfile = false">
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- PANEL IZQUIERDO: PERSONAJES                                      -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <aside class="char-sidebar glass-panel" [@slideFromLeft]="isCharPanelOpen ? 'in' : 'out'">
+    <div class="toc-header">
+      <h3>🎭 Personajes</h3>
+      <button class="close-btn" (click)="toggleCharPanel()">✕</button>
+    </div>
+
+    <!-- Lista de avatares: AUTOR + PERSONAJES separados -->
+    <div *ngIf="!showCharProfile" class="avatar-list">
+
+      <!-- ── SECCIÓN AUTOR ─────────────────────────────── -->
+      <div *ngIf="authorAvatar" class="author-section">
+        <span class="section-label">✍️ El Autor</span>
+        <div class="avatar-item author-item unlocked"
+             (click)="openCharProfile(authorAvatar)">
+          <div class="avatar-pic">
+            <img *ngIf="authorAvatar.avatar_image_url"
+                 [src]="authorAvatar.avatar_image_url"
+                 [alt]="authorAvatar.name">
+            <div *ngIf="!authorAvatar.avatar_image_url" class="avatar-placeholder">
+              {{ authorAvatar.name.charAt(0) }}
+            </div>
+          </div>
+          <div class="avatar-meta">
+            <span class="avatar-name">{{ authorAvatar.name }}</span>
+            <span class="avatar-status unlocked">Siempre disponible</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECCIÓN PERSONAJES ─────────────────────────── -->
+      <div class="characters-section">
+        <span class="section-label">🎭 Personajes</span>
+        <div *ngIf="characterAvatars.length === 0" class="empty-hint">
+          <p>Este libro no tiene personajes de IA configurados aún.</p>
+        </div>
+        <div *ngFor="let avatar of characterAvatars"
+             class="avatar-item"
+             [class.unlocked]="avatar.is_unlocked"
+             [class.locked]="!avatar.is_unlocked"
+             (click)="openCharProfile(avatar)">
+          <div class="avatar-pic">
+            <img *ngIf="avatar.avatar_image_url" [src]="avatar.avatar_image_url" [alt]="avatar.name">
+            <div *ngIf="!avatar.avatar_image_url" class="avatar-placeholder">
+              {{ avatar.name.charAt(0) }}
+            </div>
+            <span class="lock-badge" *ngIf="!avatar.is_unlocked">🔒</span>
+          </div>
+          <div class="avatar-meta">
+            <span class="avatar-name">{{ avatar.name }}</span>
+            <span class="avatar-status" [class.unlocked]="avatar.is_unlocked">
+              {{ avatar.is_unlocked ? 'Disponible' : 'Cap. ' + avatar.unlock_at_chapter }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Ficha del Personaje -->
+    <div *ngIf="showCharProfile && selectedAvatar" class="char-profile">
+      <button class="back-link" (click)="closeCharProfile()">
+        ← {{ selectedAvatar?.is_author ? 'El Autor' : 'Personajes' }}
+      </button>
+
+      <div class="profile-avatar-big">
+        <img *ngIf="selectedAvatar.avatar_image_url" [src]="selectedAvatar.avatar_image_url" [alt]="selectedAvatar.name">
+        <div *ngIf="!selectedAvatar.avatar_image_url" class="avatar-placeholder-big">
+          {{ selectedAvatar.name.charAt(0) }}
+        </div>
+      </div>
+
+      <h2 class="profile-name">{{ selectedAvatar.name }}</h2>
+      <p class="profile-desc">{{ selectedAvatar.description || 'Un personaje misterioso...' }}</p>
+
+      <!-- Bloqueado -->
+      <div *ngIf="!selectedAvatar.is_unlocked" class="locked-notice">
+        <span class="lock-big">🔒</span>
+        <p>Se desbloquea al llegar al capítulo <strong>{{ selectedAvatar.unlock_at_chapter }}</strong></p>
+        <p class="lock-progress">Estás en la sección {{ currentPage - 1 }}</p>
+      </div>
+
+      <!-- Desbloqueado -->
+      <div *ngIf="selectedAvatar.is_unlocked" class="chat-actions">
+        <!-- Selector de modo -->
+        <div class="mode-toggle">
+          <button [class.active]="chatMode === 'roleplay'" (click)="setMode('roleplay')">🎭 Inmersivo</button>
+          <button [class.active]="chatMode === 'tutor'"    (click)="setMode('tutor')">📚 Tutor</button>
+          <button [class.active]="chatMode === 'critical'" (click)="setMode('critical')">🔍 Crítico</button>
+        </div>
+        <button class="start-chat-btn glass-btn" (click)="startChat(selectedAvatar)">
+          💬 Iniciar Conversación
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- PANEL DERECHO: ÍNDICE (TOC)                                      -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <aside class="toc-sidebar glass-panel" [@slideFromRight]="isTocOpen ? 'in' : 'out'">
+    <div class="toc-header">
+      <h3>Índice</h3>
+      <button class="close-btn" (click)="toggleToc()">✕</button>
+    </div>
+    <ul class="toc-list">
+      <li *ngFor="let chapter of chapters; let i = index"
+          [class.active]="i === (currentPage - 1)"
+          (click)="goToChapter(i)">
+        <span class="chapter-number">{{ i }}.</span>
+        <span class="chapter-name">{{ chapter.title || 'Capítulo ' + i }}</span>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- PANEL DE AUDIO (GLASSMORFHISM)                                  -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div class="audio-controls-panel glass-panel" *ngIf="isAudioPanelOpen">
+    <div class="toc-header">
+      <span class="section-label">Narración</span>
+      <button class="close-btn" (click)="toggleAudioPanel()">✕</button>
+    </div>
+
+    <!-- Selector de modo -->
+    <div class="voice-selector">
+      <!-- VOZ ESTÁNDAR -->
+      <div class="voice-option" [class.active]="currentAudioMode === 'native'" (click)="currentAudioMode = 'native'">
+        <div class="voice-info">
+          <span>Voz Estándar</span>
+          <small>Nativa del navegador</small>
+        </div>
+        <span class="ink-cost">Gratis</span>
+      </div>
+
+      <!-- OTRAS OPCIONES (Voz Grabada) -->
+      <div class="voice-option"
+           [class.active]="currentAudioMode === 'pro'"
+           [class.premium-locked]="!hasPremiumNarration"
+           (click)="currentAudioMode = 'pro'">
+        <div class="voice-info">
+          <span>Otras opciones</span>
+          <small>Audio Original (Cap. 1)</small>
+        </div>
+        
+        <span class="ink-cost" *ngIf="!hasPremiumNarration">
+          {{ PREMIUM_VOICE_INK_COST }} Ink
+        </span>
+        <span class="ink-cost unlocked-badge" *ngIf="hasPremiumNarration">
+          ✓ Disponible
+        </span>
+      </div>
+    </div>
+
+    <!-- Botón de Desbloqueo si está en modo pro pero bloqueado -->
+    <div class="unlock-premium-action" *ngIf="currentAudioMode === 'pro' && !hasPremiumNarration">
+      <p class="unlock-notice">Desbloquea la narración grabada para todo el libro.</p>
+      <button class="unlock-btn" (click)="purchaseNarration()" [disabled]="isUnlocking">
+        <span *ngIf="!isUnlocking">Desbloquear por {{ PREMIUM_VOICE_INK_COST }} Ink</span>
+        <span *ngIf="isUnlocking" class="loader-spin">◷</span>
+      </button>
+    </div>
+
+    <!-- Selector de voz del navegador (solo modo nativo) -->
+    <div class="audio-config" *ngIf="currentAudioMode === 'native'">
+      <label class="config-label">🎹 Voz</label>
+      <select class="voice-dropdown"
+              [value]="audioService.selectedVoiceIndex"
+              (change)="audioService.setVoiceByIndex(+$any($event.target).value)">
+        <option *ngFor="let v of audioService.voices; let i = index" [value]="i">
+          {{ v.name }} ({{ v.lang }})
+        </option>
+      </select>
+    </div>
+
+    <!-- Control de velocidad (ambos modos) -->
+    <div class="audio-config">
+      <label class="config-label">Velocidad: {{ audioService.playbackRate | number:'1.1-1' }}x</label>
+      <input
+        type="range"
+        class="speed-slider"
+        min="0.5" max="2.0" step="0.1"
+        [value]="audioService.playbackRate"
+        (input)="audioService.setSpeed(+$any($event.target).value)">
+      <div class="speed-labels">
+        <span>0.5x</span><span>1.0x</span><span>2.0x</span>
+      </div>
+    </div>
+
+    <!-- Controles de reproducción -->
+    <div class="audio-main-controls">
+      <button class="audio-btn stop" (click)="stopAudio()" title="Detener">⏹</button>
+
+      <!-- Estado 1: Pausado → botón REANUDAR (verde) -->
+      <button class="audio-btn resume"
+              *ngIf="!(audioService.isPlaying$ | async) && (audioService.isPaused$ | async)"
+              (click)="audioService.resume()"
+              title="Reanudar donde lo dejaste">
+        ▶
+      </button>
+
+      <!-- Estado 2: Detenido / sin iniciar → botón REPRODUCIR (azul) -->
+      <button class="audio-btn play"
+              *ngIf="!(audioService.isPlaying$ | async) && !(audioService.isPaused$ | async)"
+              (click)="playAudio()"
+              [disabled]="isAudioLoading">
+        <span *ngIf="!isAudioLoading">▶</span>
+        <span *ngIf="isAudioLoading" class="loader-spin">◷</span>
+      </button>
+
+      <!-- Estado 3: Reproduciendo → botón PAUSAR -->
+      <button class="audio-btn pause"
+              *ngIf="(audioService.isPlaying$ | async)"
+              (click)="audioService.pause()"
+              title="Pausar">
+        ⏸
+      </button>
+    </div>
+
+    <!-- Mensaje de error Pro (ej. requiere plan de pago) -->
+    <div class="pro-error-msg" *ngIf="proErrorMessage">
+      {{ proErrorMessage }}
+    </div>
+
+    <!-- Aviso de tinta insuficiente -->
+    <div class="ink-warning" *ngIf="currentAudioMode === 'pro' && inkBalance < 10">
+      ⚠️ Tinta insuficiente.
+      <a routerLink="/tavern" class="tavern-link">Recargar →</a>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- LIENZO DE LECTURA PRINCIPAL                                      -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- LIENZO DE LECTURA (renderizado nativo Angular para highlighting) -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <main class="reading-canvas html-reader">
+    <!-- Título principal del capítulo -->
+    <!-- Título principal del capítulo con soporte para highlighting -->
+    <h1 class="chapter-title-main">
+      <ng-container *ngFor="let tok of titleTokens; trackBy: trackByToken">
+        <span *ngIf="tok.isWord"
+              [id]="'word-' + tok.idx"
+              class="word"
+              [class.active-word]="tok.idx === currentWordIndex"
+              (click)="onWordClick(tok.idx)">{{ tok.text }}</span>
+        <ng-container *ngIf="!tok.isWord && !tok.isImg">{{ tok.text }}</ng-container>
+        <img *ngIf="tok.isImg" [src]="tok.src" [alt]="tok.alt || ''" class="inline-img" loading="lazy">
+      </ng-container>
+      <!-- Fallback si no se encontró el título en el texto original -->
+      <ng-container *ngIf="titleTokens.length === 0">{{ chapterTitle }}</ng-container>
+    </h1>
+
+    <ng-container *ngFor="let block of parsedBlocks; trackBy: trackByBlock">
+
+      <!-- Imagen a nivel raíz (standalone) -->
+      <figure *ngIf="block.tag === 'img-block'" class="chapter-image">
+        <img [src]="block.tokens[0].src" [alt]="block.tokens[0].alt || ''" loading="lazy">
+      </figure>
+
+      <h1 *ngIf="block.tag === 'h1'" class="chapter-heading">
+        <ng-container *ngFor="let tok of block.tokens; trackBy: trackByToken">
+          <span *ngIf="tok.isWord"
+                [id]="'word-' + tok.idx"
+                class="word"
+                [class.active-word]="tok.idx === currentWordIndex"
+                (click)="onWordClick(tok.idx)">{{ tok.text }}</span>
+          <ng-container *ngIf="!tok.isWord && !tok.isImg">{{ tok.text }}</ng-container>
+          <img *ngIf="tok.isImg" [src]="tok.src" [alt]="tok.alt || ''" class="inline-img" loading="lazy">
+        </ng-container>
+      </h1>
+
+      <h2 *ngIf="block.tag === 'h2'" class="chapter-heading">
+        <ng-container *ngFor="let tok of block.tokens; trackBy: trackByToken">
+          <span *ngIf="tok.isWord"
+                [id]="'word-' + tok.idx"
+                class="word"
+                [class.active-word]="tok.idx === currentWordIndex"
+                (click)="onWordClick(tok.idx)">{{ tok.text }}</span>
+          <ng-container *ngIf="!tok.isWord && !tok.isImg">{{ tok.text }}</ng-container>
+          <img *ngIf="tok.isImg" [src]="tok.src" [alt]="tok.alt || ''" class="inline-img" loading="lazy">
+        </ng-container>
+      </h2>
+
+      <p *ngIf="block.tag === 'p' || block.tag === 'div' || block.tag === 'blockquote'">
+        <ng-container *ngFor="let tok of block.tokens; trackBy: trackByToken">
+          <span *ngIf="tok.isWord"
+                [id]="'word-' + tok.idx"
+                class="word"
+                [class.active-word]="tok.idx === currentWordIndex"
+                (click)="onWordClick(tok.idx)">{{ tok.text }}</span>
+          <ng-container *ngIf="!tok.isWord && !tok.isImg">{{ tok.text }}</ng-container>
+          <img *ngIf="tok.isImg" [src]="tok.src" [alt]="tok.alt || ''" class="inline-img" loading="lazy">
+        </ng-container>
+      </p>
+
+    </ng-container>
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- VENTANA DE CHAT (Overlay flotante sobre el libro)               -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div class="chat-window glass-panel" *ngIf="isChatOpen && chatSession">
+    <!-- Header del chat -->
+    <div class="chat-header">
+      <div class="chat-avatar-info">
+        <div class="chat-avatar-thumb">
+          <img *ngIf="selectedAvatar?.avatar_image_url"
+               [src]="selectedAvatar.avatar_image_url"
+               [alt]="selectedAvatar.name"
+               class="chat-avatar-img">
+          <span *ngIf="!selectedAvatar?.avatar_image_url" class="chat-avatar-initial">
+            {{ selectedAvatar?.name?.charAt(0) }}
+          </span>
+        </div>
+        <div>
+          <span class="chat-name">{{ selectedAvatar?.name }}</span>
+          <span class="chat-mode-label">Modo: {{ chatMode | titlecase }}</span>
+        </div>
+      </div>
+      <button class="close-btn" (click)="closeChat()">✕</button>
+    </div>
+
+    <!-- Mensajes -->
+    <div class="chat-body">
+      <div *ngFor="let msg of chatMessages"
+           class="chat-bubble-row"
+           [class.user-row]="msg.role === 'user'"
+           [class.ai-row]="msg.role === 'assistant'">
+        <!-- Mini-avatar del personaje en burbujas de IA -->
+        <div *ngIf="msg.role === 'assistant'" class="bubble-avatar">
+          <img *ngIf="selectedAvatar?.avatar_image_url"
+               [src]="selectedAvatar.avatar_image_url"
+               [alt]="selectedAvatar?.name"
+               class="bubble-avatar-img">
+          <span *ngIf="!selectedAvatar?.avatar_image_url" class="bubble-avatar-initial">
+            {{ selectedAvatar?.name?.charAt(0) }}
+          </span>
+        </div>
+        <div class="bubble" [class.user-bubble]="msg.role === 'user'" [class.ai-bubble]="msg.role === 'assistant'">
+          {{ msg.content }}
+        </div>
+      </div>
+      <div *ngIf="isSendingMessage" class="chat-bubble-row ai-row">
+        <div class="bubble-avatar">
+          <img *ngIf="selectedAvatar?.avatar_image_url"
+               [src]="selectedAvatar.avatar_image_url"
+               [alt]="selectedAvatar?.name"
+               class="bubble-avatar-img">
+          <span *ngIf="!selectedAvatar?.avatar_image_url" class="bubble-avatar-initial">
+            {{ selectedAvatar?.name?.charAt(0) }}
+          </span>
+        </div>
+        <div class="bubble ai-bubble typing-indicator">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="chat-input-area">
+      <div class="mode-mini-toggle">
+        <button [class.active]="chatMode === 'roleplay'" (click)="setMode('roleplay')" title="Inmersivo">🎭</button>
+        <button [class.active]="chatMode === 'tutor'"    (click)="setMode('tutor')"    title="Tutor">📚</button>
+        <button [class.active]="chatMode === 'critical'" (click)="setMode('critical')" title="Crítico">🔍</button>
+      </div>
+      <input
+        type="text"
+        class="chat-input"
+        [(ngModel)]="chatInput"
+        (keyup.enter)="sendMessage()"
+        placeholder="Escribe tu mensaje..."
+        [disabled]="isSendingMessage || inkBalance <= 0">
+      <button class="send-btn" (click)="sendMessage()" [disabled]="isSendingMessage || inkBalance <= 0">
+        ➤
+      </button>
+    </div>
+    <div class="ink-warning" *ngIf="inkBalance <= 0">
+      ✒ Sin tinta — 
+      <a routerLink="/tavern" class="tavern-link">Recargar en la Taberna</a>
+    </div>
+  </div>
+
+  <!-- NAVEGACIÓN MINIMALISTA -->
+  <nav class="navigation-overlay">
+    <button class="nav-btn prev" (click)="previousPage()" [disabled]="currentPage <= 1">
+      <span class="icon">«</span>
+    </button>
+    <button class="nav-btn next" (click)="nextPage()" [disabled]="currentPage >= totalPages">
+      <span class="icon">»</span>
+    </button>
+  </nav>
+
+</div>

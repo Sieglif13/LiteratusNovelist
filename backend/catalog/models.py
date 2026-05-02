@@ -40,7 +40,9 @@ DISEÑO 3NF (Tercera Forma Normal):
 
 from django.db import models
 from django.utils.text import slugify
+from django.conf import settings
 from core.models import TimeStampedModel
+import json
 
 
 class Author(TimeStampedModel):
@@ -49,16 +51,22 @@ class Author(TimeStampedModel):
     (3NF): si un autor escribe múltiples libros, sus datos persisten una sola
     vez y se referencian vía BookAuthor.
     """
-    full_name = models.CharField(max_length=255)
+    full_name = models.CharField(max_length=255) # Nombre completo del autor.
     # -------------------------------------------------------------------------
     # SLUG: Identificador amigable para URLs (ej. /autores/gabriel-garcia-marquez)
     # blank=True porque lo generamos automáticamente en save() si está vacío.
     # unique=True para garantizar que no haya dos autores con el mismo slug.
     # -------------------------------------------------------------------------
-    slug = models.SlugField(max_length=255, unique=True, blank=True)
-    bio = models.TextField(blank=True, default='')
-    nationality = models.CharField(max_length=100, blank=True, default='')
-
+    slug = models.SlugField(max_length=255, unique=True, blank=True) # Identificador en formato URL amigable generado a partir del nombre.
+    bio = models.TextField(blank=True, default='') # Biografía o descripción de la vida y obra del autor.
+    nationality = models.CharField(max_length=100, blank=True, default='') # Nacionalidad del autor.
+    
+    # Nuevos campos para la Ficha de Autor
+    photo = models.ImageField(upload_to='authors/photos/', blank=True, null=True) # Imagen del autor
+    themes = models.TextField(blank=True, default='') # Temas recurrentes en su obra
+    # Referencia al libro recomendado para iniciar. Usamos un string para el modelo para evitar dependencias circulares antes de definir Book.
+    recommended_book = models.ForeignKey('Book', on_delete=models.SET_NULL, null=True, blank=True, related_name='recommended_for_author')
+    
     class Meta:
         verbose_name = 'Author'
         verbose_name_plural = 'Authors'
@@ -101,8 +109,8 @@ class Genre(TimeStampedModel):
     Género literario. Entidad independiente que cumple 3NF:
     cada atributo depende directamente de la PK (el género en sí).
     """
-    name = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=100, unique=True, blank=True)
+    name = models.CharField(max_length=100) # Nombre del género (Ej. Fantasía, Ciencia Ficción).
+    slug = models.SlugField(max_length=100, unique=True, blank=True) # Identificador URL amigable del género.
 
     class Meta:
         verbose_name = 'Genre'
@@ -137,18 +145,58 @@ class Book(TimeStampedModel):
     NO contiene precio, formato ni archivo — violaria 1NF y 3NF.
     Esas responsabilidades son de Edition.
     """
-    title = models.CharField(max_length=255)
-    slug = models.SlugField(max_length=255, unique=True, blank=True)
-    synopsis = models.TextField(blank=True, default='')
+    title = models.CharField(max_length=255) # Título de la obra literaria.
+    slug = models.SlugField(max_length=255, unique=True, blank=True) # Identificador URL amigable derivado del título.
+    synopsis = models.TextField(blank=True, default='') # Resumen de la trama de la obra.
+
+    class DifficultyChoices(models.TextChoices):
+        BEGINNER = 'beginner', 'Principiante'
+        INTERMEDIATE = 'intermediate', 'Intermedio'
+        ADVANCED = 'advanced', 'Avanzado'
+        MASTER = 'master', 'Maestro'
+
+    difficulty_level = models.CharField(
+        max_length=20,
+        choices=DifficultyChoices.choices,
+        default=DifficultyChoices.INTERMEDIATE,
+        help_text="Nivel de dificultad de lectura."
+    ) # Nivel estimado de complejidad de la lectura.
+    is_published = models.BooleanField(
+        default=True,
+        help_text="Si está publicado, aparece en el catálogo."
+    ) # Estado de visibilidad pública de la obra.
+    
+    copyright_notice = models.TextField(
+        blank=True,
+        default="Este libro electrónico está libre de restricciones de derechos de autor en Chile (según la Ley N° 17.336 de Propiedad Intelectual). Si no se encuentra en Chile, debe consultar las leyes locales para verificar que el contenido de este libro electrónico esté libre de restricciones en su país de residencia. Literatus Novelist promueve el acceso a la cultura respetando siempre los derechos vigentes.",
+        help_text="Aviso legal sobre derechos de autor y dominio público."
+    ) # Información legal personalizada sobre la propiedad intelectual de la obra.
+    
+    # Campo para destacar libros en la Landing Page
+    is_featured = models.BooleanField(
+        default=False,
+        help_text="Marcar como True para destacar este libro en la Landing Page."
+    ) # Flag para determinar si la obra aparece destacada en la página principal.
+
+    pdf_file = models.FileField(
+        upload_to='protected/pdf_downloads/',
+        blank=True,
+        null=True,
+        help_text="Versión PDF de la obra para descarga directa de usuarios que la posean."
+    ) # Archivo PDF opcional para descarga.
+
+    view_count = models.PositiveIntegerField(default=0, help_text="Número total de visualizaciones de la ficha del libro.")
+    download_count = models.PositiveIntegerField(default=0, help_text="Número total de descargas de la obra.")
+    
     cover_image = models.ImageField(
         upload_to='book_covers/',
         null=True,
         blank=True
-    )
+    ) # Imagen de portada de la obra.
     # M2M simple (sin datos extra en la relación)
-    genres = models.ManyToManyField(Genre, related_name='books', blank=True)
+    genres = models.ManyToManyField(Genre, related_name='books', blank=True) # Relación de muchos-a-muchos con Géneros (una obra puede tener varios géneros).
     # M2M con tabla intermedia explícita para soportar el campo 'role'
-    authors = models.ManyToManyField(Author, through='BookAuthor', related_name='books')
+    authors = models.ManyToManyField(Author, through='BookAuthor', related_name='books') # Relación con Autores mediada por la tabla BookAuthor para detallar el rol.
 
     class Meta:
         verbose_name = 'Book'
@@ -195,9 +243,9 @@ class BookAuthor(TimeStampedModel):
         TRANSLATOR = 'translator', 'Translator'
         EDITOR = 'editor', 'Editor'
 
-    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='book_authors')
-    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='author_books')
-    role = models.CharField(max_length=20, choices=RoleChoices.choices, default=RoleChoices.PRIMARY)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='book_authors') # Referencia al Libro.
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='author_books') # Referencia al Autor.
+    role = models.CharField(max_length=20, choices=RoleChoices.choices, default=RoleChoices.PRIMARY) # Rol del autor en este libro específico (Ej. Escritor, Traductor).
 
     class Meta:
         unique_together = ('book', 'author', 'role')
@@ -229,19 +277,19 @@ class Edition(TimeStampedModel):
         PDF = 'pdf', 'PDF'
         AUDIO = 'audio', 'Audiobook'
 
-    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='editions')
-    language = models.CharField(max_length=10, default='es')
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='editions') # Referencia a la obra general a la que pertenece esta edición.
+    language = models.CharField(max_length=10, default='es') # Idioma específico de esta edición.
 
     # ISBN: identificador estándar de la industria editorial. Puede ser NULL
     # para obras sin ISBN formal (e.g., autopublicaciones).
-    isbn = models.CharField(max_length=13, unique=True, null=True, blank=True)
+    isbn = models.CharField(max_length=13, unique=True, null=True, blank=True) # Código identificador único internacional del libro.
 
-    format = models.CharField(max_length=10, choices=FormatChoices.choices, default=FormatChoices.EPUB)
+    format = models.CharField(max_length=10, choices=FormatChoices.choices, default=FormatChoices.EPUB) # Formato digital de esta edición (EPUB, PDF, etc).
 
     # DecimalField para dinero: NUNCA usar FloatField para valores monetarios.
     # FloatField usa punto flotante binario y acumula errores de redondeo
     # (0.1 + 0.2 ≠ 0.3 en IEEE 754). DecimalField es exacto.
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(max_digits=10, decimal_places=2) # Precio de compra o valor en moneda de esta edición concreta.
 
     # -------------------------------------------------------------------------
     # PROTECCIÓN DE ARCHIVOS DIGITALES
@@ -261,10 +309,10 @@ class Edition(TimeStampedModel):
             "Nunca servir directamente desde MEDIA_URL; usar la view "
             "de descarga autenticada en library/views.py."
         )
-    )
+    ) # El archivo físico del libro (EPUB/PDF), almacenado en un directorio protegido.
 
-    published_date = models.DateField(null=True, blank=True)
-    publisher = models.CharField(max_length=255, blank=True, default='')
+    published_date = models.DateField(null=True, blank=True) # Fecha de publicación de esta edición.
+    publisher = models.CharField(max_length=255, blank=True, default='') # Nombre de la editorial que publicó esta versión.
 
     class Meta:
         verbose_name = 'Edition'
@@ -280,3 +328,93 @@ class Edition(TimeStampedModel):
 
     def __str__(self):
         return f"{self.book.title} [{self.get_format_display()}] - {self.language}"
+
+
+class Chapter(TimeStampedModel):
+    """
+    Representa un capítulo individual de un libro con su contenido HTML procesado.
+    """
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='chapters') # Referencia al libro al que pertenece este capítulo.
+    title = models.CharField(max_length=255, blank=True, default='') # Título o nombre del capítulo.
+    order = models.PositiveIntegerField() # Número que define el orden secuencial de los capítulos.
+    content_html = models.TextField() # Contenido del capítulo en formato HTML listo para renderizar en el lector web.
+
+    class Meta:
+        verbose_name = 'Chapter'
+        verbose_name_plural = 'Chapters'
+        ordering = ['order']
+
+    def __str__(self):
+        return f"{self.book.title} - {self.title or f'Chapter {self.order}'}"
+
+
+class Review(TimeStampedModel):
+    """
+    Reseña de un libro escrita por un usuario.
+    """
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='reviews') # Referencia al usuario que escribe la reseña.
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reviews') # Referencia a la obra reseñada.
+    rating = models.PositiveSmallIntegerField(default=5, help_text="Puntuación de 1 a 5.") # Calificación en estrellas (generalmente 1 a 5).
+    comment = models.TextField(blank=True, default='') # Texto libre con la opinión del usuario.
+
+    class Meta:
+        verbose_name = 'Review'
+        verbose_name_plural = 'Reviews'
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(rating__gte=1) & models.Q(rating__lte=5),
+                name='rating_range',
+                violation_error_message="La puntuación debe estar entre 1 y 5."
+            ),
+            models.UniqueConstraint(
+                fields=['user', 'book'],
+                name='unique_review_per_book',
+                violation_error_message="El usuario ya ha reseñado este libro."
+            )
+        ]
+        indexes = [
+            models.Index(fields=['book', '-created_at'])
+        ]
+
+    def __str__(self):
+        return f"Review by {self.user} for {self.book}"
+
+
+class ChapterAudio(TimeStampedModel):
+    """
+    Audio pregrabado de un capítulo con sus timestamps de sincronización (Efecto Spotify).
+    """
+    chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE, related_name='audios')
+    voice_name = models.CharField(max_length=100, help_text="Ej: 'Carito - Colombiana'")
+    audio_file = models.FileField(upload_to='protected/chapter_audios/')
+    sync_file = models.FileField(
+        upload_to='temp_sync/', 
+        blank=True, 
+        null=True, 
+        help_text="Sube un archivo JSON de alineación. El sistema lo leerá y guardará en alignment_data automáticamente."
+    )
+    alignment_data = models.JSONField(blank=True, null=True, help_text="Datos de alineación extraídos del JSON.")
+
+    class Meta:
+        verbose_name = 'Chapter Audio'
+        verbose_name_plural = 'Chapter Audios'
+        ordering = ['chapter', 'voice_name']
+
+    def save(self, *args, **kwargs):
+        if self.sync_file:
+            try:
+                self.sync_file.open(mode='r')
+                # Leer el contenido del archivo subido
+                data = json.load(self.sync_file.file)
+                self.alignment_data = data
+                self.sync_file.close()
+                # Limpiar el campo del archivo temporal sin hacer un save() recursivo
+                self.sync_file = None
+            except Exception as e:
+                # Si falla, se podría loguear, por ahora simplemente no lo cargamos
+                pass
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Audio: {self.chapter} ({self.voice_name})"
+

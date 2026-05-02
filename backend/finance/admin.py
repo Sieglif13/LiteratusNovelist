@@ -1,23 +1,9 @@
 from django.contrib import admin
-from .models import Order, OrderItem, Transaction
-
-class OrderItemInline(admin.TabularInline):
-    model = OrderItem
-    extra = 0
-    readonly_fields = ['unit_price']
-
-class TransactionInline(admin.TabularInline):
-    model = Transaction
-    extra = 0
-    readonly_fields = ['token', 'metadata', 'created_at']
-
-@admin.register(Order)
-class OrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'status', 'total_amount', 'created_at']
-    list_filter = ['status', 'created_at']
-    inlines = [OrderItemInline, TransactionInline]
+from .models import Transaction
 
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ['token', 'order', 'provider', 'status', 'amount']
-    list_filter = ['status', 'provider']
+    list_display = ('buy_order', 'user', 'amount', 'status', 'item_type', 'item_reference', 'created_at')
+    list_filter = ('status', 'item_type', 'created_at')
+    search_fields = ('buy_order', 'token', 'user__username', 'item_reference')
+    readonly_fields = ('buy_order', 'token', 'amount', 'metadata', 'user', 'session_id', 'item_type', 'item_reference')

@@ -1,0 +1,31 @@
+<!-- Navbar superior -->
+<nav class="glass-navbar">
+  <div class="nav-container">
+    <a routerLink="/" class="logo" style="text-decoration: none;">
+      <span class="literatus">Literatus</span><span class="novelist">Novelist</span>
+    </a>
+    
+    <!-- Hamburger icon for mobile -->
+    <div class="menu-icon" (click)="toggleMenu()">
+      <span class="bar" [class.open]="menuOpen"></span>
+      <span class="bar" [class.open]="menuOpen"></span>
+      <span class="bar" [class.open]="menuOpen"></span>
+    </div>
+
+    <!-- Links de Navegación -->
+    <ul class="nav-links" [class.active]="menuOpen">
+      <li><a routerLink="/catalog" (click)="menuOpen = false">Catálogo</a></li>
+      <li *ngIf="isLoggedIn"><a routerLink="/reader/inventory_dummy" (click)="menuOpen = false">Mi Biblioteca</a></li>
+      <li *ngIf="isLoggedIn"><a routerLink="/chat/session_dummy" (click)="menuOpen = false">IA Roleplay</a></li>
+      
+      <li *ngIf="!isLoggedIn" class="auth-btn"><a routerLink="/login" (click)="menuOpen = false">Login</a></li>
+      <li *ngIf="!isLoggedIn" class="auth-btn highlight"><a routerLink="/register" (click)="menuOpen = false">Registrarse</a></li>
+      <li *ngIf="isLoggedIn" class="auth-btn logout" (click)="logout()">Cerrar Sesión</li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Contenedor Principal Ruteado -->
+<main class="container">
+  <router-outlet></router-outlet>
+</main>

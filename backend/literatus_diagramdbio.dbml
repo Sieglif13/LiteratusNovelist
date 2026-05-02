@@ -1,0 +1,151 @@
+// LiteratusNovelist Database Schema (DBML)
+// Copy this into https://dbdiagram.io/
+
+// --- USERS MODULE ---
+Table users_profile {
+  id uuid [pk]
+  user_id integer [unique]
+  ink_balance decimal [default: 150.00]
+  bio text
+  avatar image
+  created_at timestamp
+  updated_at timestamp
+}
+
+// --- CATALOG MODULE ---
+Table catalog_author {
+  id uuid [pk]
+  full_name varchar
+  slug varchar [unique]
+  bio text
+  nationality varchar
+}
+
+Table catalog_genre {
+  id uuid [pk]
+  name varchar
+  slug varchar [unique]
+}
+
+Table catalog_book {
+  id uuid [pk]
+  title varchar
+  slug varchar [unique]
+  synopsis text
+  difficulty_level varchar // beginner, intermediate, advanced, master
+  is_featured boolean [default: false]
+  is_published boolean [default: true]
+  cover_image image
+  created_at timestamp
+}
+
+Table catalog_book_genres {
+  id integer [pk]
+  book_id uuid
+  genre_id uuid
+}
+
+Table catalog_bookauthor {
+  id uuid [pk]
+  book_id uuid
+  author_id uuid
+  role varchar // author, translator, illustrator
+}
+
+Table catalog_edition {
+  id uuid [pk]
+  book_id uuid
+  language varchar
+  isbn varchar
+  format varchar // ebook, epub, audio
+  price decimal [default: 100.00]
+  published_date date
+  publisher varchar
+}
+
+Table catalog_chapter {
+  id uuid [pk]
+  book_id uuid
+  title varchar
+  order integer
+  content_html text
+  created_at timestamp
+}
+
+Table catalog_review {
+  id uuid [pk]
+  book_id uuid
+  user_id integer
+  rating integer
+  comment text
+  created_at timestamp
+}
+
+// --- LIBRARY MODULE (Inventory & Economy) ---
+Table library_userinventory {
+  id uuid [pk]
+  user_id integer
+  edition_id uuid
+  acquired_at timestamp
+}
+
+Table library_readingprogress {
+  id uuid [pk]
+  inventory_id uuid [unique]
+  current_cfi varchar
+  current_page integer
+  completion_percentage decimal
+  updated_at timestamp
+}
+
+Table library_userbookmark {
+  id uuid [pk]
+  inventory_id uuid
+  position_cfi varchar
+  note text
+  color varchar
+  created_at timestamp
+}
+
+// --- AI ENGINE MODULE ---
+Table ai_engine_aiavatar {
+  id uuid [pk]
+  edition_id uuid
+  name varchar
+  description text
+  system_prompt text
+  avatar_image image
+  is_active boolean [default: true]
+}
+
+// --- RELATIONSHIPS ---
+
+// Users
+Ref: users_profile.user_id > auth_user.id
+
+// Catalog
+Ref: catalog_bookauthor.book_id > catalog_book.id
+Ref: catalog_bookauthor.author_id > catalog_author.id
+Ref: catalog_book_genres.book_id > catalog_book.id
+Ref: catalog_book_genres.genre_id > catalog_genre.id
+Ref: catalog_edition.book_id > catalog_book.id
+Ref: catalog_chapter.book_id > catalog_book.id
+Ref: catalog_review.book_id > catalog_book.id
+Ref: catalog_review.user_id > auth_user.id
+
+// Library
+Ref: library_userinventory.user_id > auth_user.id
+Ref: library_userinventory.edition_id > catalog_edition.id
+Ref: library_readingprogress.inventory_id - library_userinventory.id // 1-to-1
+Ref: library_userbookmark.inventory_id > library_userinventory.id
+
+// AI Engine
+Ref: ai_engine_aiavatar.edition_id > catalog_edition.id
+
+// Mock for auth_user (Django built-in)
+Table auth_user {
+  id integer [pk]
+  username varchar
+  email varchar
+  password varchar
+}
