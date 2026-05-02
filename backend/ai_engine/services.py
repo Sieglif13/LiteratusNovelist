@@ -2,7 +2,8 @@
 ai_engine/services.py — Core engine AI communication handler
 """
 import os
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from django.conf import settings
 from .models import ChatMessage
 
@@ -18,13 +19,19 @@ class AIService:
         
         # Opcionalmente podrías inyectar via environ, pero Settings es la convención
         api_key = getattr(settings, 'GOOGLE_API_KEY', os.environ.get('GOOGLE_API_KEY'))
-        genai.configure(api_key=api_key)
+        self.client = genai.Client(api_key=api_key)
         
-        # Configuramos el modelo en base a la info del avatar
-        self.model = genai.GenerativeModel(
-            model_name=self.avatar.model_name,
+        # Intentamos con el modelo configurado, pero tenemos un plan de respaldo
+        self.model_name = self.avatar.model_name or 'gemini-2.5-flash'
+
+        # Limpiamos el nombre si tiene 'models/' para compa con la nueva API
+        if self.model_name.startswith('models/'):
+            self.model_name = self.model_name.replace('models/', '')
+
+    def _get_config(self):
+        return types.GenerateContentConfig(
             system_instruction=self._build_system_prompt(),
-            generation_config={"temperature": float(self.avatar.temperature)}
+            temperature=float(self.avatar.temperature)
         )
 
     def _build_system_prompt(self):
@@ -63,7 +70,6 @@ class AIService:
     def _format_history(self, limit=10):
         """
         Extrae y transforma los últimos N mensajes en el formato que Google Gemini requiere.
-        Google Gemini v1.5 API usa dicts de tipo {"role": "user" o "model", "parts": "..."}
         """
         # Obtenemos ascendente pero recortando los N últimos mediante slicing 
         # (Esto requiere un truco de DB: order by -created_at, slice, y reverse)
@@ -74,22 +80,32 @@ class AIService:
         for msg in messages:
             # Gemini requiere rol "user" o "model"
             g_role = "user" if msg.role == ChatMessage.RoleChoices.USER else "model"
-            gemini_history.append({
-                "role": g_role,
-                "parts": [msg.content]
-            })
+            gemini_history.append(
+                types.Content(
+                    role=g_role,
+                    parts=[types.Part.from_text(text=msg.content)]
+                )
+            )
         return gemini_history
 
     def generate_reply(self, new_message_content):
         """
         Formatea el historial, crea la sesión interactiva con el modelo 
-        y genera la contra-respuesta asíncronamente (sincrónicamente aquí por simplicidad DRF).
+        y genera la contra-respuesta.
         """
+        try:
+            return self._send_to_gemini(new_message_content, self.model_name)
+        except Exception as e:
+            print(f"Error en respuesta con modelo {self.model_name}: {e}. Reintentando con gemini-2.5-flash...")
+            return self._send_to_gemini(new_message_content, 'gemini-2.5-flash')
+
+    def _send_to_gemini(self, content, current_model):
         history = self._format_history()
-        # Inicializa un hilo de chat en Google
-        chat = self.model.start_chat(history=history)
-        
-        # Enviar petición a Internet
-        response = chat.send_message(new_message_content)
-        
+        config = self._get_config()
+        chat = self.client.chats.create(
+            model=current_model,
+            config=config,
+            history=history
+        )
+        response = chat.send_message(content)
         return response.text

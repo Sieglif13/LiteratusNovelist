@@ -19,9 +19,13 @@ build/
 # */migrations/*.py
 # */migrations/*.pyc
 
-# Base de datos SQLite local (solo para desarrollo rápido)
+# Base de datos SQLite local
 *.sqlite3
 db.sqlite3
+
+# Static files (Django)
+backend/static/
+backend/staticfiles/
 
 # ---------------------------------------------------------------------------
 # Entornos virtuales — NO subir al repositorio
@@ -53,9 +57,11 @@ desktop.ini
 *.swo
 
 # ---------------------------------------------------------------------------
-# Frontend
+# Frontend (Angular / Node)
 # ---------------------------------------------------------------------------
 node_modules/
+.angular/
+dist/
 .next/
 out/
 .nuxt/
@@ -65,3 +71,20 @@ out/
 # ---------------------------------------------------------------------------
 *.log
 logs/
+
+# ---------------------------------------------------------------------------
+# Multimedia y Binarios (S3 futuro)
+# ---------------------------------------------------------------------------
+backend/media/
+*.mp3
+*.wav
+*.png
+*.jpg
+*.jpeg
+
+# ---------------------------------------------------------------------------
+# Libros y Activos de Importación
+# ---------------------------------------------------------------------------
+assets_to_import/
+*.epub
+*.pdf

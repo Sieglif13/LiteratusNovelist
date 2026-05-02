@@ -1,8 +1,12 @@
 <div class="catalog-wrapper">
   
-  <div class="catalog-header">
+  <div class="catalog-header" *ngIf="!isHome">
     <h1 class="glow-text">Explora el Catálogo</h1>
     <p class="subtitle">Descubre tu próxima aventura inmersiva.</p>
+  </div>
+
+  <div class="home-grid-header" *ngIf="isHome">
+    <h2>Títulos destacados para tu próxima aventura</h2>
   </div>
 
   <!-- Loading State (Skeleton) -->
@@ -33,7 +37,7 @@
       <!-- Se asume imagen default si Django retorna null en la cubierta -->
       <div class="card-image" 
            [style.backgroundImage]="'url(' + (book.cover_image || 'assets/default_cover.jpg') + ')'">
-        <!-- Placeholder visual colorizado en CSS si asset falla -->
+        <div class="featured-badge" *ngIf="book.is_featured">★ Destacado</div>
       </div>
       
       <div class="card-content">
@@ -45,12 +49,12 @@
         </p>
         
         <div class="card-actions">
-          <button class="glass-btn read-btn" (click)="openReader(book.id)">
-            <span>Leer Obra</span>
+          <a class="glass-btn read-btn" [routerLink]="['/book', book.slug]">
+            <span>Ver Detalles</span>
             <svg xmlns="http://www.w3.org/Dom/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
               <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
             </svg>
-          </button>
+          </a>
         </div>
       </div>
     

@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 
@@ -9,21 +9,28 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   errorMsg = '';
   isLoading = false;
+  returnUrl: string = '/catalog';
 
   private fb = inject(FormBuilder);
   private api = inject(ApiService);
   private auth = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   constructor() {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
     });
+  }
+
+  ngOnInit() {
+    // Get return url from route parameters or default to '/catalog'
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/catalog';
   }
 
   onSubmit() {
@@ -36,7 +43,7 @@ export class LoginComponent {
       .subscribe({
         next: (res) => {
           this.auth.setTokens(res.access, res.refresh);
-          this.router.navigate(['/catalog']);
+          this.router.navigateByUrl(this.returnUrl);
         },
         error: (err) => {
           this.errorMsg = 'Credenciales inválidas. Verifica tu usuario o contraseña.';

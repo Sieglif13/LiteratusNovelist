@@ -1,0 +1,61 @@
+<div class="home-wrapper">
+  <!-- HERO SECTION -->
+  <header class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-headline">No solo leas la historia.<br>Vive <span class="glow-span">dentro</span> de ella.</h1>
+      <p class="hero-subheadline">
+        Explora clásicos literarios y charla en tiempo real con sus protagonistas mediante nuestra IA Roleplay avanzada.
+      </p>
+      <button class="cta-button" (click)="scrollToCatalog()">
+        Empezar Lectura
+      </button>
+    </div>
+    
+    <div class="hero-graphic">
+      <!-- Libro SVG 3D con partículas -->
+      <div class="book-3d-wrapper">
+        <div class="particles"></div>
+        <svg class="book-svg" viewBox="0 0 100 80" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="pageGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="rgba(255,255,255,0.9)" />
+              <stop offset="100%" stop-color="rgba(255,255,255,0.4)" />
+            </linearGradient>
+            <linearGradient id="coverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#8b5cf6" />
+              <stop offset="100%" stop-color="#3b82f6" />
+            </linearGradient>
+            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          <!-- Portada izquierda -->
+          <path d="M 50 70 L 10 60 L 10 20 L 50 30 Z" fill="url(#coverGrad)" filter="url(#glow)"/>
+          <!-- Portada derecha -->
+          <path d="M 50 70 L 90 60 L 90 20 L 50 30 Z" fill="url(#coverGrad)" filter="url(#glow)"/>
+          <!-- Lomo -->
+          <path d="M 47 70 L 53 70 L 53 30 L 47 30 Z" fill="#2563eb" />
+          <!-- Páginas izquierda -->
+          <path d="M 48 68 L 15 58 L 15 22 L 48 32 Z" fill="url(#pageGrad)" />
+          <path d="M 48 66 L 17 56 L 17 24 L 48 34 Z" fill="white" />
+          <!-- Páginas derecha -->
+          <path d="M 52 68 L 85 58 L 85 22 L 52 32 Z" fill="url(#pageGrad)" />
+          <path d="M 52 66 L 83 56 L 83 24 L 52 34 Z" fill="white" />
+          <!-- Lomo interior -->
+          <line x1="50" y1="31" x2="50" y2="69" stroke="rgba(0,0,0,0.2)" stroke-width="1.5" />
+        </svg>
+      </div>
+    </div>
+  </header>
+
+  <!-- CATÁLOGO GRID -->
+  <section id="catalogo" class="catalog-section">
+    <div class="catalog-container">
+      <app-book-list [isHome]="true"></app-book-list>
+    </div>
+  </section>
+</div>

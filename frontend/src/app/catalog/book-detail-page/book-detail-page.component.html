@@ -1,0 +1,229 @@
+<div class="page-wrapper">
+  
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando historia...</p>
+  </div>
+
+  <div *ngIf="errorMsg" class="error-state glass-panel">
+    <h2>Ha ocurrido un error</h2>
+    <p>{{ errorMsg }}</p>
+    <button class="glass-btn" routerLink="/catalog">Volver al Catálogo</button>
+  </div>
+
+  <div *ngIf="book && !isLoading" class="content-container fade-in">
+    
+    <!-- HEADER GRID: Left (40%) and Right (60%) -->
+    <div class="hero-grid">
+      
+      <!-- LEFT COLUMN -->
+      <div class="left-col">
+        <div class="cover-wrapper">
+          <img [src]="book.cover_image || 'assets/default_cover.jpg'" alt="{{book.title}}" class="book-cover glow-effect">
+        </div>
+        
+        <div class="action-wrapper glass-panel">
+          <div class="purchase-alert error" *ngIf="purchaseErrorMsg">
+            {{ purchaseErrorMsg }}
+            <button class="small-glass-btn" routerLink="/profile">Recargar Tinta</button>
+          </div>
+          
+          <button class="action-btn" 
+                  [class.guest-btn]="!(auth.isLoggedIn$ | async)"
+                  [class.buy-btn]="(auth.isLoggedIn$ | async) && !isOwned" 
+                  [class.read-btn]="(auth.isLoggedIn$ | async) && isOwned"
+                  (click)="handleAction()">
+            <ng-container *ngIf="!(auth.isLoggedIn$ | async)">
+              Ingresar para Explorar
+            </ng-container>
+            <ng-container *ngIf="(auth.isLoggedIn$ | async)">
+              <span *ngIf="!isOwned">💳 Adquirir Obra con Webpay</span>
+              <span *ngIf="isOwned">Empezar Lectura →</span>
+            </ng-container>
+          </button>
+
+          <button class="download-btn glass-btn" 
+                  *ngIf="(auth.isLoggedIn$ | async) && isOwned" 
+                  (click)="downloadPDF()">
+            📥 Descargar PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="right-col">
+        <h1 class="book-title glow-text">{{ book.title }}</h1>
+        <p class="book-authors">
+          <span *ngFor="let authorObj of book.book_authors; let last = last">
+            {{ authorObj.author.full_name }}<span *ngIf="!last">, </span>
+          </span>
+        </p>
+
+        <div class="badges-row">
+          <span class="badge difficulty-badge" [ngClass]="book.difficulty_level">
+            {{ book.difficulty_level | titlecase }}
+          </span>
+          <span class="badge time-badge" *ngIf="book.estimated_reading_time">
+            ⏳ {{ book.estimated_reading_time }} 
+            <span class="word-count">({{ book.total_words | number }} palabras)</span>
+            <div class="info-tooltip">
+              <span class="info-icon">?</span>
+              <span class="tooltip-text">Tiempo de lectura estimado basado en una velocidad promedio de 250 palabras por minuto.</span>
+            </div>
+          </span>
+        </div>
+
+        <div class="synopsis-section">
+          <h3>Sinopsis</h3>
+          <p class="synopsis-text">{{ book.synopsis }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM SECTION: Avatars & Comments -->
+    <div class="bottom-section">
+      
+      <!-- AVATARS -->
+      <div class="avatars-container glass-panel" *ngIf="book.avatars && book.avatars.length > 0">
+        <h3>Personajes Interactivos</h3>
+        <p class="section-subtitle">Haz clic para conocer más sobre ellos. Podrás charlar en vivo durante la lectura.</p>
+        
+        <div class="carousel-wrapper">
+          <button class="carousel-nav prev" (click)="scrollCarousel(-1)">‹</button>
+          <div class="avatars-carousel" #avatarCarousel>
+            <div class="avatar-card" *ngFor="let avatar of displayAvatars" (click)="selectAvatar(avatar)">
+              <div class="avatar-img-container">
+                <img [src]="avatar.avatar_image || 'assets/default_avatar.png'" alt="{{avatar.name}}" class="avatar-img">
+                <div class="avatar-overlay">
+                  <span>Ver Perfil</span>
+                </div>
+              </div>
+              <span class="avatar-name">{{ avatar.name }}</span>
+            </div>
+          </div>
+          <button class="carousel-nav next" (click)="scrollCarousel(1)">›</button>
+        </div>
+      </div>
+      
+      <!-- ABOUT AUTHOR CARD -->
+      <div class="author-card-container glass-panel fade-in" *ngIf="book.book_authors && book.book_authors.length > 0">
+        <ng-container *ngIf="book.book_authors[0] as rel">
+          <div class="author-card-content">
+            <div class="author-card-image">
+              <img [src]="$any(rel).author.photo || 'assets/default_avatar.png'" alt="{{ $any(rel).author.full_name }}">
+            </div>
+            <div class="author-card-info">
+              <h3>ACERCA DE {{ $any(rel).author.full_name | uppercase }}</h3>
+              <p class="author-card-bio">{{ $any(rel).author.bio | slice:0:200 }}{{ $any(rel).author.bio?.length > 200 ? '...' : '' }}</p>
+              <div class="author-card-books-count">
+                Tenemos {{ $any(rel).author.books_count }} libro{{ $any(rel).author.books_count !== 1 ? 's' : '' }} del autor en nuestra biblioteca
+              </div>
+              <button class="glass-btn primary author-card-btn" routerLink="/author/{{ $any(rel).author.slug }}">
+                Libros de {{ $any(rel).author.full_name }}
+              </button>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+      
+      <!-- LEGAL NOTICE -->
+      <div class="legal-notice-container glass-panel" *ngIf="book.copyright_notice">
+        <div class="legal-header">
+          <span class="legal-icon">⚖️</span>
+          <h3>Información Legal y Derechos</h3>
+        </div>
+        <p class="legal-text">{{ book.copyright_notice }}</p>
+      </div>
+
+      <!-- ABOUT THIS BOOK / STATS -->
+      <div class="stats-container glass-panel fade-in">
+        <h3>Sobre este libro</h3>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-icon-wrapper">📅</div>
+            <div class="stat-content">
+              <span class="stat-label">Añadido a la biblioteca</span>
+              <span class="stat-value">{{ book.created_at | date:'dd-MM-yyyy' }}</span>
+            </div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-icon-wrapper">👁️</div>
+            <div class="stat-content">
+              <span class="stat-label">Se ha visto un total de</span>
+              <span class="stat-value">{{ book.view_count | number }} veces</span>
+            </div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-icon-wrapper">📥</div>
+            <div class="stat-content">
+              <span class="stat-label">Tiene un total de</span>
+              <span class="stat-value">{{ book.download_count | number }} descargas</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REVIEWS -->
+      <div class="reviews-container glass-panel">
+        <h3>Comentarios y Reseñas</h3>
+        <div *ngIf="!book.reviews || book.reviews.length === 0" class="no-comments">
+          <p>Aún no hay reseñas para esta obra. ¡Conviértete en el primero en explorarla!</p>
+        </div>
+        
+        <div class="comments-grid" *ngIf="book.reviews && book.reviews.length > 0">
+          <div class="comment-card" *ngFor="let review of book.reviews">
+            <div class="comment-header">
+              <img [src]="review.user_avatar || 'assets/default_avatar.png'" class="comment-avatar">
+              <div class="comment-meta">
+                <span class="comment-user">{{ review.username }}</span>
+                <span class="comment-rating">
+                  <span class="star" *ngFor="let s of [1,2,3,4,5]" [class.filled]="s <= review.rating">★</span>
+                </span>
+              </div>
+            </div>
+            <p class="comment-text">{{ review.comment }}</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+</div> <!-- Fin page-wrapper -->
+
+<!-- AVATAR DETAIL MODAL -->
+<div class="avatar-modal-overlay" *ngIf="selectedAvatar" (click)="closeAvatarModal()" [style.top.px]="modalTop">
+  <div class="avatar-modal" (click)="$event.stopPropagation()">
+    <button class="modal-close-btn" (click)="closeAvatarModal()">×</button>
+    
+    <div class="avatar-modal-content">
+      <img [src]="selectedAvatar.avatar_image || 'assets/default_avatar.png'" 
+           alt="{{selectedAvatar.name}}" 
+           class="modal-avatar-img">
+      
+      <div class="avatar-modal-info">
+        <h2>{{ selectedAvatar.name }}</h2>
+        <p>{{ selectedAvatar.description }}</p>
+        <div class="info-text">
+          ✨ Este personaje está listo para interactuar contigo durante la lectura. 
+          Podrás hacerle preguntas sobre la trama y sus sentimientos.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PURCHASE CONFIRMATION MODAL -->
+<div class="mini-modal-overlay" *ngIf="showPurchaseModal" (click)="cancelPurchase()" [style.top.px]="modalTop">
+  <div class="mini-modal-content glass-panel purchase-modal" (click)="$event.stopPropagation()">
+    <div class="ink-icon">✨</div>
+    <h2>Confirmar Adquisición</h2>
+    <p>¿Confirmas el intercambio de <strong>{{ book.price }} de Tinta</strong> por esta obra?</p>
+    <div class="balance-info">
+      Tu balance actual: <span>{{ userInkBalance }} Tinta</span>
+    </div>
+    <div class="modal-actions">
+      <button class="glass-btn cancel" (click)="cancelPurchase()">Cancelar</button>
+      <button class="glass-btn confirm" (click)="confirmPurchase()">Confirmar Intercambio</button>
+    </div>
+  </div>
+</div>

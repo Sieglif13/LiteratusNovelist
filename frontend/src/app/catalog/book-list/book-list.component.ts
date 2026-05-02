@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, Input, inject } from '@angular/core';
 import { ApiService } from '../../core/services/api.service';
 import { HttpParams } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -7,7 +7,9 @@ import { Router } from '@angular/router';
 export interface Book {
   id: string;
   title: string;
+  slug: string;
   synopsis: string;
+  is_featured: boolean;
   cover_image: string | null;
   created_at: string;
 }
@@ -27,6 +29,8 @@ interface PaginatedResponse {
 export class BookListComponent implements OnInit {
   private api = inject(ApiService);
   private router = inject(Router);
+
+  @Input() isHome: boolean = false;
 
   books: Book[] = [];
   isLoading = true;
@@ -51,10 +55,5 @@ export class BookListComponent implements OnInit {
         this.isLoading = false;
       }
     });
-  }
-
-  openReader(bookId: string) {
-    // Para simplificar la demo, este dummy ID mapeará con el reader
-    this.router.navigate(['/reader', bookId]);
   }
 }

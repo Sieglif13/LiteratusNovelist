@@ -27,24 +27,63 @@ class UserInventoryViewSet(viewsets.ReadOnlyModelViewSet):
     def download_edition(self, request, pk=None):
         """
         SERVICIO DE DESCARGAS SEGURAS.
-        Endpoint custom: /api/v1/library/inventory/{id}/download/
-        Valida explícitamente que el inventario pertenece al usuario antes 
-        de servir el contenido protegido en FileResponse.
+        Prioriza el PDF del libro (pdf_file) sobre el archivo de la edición (EPUB).
         """
-        inventory_item = self.get_object() # Llama a self.get_queryset(), que ya valida el request.user
+        inventory_item = self.get_object()
         edition = inventory_item.edition
+        book = edition.book
 
-        if not edition.file:
-            return Response({"error": "No hay un archivo digital adjunto a esta edición."}, status=status.HTTP_404_NOT_FOUND)
+        target_file = book.pdf_file if book.pdf_file else edition.file
+
+        if not target_file:
+            return Response({"error": "No hay un archivo digital adjunto para descargar."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Incrementar contador de descargas de forma atómica
+        from django.db.models import F
+        from catalog.models import Book
+        Book.objects.filter(pk=book.pk).update(download_count=F('download_count') + 1)
 
         try:
-            # Django devuelve un iterador asíncrono para archivos grandes
-            # En producción, esto se puede reemplazar por un response con "X-Accel-Redirect"
-            response = FileResponse(edition.file.open('rb'))
-            response['Content-Disposition'] = f'attachment; filename="{edition.file.name.split("/")[-1]}"'
+            response = FileResponse(target_file.open('rb'))
+            filename = target_file.name.split("/")[-1]
+            response['Content-Disposition'] = f'attachment; filename="{filename}"'
             return response
         except FileNotFoundError:
-            raise Http404("El archivo de la obra no fue localizado en el servidor privado.")
+            raise Http404("El archivo físico no fue localizado en el servidor privado.")
+
+    @action(detail=True, methods=['GET'], url_path='chapters')
+    def chapters(self, request, pk=None):
+        """
+        SERVICIO DE LECTURA HTML BROWSER-NATIVE.
+        Devuelve el contenido en HTML de los capítulos y sus audios asociados.
+        """
+        inventory_item = self.get_object()
+        book = inventory_item.edition.book
+        chapters = book.chapters.all().prefetch_related('audios')
+        
+        data = []
+        for c in chapters:
+            chapter_audios = []
+            for audio in c.audios.all():
+                chapter_audios.append({
+                    'id': audio.id,
+                    'voice_name': audio.voice_name,
+                    'audio_url': request.build_absolute_uri(audio.audio_file.url) if audio.audio_file else None,
+                    'alignment_data': audio.alignment_data
+                })
+                
+            data.append({
+                'id': c.id, 
+                'title': c.title, 
+                'order': c.order, 
+                'content_html': c.content_html,
+                'audios': chapter_audios
+            })
+            
+        return Response({
+            'has_premium_narration': inventory_item.has_premium_narration,
+            'chapters': data
+        })
 
     @action(detail=True, methods=['GET'], url_path='chapters')
     def chapters(self, request, pk=None):

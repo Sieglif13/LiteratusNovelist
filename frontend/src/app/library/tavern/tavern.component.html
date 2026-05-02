@@ -1,0 +1,55 @@
+<div class="tavern-wrapper fade-in">
+  
+  <header class="tavern-header">
+    <h1 class="glow-text">La Taberna de Tinta</h1>
+    <p>Adquiere los recursos necesarios para continuar tus historias.</p>
+  </header>
+
+  <div class="bento-grid">
+    
+    <!-- BALANCE CARD -->
+    <div class="bento-item balance-card glass-panel">
+      <div class="card-content">
+        <span class="label">Balance de Tinta</span>
+        <div class="counter-container">
+          <span class="ink-icon">✒️</span>
+          <h2 class="odometer">{{ displayBalance }}</h2>
+        </div>
+        <p class="subtitle">Recursos disponibles para leer y chatear</p>
+      </div>
+    </div>
+
+    <!-- AD CARD -->
+    <div class="bento-item ad-card glass-panel" [class.loading]="adLoading">
+      <div class="card-content">
+        <h3>Pergamino de Anuncios</h3>
+        <p>Observa una visión breve y gana recompensas.</p>
+        
+        <button class="ad-btn" (click)="watchAd()" [disabled]="adLoading">
+          <span *ngIf="!adLoading">Ver Anuncio (+10 Tinta)</span>
+          <span *ngIf="adLoading">Visualizando... ({{ adTimer }}s)</span>
+        </button>
+        
+        <div class="progress-bar" *ngIf="adLoading">
+          <div class="progress-fill" [style.width.%]="(5 - adTimer) * 20"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHESTS SECTION -->
+    <div class="bento-item chest-card glass-panel" *ngFor="let chest of chests" [style.border-bottom-color]="chest.color">
+      <div class="chest-icon">{{ chest.icon }}</div>
+      <div class="chest-info">
+        <h4>{{ chest.title }}</h4>
+        <span class="amount">{{ chest.amount }} Tinta</span>
+      </div>
+      <button class="buy-btn" (click)="buyChest(chest)">{{ chest.price }}</button>
+    </div>
+
+  </div>
+
+  <div class="tavern-footer">
+    <button class="glass-btn" routerLink="/catalog">Volver al Catálogo</button>
+  </div>
+
+</div>

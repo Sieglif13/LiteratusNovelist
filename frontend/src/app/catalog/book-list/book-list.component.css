@@ -9,10 +9,20 @@
   margin-bottom: 40px;
 }
 
+.home-grid-header {
+  text-align: left;
+  margin-bottom: 30px;
+  font-family: 'Outfit', sans-serif;
+  color: var(--text-main);
+  opacity: 0.9;
+  font-size: 1.1rem;
+}
+
 .glow-text {
   font-size: 2.5rem;
   background: linear-gradient(135deg, var(--text-main), var(--glow-purple));
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 10px;
 }
@@ -51,6 +61,21 @@
   background-color: rgba(0, 0, 0, 0.5); /* Placeholder Fallback color */
   border-bottom: 1px solid var(--glass-border);
   position: relative;
+}
+
+.featured-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.4);
+  z-index: 2;
 }
 
 /* Oscurecemos muy sutilmente la parte baja de la imagen */
