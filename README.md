@@ -1,4 +1,4 @@
-# 📚 Literatus Novelist
+#  Literatus Novelist
 
 > Plataforma de lectura inteligente con extracción de personajes, análisis narrativo y chat contextual basado en IA. Una experiencia inmersiva que fusiona la literatura clásica con la tecnología generativa.
 
@@ -16,7 +16,7 @@
 
 ---
 
-## 📁 Estructura del Repositorio
+##  Estructura del Repositorio
 
 ```
 LiteratusNovelist/
@@ -37,6 +37,7 @@ LiteratusNovelist/
 ---
 
 ## ✨ Características Principales
+##  Guía de Instalación — Backend
 
 - **Catálogo Inmersivo:** Navegación fluida por obras clásicas con filtros por dificultad y género.
 - **Detalle de Obra Full-Page:** Vista completa con sinopsis, reseñas de la comunidad y avatares interactivos.
@@ -64,6 +65,9 @@ LiteratusNovelist/
 2. `npm install`
 3. `npm start`
 4. Acceder a `http://localhost:4200`
+---
+
+##  Arquitectura de Base de Datos
 
 ---
 
@@ -76,6 +80,7 @@ El sistema utiliza una arquitectura modular y segura:
 ---
 
 ## 📈 Registro de Avance (Hitos)
+##  Registro de Avance del Proyecto
 
 - **Fase 1-5:** Cimientos, API REST y Frontend Base.
 - **Fase 6:** Integración con Gemini 2.0 y Chat de Personajes.
@@ -84,7 +89,7 @@ El sistema utiliza una arquitectura modular y segura:
 
 ---
 
-## 🧑‍💻 Estándares de Desarrollo
+##  Estándares de Desarrollo
 
 - **Clean Code & PEP 8:** Código legible y documentado en español.
 - **Reactividad Angular:** Uso de `BehaviorSubject` para estados globales (Auth, Tinta).
@@ -92,6 +97,6 @@ El sistema utiliza una arquitectura modular y segura:
 
 ---
 
-## 📄 Licencia
+##  Licencia
 
 Proyecto académico — Universidad *(Año académico 2025-2026)*

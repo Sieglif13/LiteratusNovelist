@@ -85,6 +85,18 @@ class UserInventoryViewSet(viewsets.ReadOnlyModelViewSet):
             'chapters': data
         })
 
+    @action(detail=True, methods=['GET'], url_path='chapters')
+    def chapters(self, request, pk=None):
+        """
+        SERVICIO DE LECTURA HTML BROWSER-NATIVE.
+        Devuelve el contenido en HTML de los capítulos guardados en base de datos.
+        """
+        inventory_item = self.get_object()
+        book = inventory_item.edition.book
+        chapters = book.chapters.all()
+        data = [{'id': c.id, 'title': c.title, 'order': c.order, 'content_html': c.content_html} for c in chapters]
+        return Response(data)
+
 class ReadingProgressViewSet(viewsets.ModelViewSet):
     """
     Control de Progreso.
