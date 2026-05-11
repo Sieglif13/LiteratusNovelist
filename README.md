@@ -34,6 +34,15 @@ El proyecto cuenta con una arquitectura robusta y características de vanguardia
 
 ---
 
+## 🏗️ Registro de Avance (Hitos)
+
+- **Fase 1-5:** Cimientos, API REST y Frontend Base.
+- **Fase 6:** Integración con Gemini 2.0 y Chat de Personajes.
+- **Fase 7:** Migración a Vista Detalle Full-Page y Rediseño Glassmorphism.
+- **Fase 8:** Implementación de Economía de Tinta, La Taberna y Estabilización de Sesión. ✅
+
+---
+
 ## 🚧 Lo que falta agregar (Próximos Pasos)
 
 Aún existen áreas de crecimiento planeadas para completar el ciclo de vida del producto:
@@ -126,3 +135,9 @@ Para consultar la nómina completa del equipo de desarrollo, roles y el acta de 
 <p align="center">
   <i>Construido para el futuro de la literatura interactiva.</i>
 </p>
+
+---
+
+## 📄 Licencia
+
+Proyecto académico — Universidad *(Año académico 2025-2026)*
