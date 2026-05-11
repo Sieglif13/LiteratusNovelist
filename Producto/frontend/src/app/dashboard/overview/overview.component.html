@@ -1,0 +1,113 @@
+<div class="overview-container">
+
+  <!-- LOADING STATE -->
+  <div class="loading-overlay" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Cargando datos...</p>
+  </div>
+
+  <!-- STAT CARDS ROW -->
+  <div class="stats-grid" *ngIf="!loading && stats">
+
+    <div class="stat-card revenue">
+      <div class="card-header">
+        <span class="card-label">Ingresos Totales</span>
+        <span class="card-icon">💰</span>
+      </div>
+      <div class="card-value">${{ stats.revenue.total | number:'1.0-0' }}</div>
+      <div class="card-sub">
+        <span class="trend up">↑ {{ stats.revenue.last_30_days | number:'1.0-0' }}</span>
+        últimos 30 días
+      </div>
+    </div>
+
+    <div class="stat-card users">
+      <div class="card-header">
+        <span class="card-label">Usuarios Activos</span>
+        <span class="card-icon">👥</span>
+      </div>
+      <div class="card-value">{{ stats.users.total | number }}</div>
+      <div class="card-sub">
+        <span class="trend up">+{{ stats.users.new_last_30_days }}</span>
+        nuevos este mes
+      </div>
+    </div>
+
+    <div class="stat-card books">
+      <div class="card-header">
+        <span class="card-label">Libros Publicados</span>
+        <span class="card-icon">📚</span>
+      </div>
+      <div class="card-value">{{ stats.content.total_books }}</div>
+      <div class="card-sub">
+        <span class="trend up">{{ stats.content.total_purchases }}</span>
+        compras totales
+      </div>
+    </div>
+
+    <div class="stat-card revenue-7d">
+      <div class="card-header">
+        <span class="card-label">Ingresos (7 días)</span>
+        <span class="card-icon">📈</span>
+      </div>
+      <div class="card-value">${{ stats.revenue.last_7_days | number:'1.0-0' }}</div>
+      <div class="card-sub">última semana</div>
+    </div>
+
+  </div>
+
+  <!-- CHARTS ROW -->
+  <div class="charts-row" *ngIf="!loading && stats">
+
+    <!-- Gráfico de Ventas -->
+    <div class="chart-card">
+      <h3 class="chart-title">Ventas (Últimos 7 días)</h3>
+      <div class="bar-chart">
+        <div
+          class="bar-item"
+          *ngFor="let day of stats.sales_chart"
+          [style.height.%]="getBarHeight(day.amount)"
+          [title]="day.date + ': $' + day.amount">
+          <div class="bar-fill"></div>
+          <span class="bar-label">{{ day.date }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Libros -->
+    <div class="chart-card top-books">
+      <h3 class="chart-title">📖 Libros Más Comprados</h3>
+      <div class="book-list">
+        <div class="book-item" *ngFor="let book of stats.top_books; let i = index">
+          <span class="rank">{{ i + 1 }}</span>
+          <span class="book-title">{{ book['edition__book__title'] }}</span>
+          <span class="book-count">{{ book.purchases }} compras</span>
+        </div>
+        <div class="empty-state" *ngIf="!stats.top_books?.length">
+          Sin datos de ventas aún
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions" *ngIf="!loading">
+    <h3 class="section-title">Acciones Rápidas</h3>
+    <div class="actions-grid">
+      <a routerLink="/dashboard/books/new" class="action-card">
+        <span class="action-icon">📥</span>
+        <span class="action-label">Subir Libro</span>
+      </a>
+      <a routerLink="/dashboard/authors" class="action-card">
+        <span class="action-icon">✍️</span>
+        <span class="action-label">Gestionar Autores</span>
+      </a>
+      <a routerLink="/dashboard/books" class="action-card">
+        <span class="action-icon">✏️</span>
+        <span class="action-label">Editar Libros</span>
+      </a>
+    </div>
+  </div>
+
+</div>

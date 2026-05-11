@@ -1,0 +1,31 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
+import { RouterModule } from '@angular/router';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+import { DashboardRoutingModule } from './dashboard-routing.module';
+import { DashboardLayoutComponent } from './dashboard-layout/dashboard-layout.component';
+import { OverviewComponent } from './overview/overview.component';
+import { BooksComponent } from './books/books.component';
+import { BookEditorComponent } from './book-editor/book-editor.component';
+import { AuthorsComponent } from './authors/authors.component';
+
+@NgModule({
+  declarations: [
+    DashboardLayoutComponent,
+    OverviewComponent,
+    BooksComponent,
+    BookEditorComponent,
+    AuthorsComponent,
+  ],
+  imports: [
+    CommonModule,
+    HttpClientModule,
+    RouterModule,
+    FormsModule,
+    ReactiveFormsModule,
+    DashboardRoutingModule,
+  ]
+})
+export class DashboardModule {}

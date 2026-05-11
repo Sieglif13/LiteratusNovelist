@@ -1,0 +1,215 @@
+.hub-container {
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hub-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.glow-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 0 15px rgba(251, 191, 36, 0.4); /* Glow Dorado */
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #94a3b8;
+  font-size: 1.1rem;
+}
+
+.character-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 25px;
+}
+
+/* --- PREMIUM CARD CSS --- */
+.char-card {
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease, border-color 0.4s ease;
+  backdrop-filter: blur(10px);
+}
+
+.char-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  border-color: rgba(124, 58, 237, 0.5); /* Glow Púrpura */
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 20px rgba(124, 58, 237, 0.3);
+}
+
+.card-img-wrapper {
+  width: 100%;
+  height: 250px;
+  position: relative;
+  overflow: hidden;
+}
+
+.char-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.char-card:hover .char-img {
+  transform: scale(1.1); /* Ligero zoom en hover */
+}
+
+.overlay-gradient {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60%;
+  background: linear-gradient(to top, #0f172a 0%, transparent 100%);
+  z-index: 1;
+}
+
+.trend-overlay {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  padding: 4px 8px;
+  border-radius: 20px;
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  z-index: 2;
+}
+
+.card-content {
+  padding: 16px;
+  position: relative;
+  z-index: 2;
+  margin-top: -30px; /* Para superponer al gradiente */
+}
+
+.char-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 4px 0;
+}
+
+.book-origin {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin: 0 0 12px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.badges-container {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  background: rgba(124, 58, 237, 0.2);
+  color: #c4b5fd;
+  border: 1px solid rgba(124, 58, 237, 0.4);
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* --- SHIMMER EFFECT (SKELETONS) --- */
+.skeleton-card {
+  background: rgba(15, 23, 42, 0.4);
+  cursor: default;
+}
+.skeleton-card:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.shimmer-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+.shimmer-img {
+  width: 100%;
+  height: 250px;
+  background: #1e293b;
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-content {
+  padding: 16px;
+}
+
+.shimmer-line {
+  background: #1e293b;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-line.title {
+  height: 20px;
+  width: 70%;
+}
+
+.shimmer-line.subtitle {
+  height: 14px;
+  width: 50%;
+  margin-bottom: 16px;
+}
+
+.shimmer-badges {
+  display: flex;
+  gap: 6px;
+}
+
+.shimmer-badge {
+  width: 50px;
+  height: 20px;
+  background: #1e293b;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animación sweeping */
+.shimmer-img::after,
+.shimmer-line::after,
+.shimmer-badge::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.05) 20%,
+    rgba(255, 255, 255, 0.1) 60%,
+    rgba(255, 255, 255, 0)
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
