@@ -1,0 +1,163 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Página-1" id="P8_kDLiGOxbgbmlpk5ma">
+    <mxGraphModel dx="1418" dy="780" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-1" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="Estudiante" vertex="1">
+          <mxGeometry height="60" width="30" x="60" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-12" parent="1" style="rounded=0;whiteSpace=wrap;html=1;direction=south;" value="" vertex="1">
+          <mxGeometry height="600" width="546" x="212" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-13" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="CU-1 (Login&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;)&lt;/span&gt;" vertex="1">
+          <mxGeometry height="80" width="120" x="240" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-14" edge="1" parent="1" source="GP-Ch5OYEDStSpOoyWM7-1" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.3333333333333333;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="GP-Ch5OYEDStSpOoyWM7-13" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="390" y="430" as="sourcePoint" />
+            <mxPoint x="440" y="380" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-17" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="MACFLAI" vertex="1">
+          <mxGeometry height="30" width="60" x="447" y="80" as="geometry" />
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-18" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="CU-2 Realizará un Quiz para determinara el nivel del mismo" vertex="1">
+          <mxGeometry height="110" width="130" x="235" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-19" edge="1" parent="1" source="GP-Ch5OYEDStSpOoyWM7-1" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.3333333333333333;exitDx=0;exitDy=0;exitPerimeter=0;" target="GP-Ch5OYEDStSpOoyWM7-18" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="390" y="230" as="sourcePoint" />
+            <mxPoint x="440" y="180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-20" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="CU-3 (Elegirá el módulo en el que desee mejorar)" vertex="1">
+          <mxGeometry height="80" width="120" x="235" y="340" as="geometry" />
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-21" edge="1" parent="1" source="GP-Ch5OYEDStSpOoyWM7-1" style="endArrow=classic;html=1;rounded=0;entryX=0.033;entryY=0.363;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.3333333333333333;exitDx=0;exitDy=0;exitPerimeter=0;" target="GP-Ch5OYEDStSpOoyWM7-20" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="180" y="350" as="sourcePoint" />
+            <mxPoint x="440" y="180" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-22" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="CU-4&lt;div&gt;(Será notificado para practicar diariamente)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="80" width="120" x="260" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-23" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="GP-Ch5OYEDStSpOoyWM7-22" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="90" y="280" as="sourcePoint" />
+            <mxPoint x="440" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-24" edge="1" parent="1" source="GP-Ch5OYEDStSpOoyWM7-20" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="GP-Ch5OYEDStSpOoyWM7-25" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="390" y="330" as="sourcePoint" />
+            <mxPoint x="440" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-25" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="CU- 5 (El estudiante podra elegir este seccion para mejorar sus habilidades según el item 2 &quot;interpretar&quot;)" vertex="1">
+          <mxGeometry height="90" width="170" x="425" y="330" as="geometry" />
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-26" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="CU-6 (El estudiante podrá mejorar sus habilidades para &quot;evaluar&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;&quot; con la ayuda de sinclair mediante textos)&lt;/span&gt;" vertex="1">
+          <mxGeometry height="100" width="160" x="430" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-28" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="CU-4 (El estudiante será evaluado mediante contenido creado por SINCLAIR según el ítem 1 del temario PAES vigente)" vertex="1">
+          <mxGeometry height="90" width="160" x="430" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-29" edge="1" parent="1" source="GP-Ch5OYEDStSpOoyWM7-20" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="GP-Ch5OYEDStSpOoyWM7-28" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="540" y="380" as="sourcePoint" />
+            <mxPoint x="440" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-30" edge="1" parent="1" source="GP-Ch5OYEDStSpOoyWM7-20" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="GP-Ch5OYEDStSpOoyWM7-26" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="390" y="330" as="sourcePoint" />
+            <mxPoint x="440" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-33" edge="1" parent="1" source="GP-Ch5OYEDStSpOoyWM7-28" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="GP-Ch5OYEDStSpOoyWM7-35" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="390" y="330" as="sourcePoint" />
+            <mxPoint x="820" y="140" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-34" parent="1" style="shape=xor;whiteSpace=wrap;html=1;" value="SINCLAIR" vertex="1">
+          <mxGeometry height="80" width="130" x="827" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-35" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="Crear contenido dependiendo el nivel del estudiante y el item&amp;nbsp;" vertex="1">
+          <mxGeometry height="80" width="120" x="630" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-36" edge="1" parent="1" source="GP-Ch5OYEDStSpOoyWM7-25" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=0.976;exitY=0.422;exitDx=0;exitDy=0;exitPerimeter=0;" target="GP-Ch5OYEDStSpOoyWM7-35" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="390" y="330" as="sourcePoint" />
+            <mxPoint x="440" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-37" edge="1" parent="1" source="GP-Ch5OYEDStSpOoyWM7-26" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="GP-Ch5OYEDStSpOoyWM7-35" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="390" y="330" as="sourcePoint" />
+            <mxPoint x="440" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-38" edge="1" parent="1" source="GP-Ch5OYEDStSpOoyWM7-34" style="endArrow=classic;html=1;rounded=0;exitX=0.25;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="GP-Ch5OYEDStSpOoyWM7-35" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="390" y="330" as="sourcePoint" />
+            <mxPoint x="440" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-39" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="Moderador" vertex="1">
+          <mxGeometry height="60" width="30" x="877" y="570" as="geometry" />
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-40" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="CU-7(Revisar los reportes y actualizar los temarios)" vertex="1">
+          <mxGeometry height="80" width="120" x="832" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-41" edge="1" parent="1" source="GP-Ch5OYEDStSpOoyWM7-39" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="GP-Ch5OYEDStSpOoyWM7-40" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="390" y="330" as="sourcePoint" />
+            <mxPoint x="440" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-42" edge="1" parent="1" source="GP-Ch5OYEDStSpOoyWM7-40" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.577;entryY=0.975;entryDx=0;entryDy=0;entryPerimeter=0;" target="GP-Ch5OYEDStSpOoyWM7-34" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="390" y="330" as="sourcePoint" />
+            <mxPoint x="440" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-43" edge="1" parent="1" source="GP-Ch5OYEDStSpOoyWM7-13" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="GP-Ch5OYEDStSpOoyWM7-44" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="390" y="330" as="sourcePoint" />
+            <mxPoint x="440" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-44" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="CU-12 (Registro)" vertex="1">
+          <mxGeometry height="80" width="120" x="460" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-45" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="CU-12 (Test de conocimiento)" vertex="1">
+          <mxGeometry height="80" width="120" x="630" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-46" edge="1" parent="1" source="GP-Ch5OYEDStSpOoyWM7-44" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="GP-Ch5OYEDStSpOoyWM7-45" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="390" y="330" as="sourcePoint" />
+            <mxPoint x="440" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-47" parent="1" style="ellipse;whiteSpace=wrap;html=1;" value="CU-13 (Evaluar el nivel del estudiante)" vertex="1">
+          <mxGeometry height="80" width="120" x="850" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-48" edge="1" parent="1" source="GP-Ch5OYEDStSpOoyWM7-45" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" target="GP-Ch5OYEDStSpOoyWM7-47" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="390" y="330" as="sourcePoint" />
+            <mxPoint x="440" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="GP-Ch5OYEDStSpOoyWM7-49" edge="1" parent="1" source="GP-Ch5OYEDStSpOoyWM7-34" style="endArrow=classic;html=1;rounded=0;exitX=0.462;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="GP-Ch5OYEDStSpOoyWM7-47" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="390" y="330" as="sourcePoint" />
+            <mxPoint x="440" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
