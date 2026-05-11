@@ -1,0 +1,67 @@
+<div class="books-list-container">
+  <header class="list-header">
+    <div class="header-text">
+      <h2>Gestión de Biblioteca</h2>
+      <p>Administra, edita y publica tus libros curados.</p>
+    </div>
+    <button class="add-btn" routerLink="new">+ Nuevo Libro</button>
+  </header>
+
+  <!-- FILTROS Y BÚSQUEDA -->
+  <div class="list-controls card">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Buscar por título o autor..." (input)="filterBooks($event)">
+    </div>
+    <div class="filter-badges">
+      <span class="badge active">Todos ({{ books.length }})</span>
+      <span class="badge">Publicados</span>
+      <span class="badge">Borradores</span>
+    </div>
+  </div>
+
+  <!-- GRID DE LIBROS -->
+  <div class="books-grid" *ngIf="!loading; else loadingState">
+    <div class="book-card card" *ngFor="let book of filteredBooks">
+      <div class="book-cover">
+        <img [src]="book.cover || 'assets/no-cover.jpg'" alt="Cover">
+        <div class="status-badge" [class.published]="book.is_published">
+          {{ book.is_published ? 'Publicado' : 'Borrador' }}
+        </div>
+      </div>
+      <div class="book-info">
+        <h3 class="book-title">{{ book.title }}</h3>
+        <p class="book-author">por {{ book.authors.join(', ') }}</p>
+        
+        <div class="book-stats">
+          <div class="stat">
+            <span class="label">Capítulos</span>
+            <span class="value">{{ book.chapters_count }}</span>
+          </div>
+          <div class="stat">
+            <span class="label">Vistas</span>
+            <span class="value">{{ book.view_count }}</span>
+          </div>
+        </div>
+
+        <div class="book-actions">
+          <button class="action-btn edit" [routerLink]="[book.id, 'edit']">✏️ Editar</button>
+          <button class="action-btn delete" (click)="deleteBook(book)">🗑️</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div class="empty-state" *ngIf="filteredBooks.length === 0">
+      <div class="empty-icon">📭</div>
+      <p>No se encontraron libros. ¡Sube el primero!</p>
+    </div>
+  </div>
+
+  <ng-template #loadingState>
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Consultando biblioteca...</p>
+    </div>
+  </ng-template>
+</div>

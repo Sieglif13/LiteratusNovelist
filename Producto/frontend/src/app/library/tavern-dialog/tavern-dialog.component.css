@@ -1,0 +1,150 @@
+.tavern-modal {
+  padding: 30px;
+  background: rgba(15, 23, 42, 0.85); /* Negro profundo glass */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  position: relative;
+  border-radius: 16px;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: color 0.2s;
+  font-weight: bold;
+}
+.close-btn:hover { color: #ef4444; }
+
+.tavern-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.ink-logo {
+  font-size: 3rem;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.5));
+}
+
+.tavern-title {
+  font-size: 1.8rem;
+  margin: 0 0 5px 0;
+  font-weight: 700;
+}
+
+.tavern-subtitle {
+  color: #94a3b8;
+  margin: 0;
+}
+.glow-text {
+  color: #fbbf24;
+  text-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
+}
+
+.daily-reward {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(124, 58, 237, 0.05));
+  border: 1px solid rgba(124, 58, 237, 0.4);
+  padding: 15px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.daily-reward:hover {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.3), rgba(124, 58, 237, 0.1));
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(124, 58, 237, 0.2);
+}
+
+.reward-icon { font-size: 2rem; margin-right: 15px; }
+.reward-info h3 { margin: 0 0 5px 0; font-size: 1.1rem; }
+.reward-info p { margin: 0; color: #94a3b8; font-size: 0.85rem; }
+
+.claim-btn {
+  margin-left: auto;
+  background: #7c3aed;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.daily-reward:hover .claim-btn { background: #6d28d9; }
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #475569;
+  margin: 25px 0;
+}
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.divider span { padding: 0 10px; font-size: 0.9rem; }
+
+.ink-packs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.ink-pack {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 20px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.ink-pack:hover {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: #fbbf24;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.pack-amount {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.pack-price {
+  color: #10b981; /* Verde esmeralda */
+  font-weight: 600;
+}
+
+.ink-pack.popular {
+  background: linear-gradient(to bottom, rgba(251, 191, 36, 0.1), rgba(30, 41, 59, 0.8));
+  border-color: rgba(251, 191, 36, 0.4);
+}
+.popular-badge {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fbbf24;
+  color: #000;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}

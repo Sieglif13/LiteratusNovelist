@@ -1,0 +1,129 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class DashboardBooksService {
+  private apiUrl = 'http://localhost:8000/api/v1/dashboard';
+
+  constructor(private http: HttpClient) {}
+
+  getBooks(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/books/`);
+  }
+
+  getAuthors(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/authors/`);
+  }
+
+  getGenres(): Observable<any[]> {
+    // Usamos el catálogo público o el dashboard si existiera, pero catálogo público sirve
+    return this.http.get<any[]>('http://localhost:8000/api/v1/catalog/genres/');
+  }
+
+  getAuthorDetail(id: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/authors/${id}/`);
+  }
+    
+
+  parseEpub(file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('epub', file);
+    return this.http.post<any>(`${this.apiUrl}/books/parse-epub/`, formData);
+  }
+
+  saveBook(bookData: any, epubFile?: File, coverFile?: File, id?: string): Observable<any> {
+    const formData = new FormData();
+    if (epubFile) {
+      formData.append('epub', epubFile);
+    }
+    if (coverFile) {
+      formData.append('cover', coverFile);
+    }
+    
+    // Añadir metadatos
+    formData.append('title', bookData.title);
+    formData.append('author_name', bookData.author_name);
+    if (bookData.author_id) {
+      formData.append('author_id', bookData.author_id);
+    }
+    formData.append('synopsis', bookData.synopsis);
+    formData.append('mood', bookData.mood || '');
+    formData.append('price', bookData.price || '990');
+    formData.append('tags', bookData.tags || '');
+    formData.append('status', bookData.status || 'draft');
+    formData.append('is_published', String(bookData.is_published));
+    formData.append('is_featured', String(bookData.is_featured));
+    
+    // Añadir géneros si existen
+    if (bookData.genres && bookData.genres.length > 0) {
+      formData.append('genres', JSON.stringify(bookData.genres));
+    }
+    
+    
+    // Añadir capítulos como JSON string
+    formData.append('chapters', JSON.stringify(bookData.chapters));
+
+    if (id) {
+      return this.http.put<any>(`${this.apiUrl}/books/${id}/`, formData);
+    }
+    return this.http.post<any>(`${this.apiUrl}/books/save/`, formData);
+  }
+
+  getBookDetail(id: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/books/${id}/`);
+  }
+
+  deleteBook(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/books/${id}/`);
+  }
+
+  saveAvatar(data: any, file?: File, editionId?: string, avatarId?: string): Observable<any> {
+    const formData = new FormData();
+    if (file) {
+      formData.append('avatar_image', file);
+    }
+    formData.append('name', data.name);
+    formData.append('description', data.description || '');
+    formData.append('system_prompt', data.system_prompt || '');
+    formData.append('greeting_message', data.greeting_message || '');
+    formData.append('is_author', String(data.is_author || false));
+    if (editionId) {
+      formData.append('edition_id', editionId);
+    }
+    
+    if (avatarId) {
+      return this.http.put<any>(`${this.apiUrl}/avatars/${avatarId}/`, formData);
+    } else {
+      return this.http.post<any>(`${this.apiUrl}/avatars/`, formData);
+    }
+  }
+
+  deleteAvatar(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/avatars/${id}/`);
+  }
+
+  saveFullAuthor(authorData: any, photo?: File): Observable<any> {
+    const formData = new FormData();
+    if (photo) {
+      formData.append('photo', photo);
+    }
+    Object.keys(authorData).forEach(key => {
+      if (authorData[key] !== null && authorData[key] !== undefined) {
+        formData.append(key, authorData[key]);
+      }
+    });
+
+    if (authorData.id) {
+      return this.http.put<any>(`${this.apiUrl}/authors/${authorData.id}/`, formData);
+    }
+    return this.http.post<any>(`${this.apiUrl}/authors/`, formData);
+  }
+
+  deleteAuthor(id: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/authors/${id}/`);
+  }
+    
+}

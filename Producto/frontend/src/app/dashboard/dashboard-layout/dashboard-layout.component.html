@@ -1,0 +1,64 @@
+<div class="nexus-layout">
+  <!-- SIDEBAR -->
+  <aside class="nexus-sidebar" [class.collapsed]="sidebarCollapsed">
+    <div class="sidebar-header">
+      <div class="logo-container">
+        <span class="logo-icon">📚</span>
+        <span class="logo-text" *ngIf="!sidebarCollapsed">Literatus<span class="logo-accent"> Nexus</span></span>
+      </div>
+      <button class="collapse-btn" (click)="toggleSidebar()">
+        <span>{{ sidebarCollapsed ? '»' : '«' }}</span>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label" *ngIf="!sidebarCollapsed">PRINCIPAL</div>
+      <a routerLink="overview" routerLinkActive="active" class="nav-item" title="Visión General">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">Visión General</span>
+      </a>
+
+      <div class="nav-section-label" *ngIf="!sidebarCollapsed">CONTENIDO</div>
+      <a routerLink="books" routerLinkActive="active" class="nav-item" title="Libros">
+        <span class="nav-icon">📖</span>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">Libros</span>
+      </a>
+      <a routerLink="authors" routerLinkActive="active" class="nav-item" title="Autores">
+        <span class="nav-icon">✍️</span>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">Autores</span>
+      </a>
+
+      <div class="nav-section-label" *ngIf="!sidebarCollapsed">SISTEMA</div>
+      <a routerLink="/" class="nav-item" title="Ir a la Tienda">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label" *ngIf="!sidebarCollapsed">Ir a la Tienda</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer" *ngIf="!sidebarCollapsed">
+      <div class="version-badge">v1.0 Nexus</div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <div class="nexus-main">
+    <!-- TOPBAR -->
+    <header class="nexus-topbar">
+      <div class="topbar-left">
+        <h2 class="page-title">{{ pageTitle }}</h2>
+      </div>
+      <div class="topbar-right">
+        <div class="admin-badge">
+          <span class="badge-dot"></span>
+          Admin
+        </div>
+        <button class="logout-btn" (click)="logout()">Salir 🚪</button>
+      </div>
+    </header>
+
+    <!-- ROUTER OUTLET -->
+    <main class="nexus-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

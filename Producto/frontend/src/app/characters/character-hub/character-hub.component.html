@@ -1,0 +1,47 @@
+<div class="hub-container">
+  <div class="hub-header">
+    <h1 class="glow-title">Personajes en Tendencia</h1>
+    <p class="subtitle">Descubre e interactúa con las mentes más brillantes de la literatura.</p>
+  </div>
+
+  <div class="character-grid">
+    <!-- SHIMMER EFFECT (Skeletons) -->
+    <ng-container *ngIf="isLoading">
+      <div class="char-card skeleton-card" *ngFor="let s of skeletonArray">
+        <div class="shimmer-wrapper">
+          <div class="shimmer-img"></div>
+          <div class="shimmer-content">
+            <div class="shimmer-line title"></div>
+            <div class="shimmer-line subtitle"></div>
+            <div class="shimmer-badges">
+              <div class="shimmer-badge"></div>
+              <div class="shimmer-badge"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- REAL CARDS (Dark Premium) -->
+    <ng-container *ngIf="!isLoading">
+      <div class="char-card premium-card" *ngFor="let char of characters" (click)="openChat(char.id)">
+        <div class="card-img-wrapper">
+          <img [src]="char.avatar_image_url || 'assets/images/default-avatar.png'" alt="{{ char.name }}" class="char-img" onerror="this.src='assets/images/default-avatar.png'">
+          <div class="overlay-gradient"></div>
+          <div class="trend-overlay" *ngIf="char.trend_level > 50">
+            <span class="trend-icon">🔥</span>
+          </div>
+        </div>
+        
+        <div class="card-content">
+          <h3 class="char-name">{{ char.name }}</h3>
+          <p class="book-origin">{{ char.book_title }}</p>
+          
+          <div class="badges-container">
+            <span class="badge" *ngFor="let tag of char.tags">{{ tag }}</span>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
