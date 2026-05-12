@@ -67,6 +67,12 @@ class AIAvatar(TimeStampedModel):
         null=True,
         blank=True
     ) # Imagen visual del avatar mostrada en la interfaz.
+    video_avatar = models.FileField(
+        upload_to='ai_avatars/videos/',
+        null=True,
+        blank=True,
+        help_text="Video en bucle para simular habla (MP4)."
+    ) # Video corto para animación de habla.
     # SISTEMA DE DESBLOQUEO POR PROGRESO
     # El avatar se activa cuando el usuario llega a este capítulo (índice base-0).
     # unlock_at_chapter=0 significa disponible desde el inicio.
@@ -97,6 +103,12 @@ class AIAvatar(TimeStampedModel):
         blank=True,
         help_text="Bloques literales de la obra para guiar el estilo de respuesta."
     ) # Ejemplos de cómo habla el personaje para que el LLM imite su estilo de escritura.
+
+    # ESTADÍSTICAS
+    chat_count = models.PositiveIntegerField(
+        default=0,
+        help_text="Número total de conversaciones iniciadas con este personaje."
+    ) # Se usa para el ranking de 'Más Destacados'.
 
     class Meta:
         verbose_name = 'AI Avatar'

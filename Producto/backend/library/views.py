@@ -85,17 +85,29 @@ class UserInventoryViewSet(viewsets.ReadOnlyModelViewSet):
             'chapters': data
         })
 
-    @action(detail=True, methods=['GET'], url_path='chapters')
-    def chapters(self, request, pk=None):
+    @action(detail=False, methods=['GET'], url_path='check')
+    def check_ownership(self, request):
         """
-        SERVICIO DE LECTURA HTML BROWSER-NATIVE.
-        Devuelve el contenido en HTML de los capítulos guardados en base de datos.
+        Verifica si el usuario posee un libro por su slug.
+        GET /api/v1/library/inventory/check/?slug=el-principito
         """
-        inventory_item = self.get_object()
-        book = inventory_item.edition.book
-        chapters = book.chapters.all()
-        data = [{'id': c.id, 'title': c.title, 'order': c.order, 'content_html': c.content_html} for c in chapters]
-        return Response(data)
+        slug = request.query_params.get('slug')
+        if not slug:
+            return Response({"error": "Falta parámetro 'slug'"}, status=400)
+        
+        inventory_item = UserInventory.objects.filter(
+            user=request.user, 
+            edition__book__slug=slug
+        ).first()
+        
+        if inventory_item:
+            return Response({
+                "owned": True,
+                "inventory_id": inventory_item.id
+            })
+        return Response({"owned": False})
+
+
 
 class ReadingProgressViewSet(viewsets.ModelViewSet):
     """

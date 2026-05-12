@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, OnDestroy, ChangeDetectorRef, HostListener } from '@angular/core';
+import { Component, OnInit, inject, OnDestroy, ChangeDetectorRef, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { ApiService } from '../../core/services/api.service';
@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { environment } from '../../../environments/environment';
 import { PiperVoiceService } from '../../core/services/piper-voice.service';
+import { ChatService } from '../../core/services/chat.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 
 export interface ProgressData {
@@ -42,6 +43,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
   private sanitizer = inject(DomSanitizer);
   private cdr = inject(ChangeDetectorRef);
   public piperVoice = inject(PiperVoiceService);
+  public chatService = inject(ChatService);
 
   // ── LECTURA ──────────────────────────────────────────────────────
   inventoryId: string = '';
@@ -80,7 +82,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
   chatInput: string = '';
   isSendingMessage: boolean = false;
   chatMode: 'roleplay' | 'tutor' | 'critical' = 'roleplay';
-  inkBalance: number = 50;
+  inkBalance: number = 0;
 
   // Audio Control
   currentAudioMode: 'native' | 'pro' | 'piper' = 'native';
@@ -121,6 +123,11 @@ export class ReaderComponent implements OnInit, OnDestroy {
   showImageModal: boolean = false;
   modalImageSrc: string = '';
 
+  // Video Avatar
+  @ViewChild('avatarVideo') avatarVideoElement!: ElementRef<HTMLVideoElement>;
+  showVideoAvatar: boolean = false;
+  isVideoSpeaking: boolean = false;
+
   ngOnInit() {
     this.inventoryId = this.route.snapshot.paramMap.get('id') || '';
 
@@ -130,6 +137,25 @@ export class ReaderComponent implements OnInit, OnDestroy {
     this.applyTheme();
     this.applyFontSize();
     this.loadInkBalance();
+
+    // Auto-abrir chat si venimos redirigidos por un personaje
+    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
+      const avatarId = params['chatWith'];
+      if (avatarId) {
+        // Esperar a que los avatares carguen para poder iniciar el chat
+        const checkAvatars = setInterval(() => {
+          if (this.avatars && this.avatars.length > 0) {
+            const avatar = this.avatars.find(a => a.id == avatarId);
+            if (avatar) {
+              this.startChat(avatar);
+            }
+            clearInterval(checkAvatars);
+          }
+        }, 100);
+        // Timeout de seguridad de 5 segundos
+        setTimeout(() => clearInterval(checkAvatars), 5000);
+      }
+    });
 
     // Resaltado: escuchar el word index del AudioService
     this.audioService.currentWordIndex$.pipe(takeUntil(this.destroy$)).subscribe(idx => {
@@ -147,6 +173,12 @@ export class ReaderComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
         if (idx !== -1) this.scrollWordIntoView(idx);
       }
+    });
+
+    // Suscribirse a la tinta global
+    this.chatService.inkBalance$.pipe(takeUntil(this.destroy$)).subscribe(balance => {
+      this.inkBalance = balance;
+      this.cdr.detectChanges();
     });
 
 
@@ -669,6 +701,12 @@ export class ReaderComponent implements OnInit, OnDestroy {
     this.selectedAvatar = null;
   }
 
+  toggleVideoAvatar() {
+    this.showVideoAvatar = !this.showVideoAvatar;
+    // Siempre reajustar el scroll después de cambiar el layout del video
+    setTimeout(() => this.scrollChatToBottom(), 150);
+  }
+
   // ── CHAT ──────────────────────────────────────────────────────────
   startChat(avatar: any) {
     if (!avatar.is_unlocked) return;
@@ -680,6 +718,9 @@ export class ReaderComponent implements OnInit, OnDestroy {
         this.chatSession = session;
         this.loadChatHistory(session.id);
         this.isChatOpen = true;
+        this.isCharPanelOpen = true; // sidebar siempre abierto
+        this.showVideoAvatar = false; // El video es MANUAL (botón 📞)
+        setTimeout(() => this.scrollChatToBottom(), 200);
       },
       error: (err) => console.error('Error iniciando sesión de chat', err)
     });
@@ -687,7 +728,11 @@ export class ReaderComponent implements OnInit, OnDestroy {
 
   loadChatHistory(sessionId: number) {
     this.api.get(`ai/sessions/${sessionId}/messages/`).subscribe({
-      next: (msgs: any) => { this.chatMessages = msgs; },
+      next: (msgs: any) => { 
+        this.chatMessages = msgs; 
+        // Scroll al final después de cargar el historial
+        setTimeout(() => this.scrollChatToBottom(), 150);
+      },
       error: (err) => console.error('Error cargando historial', err)
     });
   }
@@ -718,9 +763,12 @@ export class ReaderComponent implements OnInit, OnDestroy {
           content: res.reply,
           created_at: res.timestamp
         });
-        this.inkBalance = res.ink_balance;
+        this.chatService.updateInkBalance(res.ink_balance);
         this.isSendingMessage = false;
         setTimeout(() => this.scrollChatToBottom(), 50);
+
+        // Hablar respuesta si el avatar está visible o siempre (según preferencia)
+        this.speakChatReply(res.reply);
       },
       error: (err) => {
         console.error('Error en el chat', err);
@@ -737,24 +785,71 @@ export class ReaderComponent implements OnInit, OnDestroy {
   }
 
   private scrollChatToBottom() {
-    const chatBody = document.querySelector('.chat-body');
-    if (chatBody) chatBody.scrollTop = chatBody.scrollHeight;
+    // Actualizado al nuevo selector del diseño Character.ai
+    const chatBody = document.querySelector('.chat-messages-area');
+    if (chatBody) {
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
   }
 
   setMode(mode: 'roleplay' | 'tutor' | 'critical') {
     this.chatMode = mode;
   }
 
+  private speakChatReply(text: string) {
+    // Usar SpeechSynthesis nativo para el chat por ahora
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    
+    // Intentar usar la voz seleccionada en el AudioService
+    const selectedVoice = this.audioService.selectedVoice;
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+      utterance.lang = selectedVoice.lang;
+    } else {
+      utterance.lang = 'es-ES';
+    }
+
+    utterance.onstart = () => {
+      this.isVideoSpeaking = true;
+      if (this.avatarVideoElement?.nativeElement) {
+        const video = this.avatarVideoElement.nativeElement;
+        video.currentTime = 1; // Empezar directamente donde abre la boca
+        video.play();
+        
+        // Loop perfecto de 1 a 6 segundos
+        video.ontimeupdate = () => {
+          if (video.currentTime >= 6) {
+            video.currentTime = 1;
+          }
+        };
+      }
+      this.cdr.detectChanges();
+    };
+
+    utterance.onend = () => {
+      this.isVideoSpeaking = false;
+      if (this.avatarVideoElement?.nativeElement) {
+        this.avatarVideoElement.nativeElement.pause();
+        this.avatarVideoElement.nativeElement.currentTime = 0;
+      }
+      this.cdr.detectChanges();
+    };
+
+    utterance.onerror = () => {
+      this.isVideoSpeaking = false;
+      if (this.avatarVideoElement?.nativeElement) {
+        this.avatarVideoElement.nativeElement.pause();
+        this.avatarVideoElement.nativeElement.currentTime = 0;
+      }
+      this.cdr.detectChanges();
+    };
+
+    window.speechSynthesis.speak(utterance);
+  }
+
   private loadInkBalance() {
-    // Cargar el balance de tinta del usuario (desde perfil)
-    this.api.get('users/profile/').subscribe({
-      next: (profile: any) => {
-        if (profile && profile.ink_balance !== undefined) {
-          this.inkBalance = profile.ink_balance;
-        }
-      },
-      error: () => {} // No crítico, usamos el default de 50
-    });
+    this.chatService.loadInitialInk();
   }
 
   // ── PERFORMANCE: trackBy para *ngFor ────────────────────────────

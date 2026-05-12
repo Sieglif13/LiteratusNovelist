@@ -1,39 +1,111 @@
-import { Component, inject } from '@angular/core';
-import { ApiService } from '../../core/services/api.service';
+import { Component, OnInit, inject, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { ChatService, ChatMessage } from '../../core/services/chat.service';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PiperVoiceService } from '../../core/services/piper-voice.service';
-
-interface ChatMessage {
-  sender: 'user' | 'ai';
-  text: string;
-}
 
 @Component({
   selector: 'app-ai-chat',
   templateUrl: './ai-chat.component.html',
   styleUrl: './ai-chat.component.css'
 })
-export class AiChatComponent {
-  private api = inject(ApiService);
+export class AiChatComponent implements OnInit, AfterViewChecked {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  public chatService = inject(ChatService);
   public piperVoice = inject(PiperVoiceService);
   
-  messages: ChatMessage[] = [
-    { sender: 'ai', text: 'Saludos, viajero. Pareces tener una duda sobre mis andanzas.' }
-  ];
+  @ViewChild('scrollMe') private myScrollContainer!: ElementRef;
+
+  // Datos del Personaje Actual
+  avatarId?: number;
+  session?: any;
+  avatar: any = null;
+  messages: ChatMessage[] = [];
+  recentCharacters: any[] = [];
   
   newMessage: string = '';
-  session_id: number = 1; // Fijo para demo
-  activeMode: 'roleplay' | 'tutor' | 'critical' = 'roleplay';
   isWriting: boolean = false;
-
   realTimeVoiceActive: boolean = false;
-  
+
   // Observables para la UI
   piperReady$ = this.piperVoice.isReady$;
   piperProgress$ = this.piperVoice.loadProgress$;
   piperSpeaking$ = this.piperVoice.isSpeaking$;
 
-  setMode(mode: 'roleplay' | 'tutor' | 'critical') {
-    this.activeMode = mode;
+  ngOnInit() {
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('session_id');
+      if (id) {
+        this.avatarId = +id;
+        console.log("Cargando chat para Avatar ID:", this.avatarId);
+        this.loadChatSession();
+      }
+    });
+    this.loadRecentCharacters();
+    
+    // Suscribirse a mensajes globales del servicio
+    this.chatService.messages$.subscribe(msgs => {
+      this.messages = msgs;
+    });
+  }
+
+  ngAfterViewChecked() {
+    this.scrollToBottom();
+  }
+
+  loadChatSession() {
+    if (!this.avatarId) return;
+
+    // Limpiar estados previos e iniciar timers de seguridad
+    this.avatar = null;
+    this.session = null;
+
+    // Timer de seguridad: si en 6 segundos no hay respuesta, mostrar error
+    const safetyTimer = setTimeout(() => {
+      if (!this.avatar) {
+        this.avatar = { name: 'Error de Conexión', description: 'El servidor está tardando demasiado en responder. Por favor, refresca la página.' };
+      }
+      if (!this.session) {
+        this.session = { id: 'timeout' };
+      }
+    }, 6000);
+
+    // 1. Obtener detalles del avatar
+    this.chatService.getAvatar(this.avatarId).subscribe({
+      next: (data) => {
+        clearTimeout(safetyTimer);
+        this.avatar = data;
+      },
+      error: (err) => {
+        clearTimeout(safetyTimer);
+        console.error("Error cargando avatar", err);
+        this.avatar = { name: 'No disponible', description: 'No se pudo conectar con el servidor.' };
+      }
+    });
+
+    // 2. Obtener o crear sesión
+    this.chatService.getSession(this.avatarId).subscribe({
+      next: (session) => {
+        this.session = session;
+        this.chatService.loadSessionMessages(session.id).subscribe();
+      },
+      error: (err) => {
+        console.error("Error cargando sesión", err);
+        this.session = { id: 'error' };
+      }
+    });
+  }
+
+  loadRecentCharacters() {
+    this.chatService.getRecentAvatars().subscribe(data => {
+      this.recentCharacters = data;
+    });
+  }
+
+  scrollToBottom(): void {
+    try {
+      this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
+    } catch(err) { }
   }
 
   async toggleVoice() {
@@ -44,47 +116,30 @@ export class AiChatComponent {
   }
 
   sendMessage() {
-    if (!this.newMessage.trim()) return;
+    if (!this.newMessage.trim() || !this.session) return;
 
-    this.messages.push({ sender: 'user', text: this.newMessage });
-    const payload = {
-      session_id: this.session_id,
-      message: this.newMessage,
-      mode: this.activeMode
-    };
-    
-    this.newMessage = ''; // Reset
+    const textToSend = this.newMessage;
+    this.newMessage = '';
     this.isWriting = true;
 
-    // Conectando con API DRF de Fase 3
-    /*
-    this.api.post<{reply: string}>('ai/chat/', payload).subscribe({
+    this.chatService.sendMessage(this.session.id, textToSend).subscribe({
       next: (res) => {
-        this.messages.push({ sender: 'ai', text: res.reply });
         this.isWriting = false;
+        if (this.realTimeVoiceActive) {
+          this.piperVoice.speak(res.reply);
+        }
       },
       error: () => {
-        this.messages.push({ sender: 'ai', text: 'Perdona, he perdido momentáneamente mi hilo de pensamiento (Error de Conexión).' });
         this.isWriting = false;
       }
     });
-    */
+  }
 
-    // Simulación Frontend por velocidad de demo:
-    setTimeout(() => {
-      let mockReply = '';
-      if (this.activeMode === 'roleplay') mockReply = 'A fe mía que hablas con gran extrañeza. No entiendo vuestras palabras del futuro.';
-      if (this.activeMode === 'tutor') mockReply = '[Modo Tutor] Esta obra fue escrita en el Siglo XVII por Cervantes, reflejando el declive de la novela de caballerías.';
-      if (this.activeMode === 'critical') mockReply = '¿Acaso mis aspas de molino no son el reflejo de tu propia locura sistémica impuesta por la sociedad capitalista?';
+  selectCharacter(id: number) {
+    this.router.navigate(['/chat', id]);
+  }
 
-      this.messages.push({ sender: 'ai', text: mockReply });
-      this.isWriting = false;
-
-      // Si la voz está activada, generar audio
-      if (this.realTimeVoiceActive) {
-        // Llamada asíncrona no-bloqueante
-        this.piperVoice.speak(mockReply);
-      }
-    }, 1500);
+  goBack() {
+    this.router.navigate(['/characters']);
   }
 }

@@ -9,11 +9,12 @@ class AIAvatarListSerializer(serializers.ModelSerializer):
     """
     is_unlocked = serializers.SerializerMethodField()
     avatar_image_url = serializers.SerializerMethodField()
+    video_avatar_url = serializers.SerializerMethodField()
 
     class Meta:
         model = AIAvatar
         fields = [
-            'id', 'name', 'description', 'avatar_image_url',
+            'id', 'name', 'description', 'avatar_image_url', 'video_avatar_url',
             'unlock_at_chapter', 'is_major_character', 'is_author',
             'is_unlocked', 'greeting_message',
         ]
@@ -30,6 +31,12 @@ class AIAvatarListSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if obj.avatar_image and request:
             return request.build_absolute_uri(obj.avatar_image.url)
+        return None
+
+    def get_video_avatar_url(self, obj):
+        request = self.context.get('request')
+        if obj.video_avatar and request:
+            return request.build_absolute_uri(obj.video_avatar.url)
         return None
 
 
@@ -66,6 +73,7 @@ class ChatInteractionSerializer(serializers.Serializer):
 class GlobalHubAvatarSerializer(serializers.ModelSerializer):
     """Serializer para el Hub Global de Personajes (Character.ai style)."""
     book_title = serializers.CharField(source='edition.book.title', read_only=True)
+    book_slug = serializers.CharField(source='edition.book.slug', read_only=True)
     avatar_image_url = serializers.SerializerMethodField()
     tags = serializers.SerializerMethodField()
     trend_level = serializers.SerializerMethodField()
@@ -73,8 +81,8 @@ class GlobalHubAvatarSerializer(serializers.ModelSerializer):
     class Meta:
         model = AIAvatar
         fields = [
-            'id', 'name', 'book_title', 'description', 'avatar_image_url',
-            'tags', 'trend_level'
+            'id', 'name', 'book_title', 'book_slug', 'description', 'avatar_image_url',
+            'tags', 'trend_level', 'chat_count'
         ]
 
     def get_avatar_image_url(self, obj):
@@ -83,15 +91,17 @@ class GlobalHubAvatarSerializer(serializers.ModelSerializer):
             return request.build_absolute_uri(obj.avatar_image.url)
         return None
 
+    def get_trend_level(self, obj):
+        # Cálculo simple de tendencia basado en chat_count
+        if obj.chat_count > 100: return 90
+        if obj.chat_count > 50: return 70
+        if obj.chat_count > 10: return 40
+        return 10
+
     def get_tags(self, obj):
-        # En una iteración futura esto podría venir de una tabla de tags reales
         tags = []
         if obj.is_author:
             tags.append("Autor")
         if obj.is_major_character:
             tags.append("Principal")
         return tags
-
-    def get_trend_level(self, obj):
-        # Métrica dummy por ahora para UI
-        return min(100, len(obj.name) * 5)

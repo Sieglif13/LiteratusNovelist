@@ -46,17 +46,29 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Si estuviéramos en producción real, aquí cargaríamos los datos del usuario
-    // desde el profile service:
-    // this.profileService.getProfile().subscribe(...)
-    // Por ahora, simulamos un balance inicial si está loggeado:
     if (this.isLoggedIn) {
-      this.chatService.updateInkBalance(50); // Valor de prueba UI
+      this.chatService.loadInitialInk();
+      this.loadUserProfile();
     }
 
     // Suscribirse a cambios de tinta para animar
     this.inkBalance$.subscribe(val => {
       this.triggerShake();
+    });
+
+    // Suscribirse a actualizaciones de perfil
+    this.chatService.profileUpdated$.subscribe(() => {
+      this.loadUserProfile();
+    });
+  }
+
+  loadUserProfile() {
+    this.chatService.getUserProfile().subscribe({
+      next: (profile) => {
+        if (profile && profile.avatar) {
+          this.userAvatarUrl = profile.avatar;
+        }
+      }
     });
   }
 

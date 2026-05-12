@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, throwError, Subject } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
@@ -16,18 +16,41 @@ export interface ChatMessage {
   providedIn: 'root'
 })
 export class ChatService {
-  private readonly API_URL = `${environment.apiUrl}/ai`;
+  private readonly API_URL = `${environment.apiUrl}ai`;
 
   // Estado global reactivo
   private inkBalanceSubject = new BehaviorSubject<number>(0);
   public inkBalance$ = this.inkBalanceSubject.asObservable();
+
+  private profileUpdatedSubject = new Subject<void>();
+  public profileUpdated$ = this.profileUpdatedSubject.asObservable();
 
   private messagesSubject = new BehaviorSubject<ChatMessage[]>([]);
   public messages$ = this.messagesSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 
-  // Actualiza el balance de tinta (puede ser llamado por AuthService al hacer login)
+  notifyProfileUpdate() {
+    this.profileUpdatedSubject.next();
+  }
+
+  // Obtener perfil completo
+  getUserProfile(): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}users/profile/`);
+  }
+
+  // Carga inicial del balance desde el perfil
+  loadInitialInk() {
+    this.http.get<any>(`${environment.apiUrl}users/profile/`).subscribe({
+      next: (profile) => {
+        if (profile && profile.ink_balance !== undefined) {
+          this.inkBalanceSubject.next(profile.ink_balance);
+        }
+      },
+      error: (err) => console.error("Error cargando balance inicial", err)
+    });
+  }
+
   updateInkBalance(balance: number) {
     this.inkBalanceSubject.next(balance);
   }
@@ -50,9 +73,21 @@ export class ChatService {
     return this.http.get(`${this.API_URL}/sessions/?avatar_id=${avatarId}`);
   }
 
-  // Obtener todos los personajes para el Hub
-  getGlobalAvatars(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.API_URL}/hub/avatars/`);
+  // Obtener todos los personajes para el Hub (con búsqueda y orden opcional)
+  getGlobalAvatars(query: string = '', sort: string = ''): Observable<any[]> {
+    let url = `${this.API_URL}/hub/avatars/?q=${query}`;
+    if (sort) url += `&sort=${sort}`;
+    return this.http.get<any[]>(url);
+  }
+
+  // Obtener un avatar por ID
+  getAvatar(id: number): Observable<any> {
+    return this.http.get<any>(`${this.API_URL}/avatars/${id}/`);
+  }
+
+  // Obtener personajes recientes
+  getRecentAvatars(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.API_URL}/hub/recent/`);
   }
 
   // Enviar mensaje y manejar respuesta reactiva

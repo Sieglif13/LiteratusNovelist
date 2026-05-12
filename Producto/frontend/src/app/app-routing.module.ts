@@ -6,7 +6,6 @@ import { RegisterComponent } from './auth/register/register.component';
 import { BookListComponent } from './catalog/book-list/book-list.component';
 import { BookDetailPageComponent } from './catalog/book-detail-page/book-detail-page.component';
 import { ReaderComponent } from './library/reader/reader.component';
-import { AiChatComponent } from './library/ai-chat/ai-chat.component';
 import { TavernComponent } from './library/tavern/tavern.component';
 import { authGuard } from './core/guards/auth.guard';
 import { adminGuard } from './guards/admin.guard';
@@ -37,7 +36,6 @@ const routes: Routes = [
   { path: 'library', component: LibraryListComponent, canActivate: [authGuard] },
   { path: 'tavern', component: TavernComponent, canActivate: [authGuard] },
   { path: 'reader/:id', component: ReaderComponent, canActivate: [authGuard] },
-  { path: 'chat/:session_id', component: AiChatComponent, canActivate: [authGuard] },
   {
     path: 'dashboard',
     loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule),

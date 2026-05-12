@@ -62,100 +62,176 @@
   <!-- ═══════════════════════════════════════════════════════════════ -->
   <!-- PANEL IZQUIERDO: PERSONAJES                                      -->
   <!-- ═══════════════════════════════════════════════════════════════ -->
-  <aside class="char-sidebar glass-panel" [@slideFromLeft]="isCharPanelOpen ? 'in' : 'out'">
-    <div class="toc-header">
-      <h3>🎭 Personajes</h3>
-      <button class="close-btn" (click)="toggleCharPanel()">✕</button>
-    </div>
+  <aside class="char-sidebar glass-panel" 
+         [class.is-chat-active]="isChatOpen"
+         [@slideFromLeft]="isCharPanelOpen ? 'in' : 'out'">
 
-    <!-- Lista de avatares: AUTOR + PERSONAJES separados -->
-    <div *ngIf="!showCharProfile" class="avatar-list">
-
-      <!-- ── SECCIÓN AUTOR ─────────────────────────────── -->
-      <div *ngIf="authorAvatar" class="author-section">
-        <span class="section-label">✍️ El Autor</span>
-        <div class="avatar-item author-item unlocked"
-             (click)="openCharProfile(authorAvatar)">
-          <div class="avatar-pic">
-            <img *ngIf="authorAvatar.avatar_image_url"
-                 [src]="authorAvatar.avatar_image_url"
-                 [alt]="authorAvatar.name">
-            <div *ngIf="!authorAvatar.avatar_image_url" class="avatar-placeholder">
-              {{ authorAvatar.name.charAt(0) }}
-            </div>
-          </div>
-          <div class="avatar-meta">
-            <span class="avatar-name">{{ authorAvatar.name }}</span>
-            <span class="avatar-status unlocked">Siempre disponible</span>
-          </div>
-        </div>
+    <!-- ════════════════════════════════════════ -->
+    <!-- ESTADO 1: LISTA DE PERSONAJES           -->
+    <!-- ════════════════════════════════════════ -->
+    <ng-container *ngIf="!showCharProfile && !isChatOpen">
+      <div class="sidebar-header">
+        <h3 class="sidebar-title">🎭 Personajes</h3>
+        <button class="sidebar-close-btn" (click)="toggleCharPanel()">✕</button>
       </div>
 
-      <!-- ── SECCIÓN PERSONAJES ─────────────────────────── -->
-      <div class="characters-section">
-        <span class="section-label">🎭 Personajes</span>
-        <div *ngIf="characterAvatars.length === 0" class="empty-hint">
-          <p>Este libro no tiene personajes de IA configurados aún.</p>
-        </div>
-        <div *ngFor="let avatar of characterAvatars"
-             class="avatar-item"
-             [class.unlocked]="avatar.is_unlocked"
-             [class.locked]="!avatar.is_unlocked"
-             (click)="openCharProfile(avatar)">
-          <div class="avatar-pic">
-            <img *ngIf="avatar.avatar_image_url" [src]="avatar.avatar_image_url" [alt]="avatar.name">
-            <div *ngIf="!avatar.avatar_image_url" class="avatar-placeholder">
-              {{ avatar.name.charAt(0) }}
-            </div>
-            <span class="lock-badge" *ngIf="!avatar.is_unlocked">🔒</span>
+      <div class="char-list">
+        <!-- Autor -->
+        <div *ngIf="authorAvatar" class="char-list-item" (click)="openCharProfile(authorAvatar)">
+          <div class="char-avatar-pic">
+            <img *ngIf="authorAvatar.avatar_image_url" [src]="authorAvatar.avatar_image_url" [alt]="authorAvatar.name">
+            <div *ngIf="!authorAvatar.avatar_image_url" class="char-avatar-initial">{{ authorAvatar.name.charAt(0) }}</div>
           </div>
-          <div class="avatar-meta">
-            <span class="avatar-name">{{ avatar.name }}</span>
-            <span class="avatar-status" [class.unlocked]="avatar.is_unlocked">
+          <div class="char-info">
+            <span class="char-name">{{ authorAvatar.name }}</span>
+            <span class="char-role">✍️ El Autor</span>
+          </div>
+          <span class="char-arrow">›</span>
+        </div>
+
+        <!-- Personajes -->
+        <div *ngFor="let avatar of characterAvatars"
+             class="char-list-item"
+             [class.locked-item]="!avatar.is_unlocked"
+             (click)="openCharProfile(avatar)">
+          <div class="char-avatar-pic">
+            <img *ngIf="avatar.avatar_image_url" [src]="avatar.avatar_image_url" [alt]="avatar.name">
+            <div *ngIf="!avatar.avatar_image_url" class="char-avatar-initial">{{ avatar.name.charAt(0) }}</div>
+            <span class="char-lock-icon" *ngIf="!avatar.is_unlocked">🔒</span>
+          </div>
+          <div class="char-info">
+            <span class="char-name">{{ avatar.name }}</span>
+            <span class="char-status" [class.available]="avatar.is_unlocked">
               {{ avatar.is_unlocked ? 'Disponible' : 'Cap. ' + avatar.unlock_at_chapter }}
             </span>
           </div>
+          <span class="char-arrow">›</span>
         </div>
       </div>
+    </ng-container>
 
-    </div>
+    <!-- ════════════════════════════════════════ -->
+    <!-- ESTADO 2: PERFIL DEL PERSONAJE          -->
+    <!-- ════════════════════════════════════════ -->
+    <ng-container *ngIf="showCharProfile && selectedAvatar && !isChatOpen">
+      <div class="sidebar-header">
+        <button class="sidebar-back-btn" (click)="closeCharProfile()">
+          <span>‹</span> Volver
+        </button>
+        <button class="sidebar-close-btn" (click)="toggleCharPanel()">✕</button>
+      </div>
 
-    <!-- Ficha del Personaje -->
-    <div *ngIf="showCharProfile && selectedAvatar" class="char-profile">
-      <button class="back-link" (click)="closeCharProfile()">
-        ← {{ selectedAvatar?.is_author ? 'El Autor' : 'Personajes' }}
-      </button>
-
-      <div class="profile-avatar-big">
-        <img *ngIf="selectedAvatar.avatar_image_url" [src]="selectedAvatar.avatar_image_url" [alt]="selectedAvatar.name">
-        <div *ngIf="!selectedAvatar.avatar_image_url" class="avatar-placeholder-big">
+      <div class="profile-hero">
+        <img *ngIf="selectedAvatar.avatar_image_url" 
+             [src]="selectedAvatar.avatar_image_url" 
+             [alt]="selectedAvatar.name"
+             class="profile-hero-img">
+        <div *ngIf="!selectedAvatar.avatar_image_url" class="profile-hero-initial">
           {{ selectedAvatar.name.charAt(0) }}
         </div>
       </div>
 
-      <h2 class="profile-name">{{ selectedAvatar.name }}</h2>
-      <p class="profile-desc">{{ selectedAvatar.description || 'Un personaje misterioso...' }}</p>
+      <div class="profile-info">
+        <h2 class="profile-name">{{ selectedAvatar.name }}</h2>
+        <p class="profile-desc">{{ selectedAvatar.description || 'Un personaje misterioso...' }}</p>
+      </div>
 
       <!-- Bloqueado -->
-      <div *ngIf="!selectedAvatar.is_unlocked" class="locked-notice">
-        <span class="lock-big">🔒</span>
-        <p>Se desbloquea al llegar al capítulo <strong>{{ selectedAvatar.unlock_at_chapter }}</strong></p>
-        <p class="lock-progress">Estás en la sección {{ currentPage - 1 }}</p>
+      <div *ngIf="!selectedAvatar.is_unlocked" class="profile-locked">
+        <span class="lock-icon-big">🔒</span>
+        <p>Se desbloquea en el capítulo <strong>{{ selectedAvatar.unlock_at_chapter }}</strong></p>
       </div>
 
       <!-- Desbloqueado -->
-      <div *ngIf="selectedAvatar.is_unlocked" class="chat-actions">
-        <!-- Selector de modo -->
-        <div class="mode-toggle">
-          <button [class.active]="chatMode === 'roleplay'" (click)="setMode('roleplay')">🎭 Inmersivo</button>
-          <button [class.active]="chatMode === 'tutor'"    (click)="setMode('tutor')">📚 Tutor</button>
-          <button [class.active]="chatMode === 'critical'" (click)="setMode('critical')">🔍 Crítico</button>
+      <div *ngIf="selectedAvatar.is_unlocked" class="profile-actions">
+        <div class="mode-pills">
+          <button class="mode-pill" [class.active]="chatMode === 'roleplay'" (click)="setMode('roleplay')">🎭 Roleplay</button>
+          <button class="mode-pill" [class.active]="chatMode === 'tutor'"    (click)="setMode('tutor')">📚 Tutor</button>
+          <button class="mode-pill" [class.active]="chatMode === 'critical'" (click)="setMode('critical')">🔍 Crítico</button>
         </div>
-        <button class="start-chat-btn glass-btn" (click)="startChat(selectedAvatar)">
+        <button class="start-chat-cta" (click)="startChat(selectedAvatar)">
           💬 Iniciar Conversación
         </button>
       </div>
-    </div>
+    </ng-container>
+
+    <!-- ════════════════════════════════════════ -->
+    <!-- ESTADO 3: CHAT ACTIVO (estilo c.ai)     -->
+    <!-- ════════════════════════════════════════ -->
+    <ng-container *ngIf="isChatOpen && chatSession">
+
+      <!-- Header del chat -->
+      <div class="chat-topbar">
+        <button class="topbar-back-btn" (click)="isChatOpen = false">‹</button>
+        <div class="topbar-avatar">
+          <img *ngIf="selectedAvatar?.avatar_image_url" [src]="selectedAvatar.avatar_image_url" [alt]="selectedAvatar?.name">
+          <div *ngIf="!selectedAvatar?.avatar_image_url" class="topbar-initial">{{ selectedAvatar?.name?.charAt(0) }}</div>
+        </div>
+        <div class="topbar-info">
+          <span class="topbar-name">{{ selectedAvatar?.name }}</span>
+          <span class="topbar-mode">{{ chatMode | titlecase }}</span>
+        </div>
+        <!-- Botón de Video (Teléfono) - Manual -->
+        <button class="topbar-video-btn" 
+                [class.active]="showVideoAvatar"
+                (click)="toggleVideoAvatar()" 
+                title="Activar/Desactivar Avatar">
+          📞
+        </button>
+        <button class="topbar-close-btn" (click)="isChatOpen = false; isCharPanelOpen = false">✕</button>
+      </div>
+
+      <!-- PANEL DE VIDEO (solo si está activo manualmente) -->
+      <div class="chat-video-panel" *ngIf="showVideoAvatar && selectedAvatar?.video_avatar_url">
+        <video #avatarVideo 
+               [src]="selectedAvatar.video_avatar_url" 
+               [autoplay]="false" 
+               [loop]="true" 
+               [muted]="true"
+               class="chat-video-el"
+               [class.speaking]="isVideoSpeaking">
+        </video>
+        <div class="chat-video-shine"></div>
+      </div>
+
+      <!-- Mensajes -->
+      <div class="chat-messages-area" #chatBody>
+        <div *ngFor="let msg of chatMessages" 
+             class="chat-msg-row"
+             [class.user-msg]="msg.role === 'user'"
+             [class.ai-msg]="msg.role !== 'user'">
+          
+          <!-- Avatar mini en mensajes de IA -->
+          <div class="msg-avatar" *ngIf="msg.role !== 'user'">
+            <img *ngIf="selectedAvatar?.avatar_image_url" [src]="selectedAvatar.avatar_image_url">
+          </div>
+          
+          <div class="msg-bubble" [class.user-bubble]="msg.role === 'user'" [class.ai-bubble]="msg.role !== 'user'">
+            {{ msg.content }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Input -->
+      <div class="chat-footer">
+        <div class="chat-input-box">
+          <input type="text"
+                 [(ngModel)]="chatInput"
+                 (keyup.enter)="sendMessage()"
+                 [placeholder]="'Mensaje ' + (selectedAvatar?.name || 'personaje') + '...'"
+                 [disabled]="isSendingMessage"
+                 class="chat-text-input">
+          <button class="chat-send-btn" 
+                  (click)="sendMessage()" 
+                  [disabled]="!chatInput.trim() || isSendingMessage">
+            <span *ngIf="!isSendingMessage">▶</span>
+            <span *ngIf="isSendingMessage" class="loader-spin">◷</span>
+          </button>
+        </div>
+        <p class="chat-disclaimer">Esto es IA y no una persona real.</p>
+      </div>
+    </ng-container>
+
   </aside>
 
   <!-- ═══════════════════════════════════════════════════════════════ -->
@@ -381,89 +457,8 @@
     </ng-container>
   </main>
 
-  <!-- ═══════════════════════════════════════════════════════════════ -->
-  <!-- VENTANA DE CHAT (Overlay flotante sobre el libro)               -->
-  <!-- ═══════════════════════════════════════════════════════════════ -->
-  <div class="chat-window glass-panel" *ngIf="isChatOpen && chatSession">
-    <!-- Header del chat -->
-    <div class="chat-header">
-      <div class="chat-avatar-info">
-        <div class="chat-avatar-thumb">
-          <img *ngIf="selectedAvatar?.avatar_image_url"
-               [src]="selectedAvatar.avatar_image_url"
-               [alt]="selectedAvatar.name"
-               class="chat-avatar-img">
-          <span *ngIf="!selectedAvatar?.avatar_image_url" class="chat-avatar-initial">
-            {{ selectedAvatar?.name?.charAt(0) }}
-          </span>
-        </div>
-        <div>
-          <span class="chat-name">{{ selectedAvatar?.name }}</span>
-          <span class="chat-mode-label">Modo: {{ chatMode | titlecase }}</span>
-        </div>
-      </div>
-      <button class="close-btn" (click)="closeChat()">✕</button>
-    </div>
+  <!-- Chat integrado en el sidebar - sin código flotante aquí -->
 
-    <!-- Mensajes -->
-    <div class="chat-body">
-      <div *ngFor="let msg of chatMessages"
-           class="chat-bubble-row"
-           [class.user-row]="msg.role === 'user'"
-           [class.ai-row]="msg.role === 'assistant'">
-        <!-- Mini-avatar del personaje en burbujas de IA -->
-        <div *ngIf="msg.role === 'assistant'" class="bubble-avatar">
-          <img *ngIf="selectedAvatar?.avatar_image_url"
-               [src]="selectedAvatar.avatar_image_url"
-               [alt]="selectedAvatar?.name"
-               class="bubble-avatar-img">
-          <span *ngIf="!selectedAvatar?.avatar_image_url" class="bubble-avatar-initial">
-            {{ selectedAvatar?.name?.charAt(0) }}
-          </span>
-        </div>
-        <div class="bubble" [class.user-bubble]="msg.role === 'user'" [class.ai-bubble]="msg.role === 'assistant'">
-          {{ msg.content }}
-        </div>
-      </div>
-      <div *ngIf="isSendingMessage" class="chat-bubble-row ai-row">
-        <div class="bubble-avatar">
-          <img *ngIf="selectedAvatar?.avatar_image_url"
-               [src]="selectedAvatar.avatar_image_url"
-               [alt]="selectedAvatar?.name"
-               class="bubble-avatar-img">
-          <span *ngIf="!selectedAvatar?.avatar_image_url" class="bubble-avatar-initial">
-            {{ selectedAvatar?.name?.charAt(0) }}
-          </span>
-        </div>
-        <div class="bubble ai-bubble typing-indicator">
-          <span></span><span></span><span></span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Input -->
-    <div class="chat-input-area">
-      <div class="mode-mini-toggle">
-        <button [class.active]="chatMode === 'roleplay'" (click)="setMode('roleplay')" title="Inmersivo">🎭</button>
-        <button [class.active]="chatMode === 'tutor'"    (click)="setMode('tutor')"    title="Tutor">📚</button>
-        <button [class.active]="chatMode === 'critical'" (click)="setMode('critical')" title="Crítico">🔍</button>
-      </div>
-      <input
-        type="text"
-        class="chat-input"
-        [(ngModel)]="chatInput"
-        (keyup.enter)="sendMessage()"
-        placeholder="Escribe tu mensaje..."
-        [disabled]="isSendingMessage || inkBalance <= 0">
-      <button class="send-btn" (click)="sendMessage()" [disabled]="isSendingMessage || inkBalance <= 0">
-        ➤
-      </button>
-    </div>
-    <div class="ink-warning" *ngIf="inkBalance <= 0">
-      ✒ Sin tinta — 
-      <a routerLink="/tavern" class="tavern-link">Recargar en la Taberna</a>
-    </div>
-  </div>
 
   <!-- BOTÓN INTERACTIVO SIGUIENTE CAPÍTULO (Aparece al final del scroll) -->
   <div class="next-chapter-container" [class.visible]="isNearEnd && currentPage < totalPages">
@@ -472,15 +467,6 @@
     </button>
   </div>
 
-  <!-- NAVEGACIÓN MINIMALISTA -->
-  <nav class="navigation-overlay">
-    <button class="nav-btn prev" (click)="previousPage()" [disabled]="currentPage <= 1">
-      <span class="icon">«</span>
-    </button>
-    <button class="nav-btn next" (click)="nextPage()" [disabled]="currentPage >= totalPages">
-      <span class="icon">»</span>
-    </button>
-  </nav>
 
   <!-- MENU FLOTANTE DE ACCIONES SOBRE EL TEXTO -->
   <div class="word-action-menu glass-panel" *ngIf="showWordMenu"

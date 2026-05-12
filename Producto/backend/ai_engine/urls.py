@@ -4,7 +4,9 @@ ai_engine/urls.py — Enrutador de IA
 from django.urls import path
 from .views import (
     AvatarListView,
+    AvatarDetailView,
     GlobalAvatarListView,
+    RecentChatsView,
     ChatSessionView,
     ChatHistoryView,
     ChatInteractionView,
@@ -16,10 +18,17 @@ urlpatterns = [
     # GET /api/v1/ai/hub/avatars/
     path('hub/avatars/', GlobalAvatarListView.as_view(), name='ai-hub-avatars'),
 
+    # Personajes recientes con los que se ha chateado
+    # GET /api/v1/ai/hub/recent/
+    path('hub/recent/', RecentChatsView.as_view(), name='ai-hub-recent'),
+
     # Lista de personajes con estado de desbloqueo
 
     # GET /api/v1/ai/avatars/?inventory_id=<uuid>
     path('avatars/', AvatarListView.as_view(), name='ai-avatars'),
+
+    # GET /api/v1/ai/avatars/<id>/
+    path('avatars/<int:pk>/', AvatarDetailView.as_view(), name='ai-avatar-detail'),
 
     # Obtener o crear sesión de chat con un personaje
     # GET /api/v1/ai/sessions/?avatar_id=<int>

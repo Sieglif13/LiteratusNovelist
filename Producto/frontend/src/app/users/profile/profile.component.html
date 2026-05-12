@@ -2,10 +2,15 @@
   <div class="glass-panel profile-card">
     <div class="profile-header">
       <div class="avatar-section">
-        <div class="initials-avatar-large">{{ userInitials }}</div>
-        <button class="change-avatar-btn" title="Cambiar Avatar">
-          <mat-icon>camera_alt</mat-icon>
-        </button>
+        <div class="avatar-wrapper">
+          <img *ngIf="avatarUrl" [src]="avatarUrl" class="profile-img-preview" onerror="this.src='assets/images/default-avatar.png'">
+          <div *ngIf="!avatarUrl" class="initials-avatar-large">{{ userInitials }}</div>
+          
+          <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none;">
+          <button type="button" class="change-avatar-btn" (click)="fileInput.click()" title="Cambiar Avatar">
+            <mat-icon>camera_alt</mat-icon>
+          </button>
+        </div>
       </div>
       <h2>Tu Perfil</h2>
       <p class="subtitle">Gestiona tu identidad en Literatus Novelist</p>

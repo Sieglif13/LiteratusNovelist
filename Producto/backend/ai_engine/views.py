@@ -62,6 +62,22 @@ class AvatarListView(APIView):
         return Response(serializer.data)
 
 
+class AvatarDetailView(APIView):
+    """
+    GET /api/v1/ai/avatars/<int:pk>/
+    Devuelve el detalle de un avatar específico.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, pk):
+        avatar = get_object_or_404(AIAvatar, pk=pk)
+        serializer = GlobalHubAvatarSerializer(
+            avatar,
+            context={'request': request}
+        )
+        return Response(serializer.data)
+
+
 class GlobalAvatarListView(APIView):
     """
     GET /api/v1/ai/hub/avatars/
@@ -70,7 +86,48 @@ class GlobalAvatarListView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
+        query = request.query_params.get('q', '')
+        sort_by = request.query_params.get('sort', 'name') # name, popularity
+
         avatars = AIAvatar.objects.select_related('edition__book').all()
+
+        if query:
+            from django.db.models import Q
+            avatars = avatars.filter(
+                Q(name__icontains=query) | 
+                Q(description__icontains=query) |
+                Q(edition__book__title__icontains=query)
+            )
+
+        if sort_by == 'popularity':
+            avatars = avatars.order_by('-chat_count', 'name')
+        else:
+            avatars = avatars.order_by('name')
+
+        serializer = GlobalHubAvatarSerializer(
+            avatars,
+            many=True,
+            context={'request': request}
+        )
+        return Response(serializer.data)
+
+
+class RecentChatsView(APIView):
+    """
+    GET /api/v1/ai/hub/recent/
+    Devuelve los personajes con los que el usuario ha chateado recientemente.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        # Obtener las sesiones más recientes (updated_at se actualiza con nuevos mensajes)
+        # Usamos updated_at de la sesión o created_at. TimeStampedModel tiene ambos.
+        sessions = ChatSession.objects.filter(
+            user=request.user
+        ).select_related('avatar__edition__book').order_by('-updated_at')[:12]
+        
+        avatars = [s.avatar for s in sessions]
+        
         serializer = GlobalHubAvatarSerializer(
             avatars,
             many=True,
@@ -96,23 +153,31 @@ class ChatSessionView(APIView):
 
         avatar = get_object_or_404(AIAvatar, id=avatar_id)
 
-        # Verificar que el usuario posee la edición
+        # Si es un personaje principal o autor, permitir chat aunque no esté en inventario
+        # (Para permitir exploración desde el Hub Global)
+        is_public = avatar.is_major_character or avatar.is_author
+        
         owns = UserInventory.objects.filter(
             user=request.user,
             edition=avatar.edition
         ).exists()
-        if not owns:
+        
+        if not owns and not is_public:
             return Response(
                 {"error": "No posees esta obra."},
                 status=status.HTTP_403_FORBIDDEN
             )
 
         # Obtener o crear la sesión (una por usuario+avatar)
-        session, _ = ChatSession.objects.get_or_create(
+        session, created = ChatSession.objects.get_or_create(
             user=request.user,
             avatar=avatar,
             defaults={'title': f'Chat con {avatar.name}'}
         )
+
+        if created:
+            avatar.chat_count += 1
+            avatar.save()
 
         # Añadir el greeting como primer mensaje si la sesión es nueva
         if not session.messages.exists():
@@ -148,7 +213,7 @@ class ChatInteractionView(APIView):
     """
     permission_classes = [permissions.IsAuthenticated]
 
-    @method_decorator(consume_ink(cost=1))
+    @consume_ink(cost=1)
     def post(self, request, *args, **kwargs):
         serializer = ChatInteractionSerializer(data=request.data)
         if not serializer.is_valid():

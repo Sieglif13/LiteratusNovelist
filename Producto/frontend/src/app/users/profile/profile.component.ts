@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { ApiService } from '../../core/services/api.service';
+import { ChatService } from '../../core/services/chat.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
@@ -13,30 +14,58 @@ export class ProfileComponent implements OnInit {
   profileForm: FormGroup;
   authService = inject(AuthService);
   api = inject(ApiService);
+  chatService = inject(ChatService);
   fb = inject(FormBuilder);
   snackBar = inject(MatSnackBar);
 
   loading = false;
   userInitials = 'V';
+  avatarUrl: string | null = null;
+  selectedFile: File | null = null;
 
   constructor() {
     this.profileForm = this.fb.group({
       username: ['', Validators.required],
       email: [{value: '', disabled: true}],
-      bio: ['']
+      bio: [''],
+      country: ['']
     });
   }
 
   ngOnInit() {
-    const user = this.authService.currentUser();
-    if (user) {
-      this.profileForm.patchValue({
-        username: user.username || user.email.split('@')[0],
-        email: user.email
-      });
-      
-      const name = this.profileForm.value.username;
-      this.userInitials = name ? name.charAt(0).toUpperCase() : 'V';
+    this.loadProfile();
+  }
+
+  loadProfile() {
+    this.api.get<any>('users/profile/').subscribe({
+      next: (profile) => {
+        if (profile) {
+          this.profileForm.patchValue({
+            username: profile.username || this.authService.currentUser()?.username,
+            email: this.authService.currentUser()?.email,
+            bio: profile.bio,
+            country: profile.country
+          });
+          this.avatarUrl = profile.avatar;
+          this.updateInitials();
+        }
+      }
+    });
+  }
+
+  updateInitials() {
+    const name = this.profileForm.get('username')?.value;
+    this.userInitials = name ? name.charAt(0).toUpperCase() : 'V';
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      // Vista previa local
+      const reader = new FileReader();
+      reader.onload = () => this.avatarUrl = reader.result as string;
+      reader.readAsDataURL(file);
     }
   }
 
@@ -44,14 +73,29 @@ export class ProfileComponent implements OnInit {
     if (this.profileForm.invalid) return;
     this.loading = true;
 
-    // Aquí iría el update al backend:
-    // this.api.put('auth/users/me/', this.profileForm.value).subscribe(...)
-    setTimeout(() => {
-      this.loading = false;
-      this.snackBar.open('Perfil actualizado exitosamente', 'Cerrar', {
-        duration: 3000,
-        panelClass: ['success-snackbar']
-      });
-    }, 1000);
+    const formData = new FormData();
+    formData.append('bio', this.profileForm.get('bio')?.value || '');
+    formData.append('country', this.profileForm.get('country')?.value || '');
+    if (this.selectedFile) {
+      formData.append('avatar', this.selectedFile);
+    }
+
+    this.api.patch('users/profile/', formData).subscribe({
+      next: (res) => {
+        this.loading = false;
+        this.snackBar.open('Perfil actualizado exitosamente', 'Cerrar', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+        // Actualizar el estado global
+        this.chatService.notifyProfileUpdate();
+        this.loadProfile();
+      },
+      error: (err) => {
+        this.loading = false;
+        console.error("Error actualizando perfil", err);
+        this.snackBar.open('Error al guardar los cambios', 'Cerrar', { duration: 3000 });
+      }
+    });
   }
 }

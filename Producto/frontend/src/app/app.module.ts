@@ -8,7 +8,6 @@ import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { BookListComponent } from './catalog/book-list/book-list.component';
 import { ReaderComponent } from './library/reader/reader.component';
-import { AiChatComponent } from './library/ai-chat/ai-chat.component';
 
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { HttpClientModule, provideHttpClient, withInterceptors } from '@angular/common/http';
@@ -23,7 +22,6 @@ import { CheckoutComponent } from './catalog/checkout/checkout.component';
 import { PaymentSuccessComponent } from './catalog/payment-success/payment-success.component';
 import { PaymentFailureComponent } from './catalog/payment-failure/payment-failure.component';
 import { LibraryListComponent } from './library/library-list/library-list.component';
-import { LiyumiWidgetComponent } from './core/components/liyumi-widget/liyumi-widget.component';
 import { CharacterHubComponent } from './characters/character-hub/character-hub.component';
 import { TavernDialogComponent } from './library/tavern-dialog/tavern-dialog.component';
 
@@ -44,7 +42,6 @@ import { AuthorListComponent } from './catalog/author-list/author-list.component
     RegisterComponent,
     BookListComponent,
     ReaderComponent,
-    AiChatComponent,
     HomeComponent,
     BookDetailPageComponent,
     TavernComponent,
@@ -53,7 +50,6 @@ import { AuthorListComponent } from './catalog/author-list/author-list.component
     PaymentSuccessComponent,
     PaymentFailureComponent,
     LibraryListComponent,
-    LiyumiWidgetComponent,
     CharacterHubComponent,
     TavernDialogComponent,
     ProfileComponent,
