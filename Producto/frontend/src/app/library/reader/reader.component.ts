@@ -8,7 +8,9 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { environment } from '../../../environments/environment';
 import { PiperVoiceService } from '../../core/services/piper-voice.service';
 import { ChatService } from '../../core/services/chat.service';
+import { SpeechRecognitionService } from '../../core/services/speech-recognition.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+
 
 export interface ProgressData {
   percentage: number;
@@ -44,8 +46,10 @@ export class ReaderComponent implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
   public piperVoice = inject(PiperVoiceService);
   public chatService = inject(ChatService);
+  public speechService = inject(SpeechRecognitionService);
 
   // ── LECTURA ──────────────────────────────────────────────────────
+
   inventoryId: string = '';
   currentPage: number = 1;
   totalPages: number = 1;
@@ -81,7 +85,6 @@ export class ReaderComponent implements OnInit, OnDestroy {
   chatMessages: any[] = [];
   chatInput: string = '';
   isSendingMessage: boolean = false;
-  chatMode: 'roleplay' | 'tutor' | 'critical' = 'roleplay';
   inkBalance: number = 0;
 
   // Audio Control
@@ -99,17 +102,27 @@ export class ReaderComponent implements OnInit, OnDestroy {
   // Renderizado de palabras (para highlighting nativo de Angular)
   parsedBlocks: Array<{
     tag: string;
-    tokens: Array<{
-      text: string;
-      isWord: boolean;
-      isImg: boolean;
+    tokens: Array<any>;
+    sentences?: Array<{
       idx: number;
-      src?: string;
-      alt?: string;
+      tokens: Array<{
+        text: string;
+        isWord: boolean;
+        isImg: boolean;
+        isBr?: boolean;
+        idx: number;
+        src?: string;
+        alt?: string;
+      }>;
     }>;
   }> = [];
   titleTokens: any[] = [];
   private totalWordCount: number = 0;
+
+  // ── VOZ Y LLAMADA ────────────────────────────────────────────────
+  isCallMode: boolean = false;
+  audioLevel: number = 0;
+  partialTranscript: string = '';
 
   private saveProgressSubject = new Subject<number>();
   private destroy$ = new Subject<void>();
@@ -123,10 +136,21 @@ export class ReaderComponent implements OnInit, OnDestroy {
   showImageModal: boolean = false;
   modalImageSrc: string = '';
 
+  // Modal para reiniciar audio
+  showRestartModal: boolean = false;
+  lastAudioWordIndex: number = 0;
+
   // Video Avatar
   @ViewChild('avatarVideo') avatarVideoElement!: ElementRef<HTMLVideoElement>;
   showVideoAvatar: boolean = false;
   isVideoSpeaking: boolean = false;
+
+  // Estado IA
+  aiProvider: string = 'gemini'; // 'gemini', 'deepseek', 'none'
+  aiStatus: 'ok' | 'warning' | 'error' = 'ok';
+
+  private isInitialDataLoaded = false;
+  private isLoadingInitialData = false;
 
   ngOnInit() {
     this.inventoryId = this.route.snapshot.paramMap.get('id') || '';
@@ -161,15 +185,66 @@ export class ReaderComponent implements OnInit, OnDestroy {
     this.audioService.currentWordIndex$.pipe(takeUntil(this.destroy$)).subscribe(idx => {
       if (this.currentAudioMode !== 'piper') {
         this.currentWordIndex = idx;
+        if (idx !== -1) {
+          this.lastAudioWordIndex = idx;
+          this.saveAudioPosition();
+        }
         this.cdr.detectChanges(); // Forzar re-render sin borrar el DOM
         if (idx !== -1) this.scrollWordIntoView(idx);
       }
     });
 
+    // Suscripciones de Reconocimiento de Voz
+    this.speechService.transcript$.pipe(takeUntil(this.destroy$)).subscribe(text => {
+      if (text) {
+        this.chatInput = text;
+        this.sendMessage();
+      }
+    });
+
+    this.speechService.partialTranscript$.pipe(takeUntil(this.destroy$)).subscribe(text => {
+      this.partialTranscript = text;
+      this.cdr.detectChanges();
+    });
+
+    this.speechService.audioLevel$.pipe(takeUntil(this.destroy$)).subscribe(level => {
+      this.audioLevel = level;
+      this.cdr.detectChanges();
+    });
+
+    // Sincronizar Avatar animado con PiperVoice
+    this.piperVoice.isSpeaking$.pipe(takeUntil(this.destroy$)).subscribe(isSpeaking => {
+      this.isVideoSpeaking = isSpeaking;
+      if (isSpeaking) {
+        this.activeTalkingFrame = Math.floor(Math.random() * 3) + 1;
+      }
+      
+      if (this.isCallMode && this.avatarVideoElement?.nativeElement) {
+         const video = this.avatarVideoElement.nativeElement;
+         if (isSpeaking) {
+           video.currentTime = 1;
+           video.play();
+           video.ontimeupdate = () => {
+             if (video.currentTime >= 6) video.currentTime = 1;
+           };
+         } else {
+           video.pause();
+           video.currentTime = 0;
+           video.ontimeupdate = null;
+         }
+      }
+      this.cdr.detectChanges();
+    });
+
     // Resaltado: escuchar el word index del PiperVoice
+
     this.piperVoice.currentWordIndex$.pipe(takeUntil(this.destroy$)).subscribe(idx => {
       if (this.currentAudioMode === 'piper') {
         this.currentWordIndex = idx;
+        if (idx !== -1) {
+          this.lastAudioWordIndex = idx;
+          this.saveAudioPosition();
+        }
         this.cdr.detectChanges();
         if (idx !== -1) this.scrollWordIntoView(idx);
       }
@@ -184,6 +259,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
 
     // Auto-avance de capítulo cuando termina la narración
     this.audioService.chapterEnd$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.lastAudioWordIndex = 0;
       this.saveAudioPosition(); // Guardar antes de avanzar
       if (this.currentPage < this.totalPages) {
         setTimeout(() => {
@@ -201,8 +277,13 @@ export class ReaderComponent implements OnInit, OnDestroy {
   }
 
   loadInitialData() {
+    if (this.isInitialDataLoaded || this.isLoadingInitialData) return;
+    this.isLoadingInitialData = true;
+
     this.api.get<any>(`library/inventory/${this.inventoryId}/`).subscribe({
       next: (inventory) => {
+        this.isLoadingInitialData = false;
+        this.isInitialDataLoaded = true;
         if (inventory && inventory.progress) {
           this.currentPage = inventory.progress.current_page || 1;
           this.progressId = inventory.progress.id;
@@ -286,6 +367,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
 
   // ── CAPÍTULOS ─────────────────────────────────────────────────────
   loadChapters() {
+    if (this.chapters && this.chapters.length > 0) return;
     this.api.get(`library/inventory/${this.inventoryId}/chapters/`).subscribe({
       next: (res: any) => {
         if (res && res.chapters && res.chapters.length > 0) {
@@ -315,10 +397,21 @@ export class ReaderComponent implements OnInit, OnDestroy {
     this.parseAndRenderChapter();
   }
 
+  isActiveSentence(sentence: any): boolean {
+    if (this.currentWordIndex < 0 || !sentence || !sentence.tokens) return false;
+    const words = sentence.tokens.filter((t: any) => t.isWord);
+    if (words.length === 0) return false;
+    const firstIdx = words[0].idx;
+    const lastIdx = words[words.length - 1].idx;
+    return this.currentWordIndex >= firstIdx && this.currentWordIndex <= lastIdx;
+  }
+
   /** Parsea el HTML del capítulo y crea la estructura de bloques/tokens para el *ngFor */
   parseAndRenderChapter() {
     const chapter = this.chapters[this.currentPage - 1];
     if (!chapter) return;
+
+    this.currentWordIndex = this.getSavedAudioWordIndex();
 
     this.chapterTitle = chapter.title || `Capítulo ${this.currentPage}`;
 
@@ -332,65 +425,113 @@ export class ReaderComponent implements OnInit, OnDestroy {
     tempDiv.innerHTML = cleanHtml;
     this.currentChapterPlainText = tempDiv.textContent || '';
 
-    // 3. Parsear el HTML limpio en bloques + tokens
+    // 3. Parsear el HTML limpio preservando la estructura
     const parser = new DOMParser();
     const doc = parser.parseFromString(cleanHtml, 'text/html');
     const blocks: typeof this.parsedBlocks = [];
     let wordIdx = 0;
 
-    const tokenize = (node: Node): typeof this.parsedBlocks[0]['tokens'] => {
+    const tokenizeInline = (node: Node): typeof this.parsedBlocks[0]['tokens'] => {
       const tokens: typeof this.parsedBlocks[0]['tokens'] = [];
       node.childNodes.forEach(child => {
         if (child.nodeType === Node.TEXT_NODE) {
           const parts = (child.textContent || '').split(/(\s+)/);
           parts.forEach(part => {
             if (part.trim().length > 0) {
-              tokens.push({ text: part, isWord: true, isImg: false, idx: wordIdx++ });
+              tokens.push({ text: part, isWord: true, isImg: false, isBr: false, idx: wordIdx++ });
             } else if (part.length > 0) {
-              tokens.push({ text: part, isWord: false, isImg: false, idx: -1 });
+              tokens.push({ text: part, isWord: false, isImg: false, isBr: false, idx: -1 });
             }
           });
-        } else if ((child as Element).tagName?.toLowerCase() === 'img') {
-          // Preservar imágenes como token especial (no se leen en voz alta)
-          const img = child as HTMLImageElement;
-          tokens.push({
-            text: '',
-            isWord: false,
-            isImg: true,
-            idx: -1,
-            src: img.src || img.getAttribute('src') || '',
-            alt: img.alt || ''
-          });
-        } else {
-          tokens.push(...tokenize(child));
+        } else if (child.nodeType === Node.ELEMENT_NODE) {
+          const el = child as Element;
+          const tag = el.tagName.toLowerCase();
+          if (tag === 'img') {
+            const img = el as HTMLImageElement;
+            tokens.push({
+              text: '', isWord: false, isImg: true, isBr: false, idx: -1,
+              src: img.src || img.getAttribute('src') || '', alt: img.alt || ''
+            });
+          } else if (tag === 'br') {
+            tokens.push({ text: '', isWord: false, isImg: false, isBr: true, idx: -1 });
+          } else {
+            tokens.push(...tokenizeInline(child));
+          }
         }
       });
       return tokens;
     };
 
-    doc.body.childNodes.forEach(node => {
-      const el = node as Element;
-      const tag = el.tagName?.toLowerCase() || '';
+    const blockTags = new Set(['p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'li', 'ul', 'ol', 'section', 'article', 'figure']);
 
-      // Imágenes a nivel raíz (fuera de párrafos) → bloque especial de imagen
-      if (tag === 'img') {
-        const img = el as HTMLImageElement;
-        blocks.push({
-          tag: 'img-block',
-          tokens: [{ text: '', isWord: false, isImg: true, idx: -1,
-            src: img.getAttribute('src') || '', alt: img.alt || '' }]
-        });
-      } else if (['p', 'h1', 'h2', 'h3', 'blockquote', 'div'].includes(tag)) {
-        blocks.push({ tag, tokens: tokenize(el) });
+    const parseNode = (node: Node) => {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        const el = node as Element;
+        const tag = el.tagName.toLowerCase();
+        
+        if (tag === 'img') {
+          const img = el as HTMLImageElement;
+          blocks.push({
+            tag: 'img-block',
+            tokens: [{ text: '', isWord: false, isImg: true, idx: -1, src: img.src || img.getAttribute('src') || '', alt: img.alt || '' }]
+          });
+        } else if (blockTags.has(tag)) {
+          let hasBlockChildren = false;
+          for (let i = 0; i < el.children.length; i++) {
+            if (blockTags.has(el.children[i].tagName.toLowerCase())) {
+              hasBlockChildren = true;
+              break;
+            }
+          }
+
+          if (hasBlockChildren) {
+            el.childNodes.forEach(child => parseNode(child));
+          } else {
+            const tokens = tokenizeInline(el);
+            if (tokens.length > 0) {
+              blocks.push({ tag: tag === 'div' || tag === 'figure' ? 'p' : tag, tokens });
+            }
+          }
+        } else {
+          const tokens = tokenizeInline(node);
+          if (tokens.length > 0) blocks.push({ tag: 'p', tokens });
+        }
       } else if (node.nodeType === Node.TEXT_NODE && node.textContent?.trim()) {
-        const parts = node.textContent.split(/(\s+)/);
-        const tokens = parts
-          .filter(p => p.length > 0)
-          .map(p => p.trim().length > 0
-            ? { text: p, isWord: true, isImg: false, idx: wordIdx++ }
-            : { text: p, isWord: false, isImg: false, idx: -1 });
+        const tokens = tokenizeInline(node);
         if (tokens.length > 0) blocks.push({ tag: 'p', tokens });
       }
+    };
+
+    doc.body.childNodes.forEach(child => parseNode(child));
+
+    // 4. Agrupar tokens por oraciones (punto a punto) para resaltar como ReadEra
+    let globalSentenceIdx = 0;
+    blocks.forEach(block => {
+      if (block.tag === 'img-block') return;
+      
+      const sentences = [];
+      let currentTokens = [];
+      
+      for (let i = 0; i < block.tokens.length; i++) {
+        const tok = block.tokens[i];
+        currentTokens.push(tok);
+        
+        if (tok.isWord) {
+          if (/[.!?]["'»”)]*$/.test(tok.text)) {
+            sentences.push({ idx: globalSentenceIdx++, tokens: currentTokens });
+            currentTokens = [];
+          }
+        } else if (tok.isBr) {
+          sentences.push({ idx: globalSentenceIdx++, tokens: currentTokens });
+          currentTokens = [];
+        }
+      }
+      
+      if (currentTokens.length > 0) {
+        sentences.push({ idx: globalSentenceIdx++, tokens: currentTokens });
+      }
+      
+      block.sentences = sentences;
     });
 
     this.parsedBlocks = blocks;
@@ -449,6 +590,8 @@ export class ReaderComponent implements OnInit, OnDestroy {
           viewer.scrollTop = this.savedProgressData.scrollPercent * (viewer.scrollHeight - viewer.clientHeight);
         }
         this.savedProgressData = null; // Limpiar después de restaurar
+      } else if (this.currentWordIndex > 0) {
+        this.scrollWordIntoView(this.currentWordIndex, true);
       }
     }, 500); // Dar tiempo a Angular a renderizar el *ngFor
   }
@@ -466,6 +609,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
         const text = node.textContent || '';
         const words = text.split(/(\s+)/); // Preservar espacios
         const fragment = document.createDocumentFragment();
+
 
         words.forEach(w => {
           if (w.trim().length > 0) {
@@ -519,12 +663,79 @@ export class ReaderComponent implements OnInit, OnDestroy {
     });
   }
 
+  getFirstVisibleWordIndex(): number {
+    // Obtenemos todas las palabras y buscamos la primera que esté visible
+    // en la pantalla (viewport) debajo del header (aprox 80px).
+    const words = document.querySelectorAll('.word');
+    for (let i = 0; i < words.length; i++) {
+      const w = words[i];
+      const rect = w.getBoundingClientRect();
+      // rect.top es relativo a la pantalla del usuario. 
+      // 80px es un margen seguro para saltarse el toolbar superior fijo.
+      if (rect.top >= 80 && rect.top <= window.innerHeight) {
+        const idStr = w.getAttribute('id');
+        if (idStr) {
+          return parseInt(idStr.replace('word-', ''), 10);
+        }
+      }
+    }
+    return -1;
+  }
+
+  resumeAudio() {
+    const savedWordEl = document.getElementById(`word-${this.lastAudioWordIndex}`);
+    if (savedWordEl) {
+      const savedRect = savedWordEl.getBoundingClientRect();
+      
+      // Si el usuario scrolleó y la palabra pausada ya no se ve en pantalla, 
+      // cancelamos el resume normal y forzamos a que inicie desde el scroll actual.
+      if (savedRect.bottom <= 80 || savedRect.top >= window.innerHeight) {
+        this.stopAudio(true);
+        // Le damos un pequeño tiempo para que el stop haga efecto antes de iniciar
+        setTimeout(() => this.playAudio(), 100);
+        return;
+      }
+    }
+
+    // Si sigue visible, simplemente reanuda donde se quedó
+    if (this.currentAudioMode === 'piper') {
+      this.piperVoice.resume();
+    } else {
+      this.audioService.resume();
+    }
+  }
+
   playAudio() {
+    this.stopAudio(true); // Evitar que múltiples narradores hablen al mismo tiempo
     this.proErrorMessage = ''; 
     const chapter = this.chapters[this.currentPage - 1];
 
+    // LÓGICA DE CONTINUACIÓN DE SCROLL: 
+    // Si la palabra guardada está fuera de pantalla, reanudar desde lo que el usuario está viendo actualmente.
+    const savedWordEl = document.getElementById(`word-${this.lastAudioWordIndex}`);
+    if (savedWordEl) {
+      const savedRect = savedWordEl.getBoundingClientRect();
+      
+      // Si el elemento guardado está completamente fuera del viewport (pantalla real)
+      if (savedRect.bottom <= 80 || savedRect.top >= window.innerHeight) {
+        const visibleIdx = this.getFirstVisibleWordIndex();
+        if (visibleIdx !== -1) {
+          this.lastAudioWordIndex = visibleIdx;
+          this.currentWordIndex = visibleIdx;
+        }
+      }
+    } else {
+       // Si la palabra guardada ni siquiera existe en el DOM (ej. cap nuevo) o no se encuentra
+       const visibleIdx = this.getFirstVisibleWordIndex();
+       if (visibleIdx !== -1) {
+         this.lastAudioWordIndex = visibleIdx;
+         this.currentWordIndex = visibleIdx;
+       }
+    }
+
     if (this.currentAudioMode === 'native') {
-      this.audioService.playNative(this.currentChapterPlainText);
+      const startWord = this.lastAudioWordIndex >= 0 ? this.lastAudioWordIndex : 0;
+      this.audioService.playNative(this.currentChapterPlainText, startWord);
     } else if (this.currentAudioMode === 'piper') {
       // MODO PIPER TTS (Local)
       if (!(this.piperVoice as any).isReadySubject?.value) {
@@ -599,15 +810,17 @@ export class ReaderComponent implements OnInit, OnDestroy {
     }
   }
 
-  stopAudio() {
+  stopAudio(preventScroll: boolean = false) {
     this.audioService.stop();
     this.piperVoice.stop();
     this.currentWordIndex = -1;
 
-    // Volver al inicio del texto visualmente
-    const canvas = document.querySelector('.reading-canvas');
-    if (canvas) {
-      canvas.scrollTo({ top: 0, behavior: 'smooth' });
+    if (!preventScroll) {
+      // Volver al inicio del texto visualmente (solo cuando se detiene manual y definitivamente)
+      const canvas = document.querySelector('.reading-canvas');
+      if (canvas) {
+        canvas.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
   }
 
@@ -618,11 +831,48 @@ export class ReaderComponent implements OnInit, OnDestroy {
     this.currentWordIndex = wordIdx;
   }
 
+  getSavedAudioWordIndex(): number {
+    if (!this.inventoryId) return 0;
+    try {
+      const saved = localStorage.getItem(`audio_pos_${this.inventoryId}`);
+      if (saved) {
+        const data = JSON.parse(saved);
+        if (data.page === this.currentPage && typeof data.wordIndex === 'number' && data.wordIndex >= 0) {
+          this.lastAudioWordIndex = data.wordIndex;
+          return data.wordIndex;
+        }
+      }
+    } catch (e) {
+      console.warn('Error reading saved audio position', e);
+    }
+    this.lastAudioWordIndex = 0;
+    return 0;
+  }
+
+  confirmRestartAudio() {
+    this.showRestartModal = true;
+  }
+
+  closeRestartModal() {
+    this.showRestartModal = false;
+  }
+
+  restartAudio() {
+    this.showRestartModal = false;
+    this.stopAudio();
+    this.currentWordIndex = 0;
+    this.lastAudioWordIndex = 0;
+    this.saveAudioPosition();
+    setTimeout(() => {
+      this.playAudio();
+    }, 100);
+  }
+
   private saveAudioPosition() {
     if (this.inventoryId) {
       localStorage.setItem(`audio_pos_${this.inventoryId}`, JSON.stringify({
         page: this.currentPage,
-        wordIndex: this.currentWordIndex
+        wordIndex: this.lastAudioWordIndex
       }));
     }
   }
@@ -707,6 +957,25 @@ export class ReaderComponent implements OnInit, OnDestroy {
     setTimeout(() => this.scrollChatToBottom(), 150);
   }
 
+  activeTalkingFrame: number = 1;
+
+  getMangaFrameUrl(): string | null {
+    if (!this.selectedAvatar || !this.selectedAvatar.avatar_image_url) return null;
+    const imgUrl = this.selectedAvatar.avatar_image_url;
+    if (!imgUrl.includes('manga_assets')) {
+      return imgUrl;
+    }
+    const lastSlashIndex = imgUrl.lastIndexOf('/');
+    const basePath = imgUrl.substring(0, lastSlashIndex);
+    if (this.isSendingMessage) {
+      return `${basePath}/thinking.png`;
+    } else if (this.isVideoSpeaking) {
+      return `${basePath}/talking_${this.activeTalkingFrame}.png`;
+    } else {
+      return `${basePath}/calm.png`;
+    }
+  }
+
   // ── CHAT ──────────────────────────────────────────────────────────
   startChat(avatar: any) {
     if (!avatar.is_unlocked) return;
@@ -754,8 +1023,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
 
     this.api.post('ai/chat/', {
       session_id: this.chatSession.id,
-      message: content,
-      mode: this.chatMode
+      message: content
     }).subscribe({
       next: (res: any) => {
         this.chatMessages.push({
@@ -763,7 +1031,17 @@ export class ReaderComponent implements OnInit, OnDestroy {
           content: res.reply,
           created_at: res.timestamp
         });
-        this.chatService.updateInkBalance(res.ink_balance);
+        
+        // Actualizar balance de tinta
+        if (res.ink_balance !== undefined) {
+          this.inkBalance = res.ink_balance;
+          this.chatService.updateInkBalance(res.ink_balance);
+        }
+
+        // Actualizar estado IA
+        this.aiProvider = res.ai_provider || 'gemini';
+        this.aiStatus = res.ai_status || 'ok';
+        
         this.isSendingMessage = false;
         setTimeout(() => this.scrollChatToBottom(), 50);
 
@@ -773,6 +1051,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
       error: (err) => {
         console.error('Error en el chat', err);
         this.isSendingMessage = false;
+        this.aiStatus = 'error';
         // Eliminar mensaje optimista si hubo error
         this.chatMessages.pop();
         this.chatInput = content;
@@ -780,7 +1059,29 @@ export class ReaderComponent implements OnInit, OnDestroy {
     });
   }
 
+  formatMessage(text: string): string {
+    if (!text) return '';
+    return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  }
+
+  toggleCallMode() {
+    this.isCallMode = !this.isCallMode;
+    if (this.isCallMode) {
+      this.speechService.startListening();
+      // Asegurar que el modelo esté listo
+      if (!this.piperVoice.isReadySubject.value) {
+        this.piperVoice.initModel();
+      }
+    } else {
+      this.speechService.stopListening();
+      this.piperVoice.stop();
+      // Pequeño delay para que el *ngIf restaure el DOM y podamos scrollear
+      setTimeout(() => this.scrollChatToBottom(), 100);
+    }
+  }
+
   closeChat() {
+
     this.isChatOpen = false;
   }
 
@@ -792,61 +1093,68 @@ export class ReaderComponent implements OnInit, OnDestroy {
     }
   }
 
-  setMode(mode: 'roleplay' | 'tutor' | 'critical') {
-    this.chatMode = mode;
-  }
 
-  private speakChatReply(text: string) {
-    // Usar SpeechSynthesis nativo para el chat por ahora
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    
-    // Intentar usar la voz seleccionada en el AudioService
-    const selectedVoice = this.audioService.selectedVoice;
-    if (selectedVoice) {
-      utterance.voice = selectedVoice;
-      utterance.lang = selectedVoice.lang;
+  private async speakChatReply(text: string) {
+    if (this.isCallMode) {
+      // Usar PiperVoice en Modo Llamada para inmersión
+      if (!this.piperVoice.isReadySubject.value) {
+        await this.piperVoice.initModel();
+      }
+      this.piperVoice.speak(text);
     } else {
-      utterance.lang = 'es-ES';
+      // Usar SpeechSynthesis nativo para el chat por ahora
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      
+      // Intentar usar la voz seleccionada en el AudioService
+      const selectedVoice = this.audioService.selectedVoice;
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
+        utterance.lang = selectedVoice.lang;
+      } else {
+        utterance.lang = 'es-ES';
+      }
+
+      utterance.onstart = () => {
+        this.isVideoSpeaking = true;
+        this.activeTalkingFrame = Math.floor(Math.random() * 3) + 1;
+        if (this.avatarVideoElement?.nativeElement) {
+          const video = this.avatarVideoElement.nativeElement;
+          video.currentTime = 1; // Empezar directamente donde abre la boca
+          video.play();
+          
+          // Loop perfecto de 1 a 6 segundos
+          video.ontimeupdate = () => {
+            if (video.currentTime >= 6) {
+              video.currentTime = 1;
+            }
+          };
+        }
+        this.cdr.detectChanges();
+      };
+
+      utterance.onend = () => {
+        this.isVideoSpeaking = false;
+        if (this.avatarVideoElement?.nativeElement) {
+          this.avatarVideoElement.nativeElement.pause();
+          this.avatarVideoElement.nativeElement.currentTime = 0;
+        }
+        this.cdr.detectChanges();
+      };
+
+      utterance.onerror = () => {
+        this.isVideoSpeaking = false;
+        if (this.avatarVideoElement?.nativeElement) {
+          this.avatarVideoElement.nativeElement.pause();
+          this.avatarVideoElement.nativeElement.currentTime = 0;
+        }
+        this.cdr.detectChanges();
+      };
+
+      window.speechSynthesis.speak(utterance);
     }
-
-    utterance.onstart = () => {
-      this.isVideoSpeaking = true;
-      if (this.avatarVideoElement?.nativeElement) {
-        const video = this.avatarVideoElement.nativeElement;
-        video.currentTime = 1; // Empezar directamente donde abre la boca
-        video.play();
-        
-        // Loop perfecto de 1 a 6 segundos
-        video.ontimeupdate = () => {
-          if (video.currentTime >= 6) {
-            video.currentTime = 1;
-          }
-        };
-      }
-      this.cdr.detectChanges();
-    };
-
-    utterance.onend = () => {
-      this.isVideoSpeaking = false;
-      if (this.avatarVideoElement?.nativeElement) {
-        this.avatarVideoElement.nativeElement.pause();
-        this.avatarVideoElement.nativeElement.currentTime = 0;
-      }
-      this.cdr.detectChanges();
-    };
-
-    utterance.onerror = () => {
-      this.isVideoSpeaking = false;
-      if (this.avatarVideoElement?.nativeElement) {
-        this.avatarVideoElement.nativeElement.pause();
-        this.avatarVideoElement.nativeElement.currentTime = 0;
-      }
-      this.cdr.detectChanges();
-    };
-
-    window.speechSynthesis.speak(utterance);
   }
+
 
   private loadInkBalance() {
     this.chatService.loadInitialInk();
@@ -881,8 +1189,18 @@ export class ReaderComponent implements OnInit, OnDestroy {
   onSelectionChange() {
     const selection = window.getSelection();
     if (selection && selection.toString().trim().length > 0) {
+      
+      // VERIFICAR QUE LA SELECCIÓN ESTÉ DENTRO DEL CONTENIDO DEL LIBRO (.reading-canvas)
+      const anchorNode = selection.anchorNode;
+      const readingCanvas = document.querySelector('.reading-canvas');
+      if (anchorNode && readingCanvas && !readingCanvas.contains(anchorNode)) {
+         this.showWordMenu = false;
+         return;
+      }
+
       // Usar setTimeout para dejar que el DOM se asiente
       setTimeout(() => {
+        if (selection.rangeCount === 0) return;
         const range = selection.getRangeAt(0);
         const rect = range.getBoundingClientRect();
         this.selectedText = selection.toString().trim();
@@ -952,6 +1270,41 @@ export class ReaderComponent implements OnInit, OnDestroy {
     }, 2500);
 
     this.showWordMenu = false;
+  }
+
+  playAudioFromSelection() {
+    if (!this.selectedText) return;
+    
+    const selection = window.getSelection();
+    let wordIdx = -1;
+    
+    if (selection && selection.rangeCount > 0) {
+      const node = selection.anchorNode?.parentElement;
+      const wordSpan = node?.closest('.word');
+      if (wordSpan && wordSpan.id) {
+        wordIdx = parseInt(wordSpan.id.replace('word-', ''), 10);
+      }
+    }
+
+    this.showWordMenu = false;
+    
+    if (wordIdx !== -1 && !isNaN(wordIdx)) {
+      this.lastAudioWordIndex = wordIdx;
+      this.currentWordIndex = wordIdx;
+      this.saveAudioPosition();
+      this.stopAudio(true);
+      
+      // Pequeño retardo para asegurar que stopAudio finalice antes de iniciar el nuevo
+      setTimeout(() => {
+        // Forzar panel de audio abierto si no lo estaba
+        if (!this.isAudioPanelOpen) this.isAudioPanelOpen = true;
+        this.playAudio();
+      }, 150);
+    } else {
+      // Si no detectó bien la palabra (seleccionó un espacio vacío), iniciamos normal
+      if (!this.isAudioPanelOpen) this.isAudioPanelOpen = true;
+      this.playAudio();
+    }
   }
 
   defineWord() {

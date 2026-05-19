@@ -18,7 +18,9 @@
       <div class="hero-ctas">
         <button class="cta-primary" (click)="scrollToCatalog()">
           Explorar Tienda
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
         </button>
         <a routerLink="/catalog" class="cta-ghost">Ver Catálogo Completo</a>
       </div>
@@ -44,14 +46,13 @@
     ═══════════════════════════════════════════════════════════ -->
     <section class="trending-section" *ngIf="trendingBooks.length > 0">
       <div class="section-header">
-        <div class="section-label">🔥 Tendencias</div>
+        <div class="section-label"><svg lucideFlame [size]="20" class="lucide-icon"></svg> Tendencias</div>
         <h2 class="section-title">Lecturas del Momento</h2>
       </div>
 
       <div class="trending-track">
-        <div class="trending-card"
-             *ngFor="let book of trendingBooks; trackBy: trackBySlug"
-             (click)="goToBook(book.slug)">
+        <div class="trending-card" *ngFor="let book of trendingBooks; trackBy: trackBySlug"
+          (click)="goToBook(book.slug)">
           <div class="trending-cover-wrap">
             <img [src]="book.cover_image || 'assets/default_cover.jpg'" [alt]="book.title" class="trending-cover">
             <div class="trending-overlay">
@@ -75,144 +76,121 @@
     ═══════════════════════════════════════════════════════════ -->
     <section class="recommended-section" *ngIf="recommendedBooks.length > 0">
       <div class="section-header">
-        <div class="section-label">✨ IA Select</div>
+        <div class="section-label"><svg lucideSparkles [size]="20" class="lucide-icon"></svg> IA Select</div>
         <h2 class="section-title">Especialmente para Ti</h2>
         <p class="section-sub">Basado en tus gustos y lecturas recientes</p>
       </div>
 
       <div class="recommended-track">
-        <div class="recommended-card"
-             *ngFor="let book of recommendedBooks; trackBy: trackBySlug"
-             (click)="goToBook(book.slug)">
+        <div class="recommended-card" *ngFor="let book of recommendedBooks; trackBy: trackBySlug"
+          (click)="goToBook(book.slug)">
           <div class="recommended-badge" *ngIf="book.mood">{{ book.mood }}</div>
           <div class="recommended-cover-box">
-             <img [src]="book.cover_image || 'assets/default_cover.jpg'" [alt]="book.title">
+            <img [src]="book.cover_image || 'assets/default_cover.jpg'" [alt]="book.title">
           </div>
           <div class="recommended-info">
             <h4 class="recommended-book-title">{{ book.title }}</h4>
             <div class="recommended-tags">
-               <span class="rec-tag" *ngFor="let tag of book.tags?.slice(0,1)">#{{ tag.name }}</span>
+              <span class="rec-tag" *ngFor="let tag of book.tags?.slice(0,1)">#{{ tag.name }}</span>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-  <!-- ═══════════════════════════════════════════════════════════
+    <!-- ═══════════════════════════════════════════════════════════
        BANNER DECORATIVO: Lottie "librito" + Frase Inspiradora
   ═══════════════════════════════════════════════════════════ -->
-  <section class="inspirational-banner">
-    <div class="banner-lottie librito-container" #libritoContainer>
-    </div>
-    <div class="banner-text">
-      <blockquote class="banner-quote">
-        "Un lector vive mil vidas antes de morir.<br>
-        <span class="quote-sub">El que nunca lee, vive sólo una."</span>
-      </blockquote>
-      <p class="banner-desc">
-        En <strong>Literatus Novelist</strong> cada libro es un portal. Lee, escucha y conversa
-        con los personajes que dieron forma a la literatura universal.
-      </p>
-    </div>
-  </section>
+    <section class="inspirational-banner">
+      <div class="banner-lottie librito-container" #libritoContainer>
+      </div>
+      <div class="banner-text">
+        <blockquote class="banner-quote">
+          "Un lector vive mil vidas antes de morir.<br>
+          <span class="quote-sub">El que nunca lee, vive sólo una."</span>
+        </blockquote>
+        <p class="banner-desc">
+          En <strong>Literatus Novelist</strong> cada libro es un portal. Lee, escucha y conversa
+          con los personajes que dieron forma a la literatura universal.
+        </p>
+      </div>
+    </section>
 
     <!-- ═══════════════════════════════════════════════════════════
          SECCIÓN: EL FAVORITO DE LIYUMI
     ═══════════════════════════════════════════════════════════ -->
     <!-- Se oculta si hay búsqueda activa o filtro de mood -->
-    <section class="liyumi-pick-section" *ngIf="liyumiFavorite && !searchQuery && !activeMood">
-      <div class="liyumi-pick-card glass-panel">
+    <ng-container *ngIf="liyumiFavorite as fav">
+      <section class="liyumi-pick-section" *ngIf="!searchQuery">
+        <div class="liyumi-pick-card glass-panel">
 
-        <div class="liyumi-pick-left">
-          <div class="pick-cover-glow">
-            <img [src]="liyumiFavorite.cover_image || 'assets/default_cover.jpg'"
-                 [alt]="liyumiFavorite.title"
-                 class="pick-cover">
+          <div class="liyumi-pick-left">
+            <div class="pick-cover-glow">
+              <img [src]="fav.cover_image || 'assets/default_cover.jpg'" [alt]="fav.title"
+                class="pick-cover">
+            </div>
           </div>
+
+          <div class="liyumi-pick-center">
+            <div class="pick-eyebrow">
+              <img src="assets/liyumi_avatar.png" alt="Liyumi" class="pick-liyumi-avatar">
+              <span>El Favorito de Liyumi</span>
+            </div>
+            <h2 class="pick-title">{{ fav.title }}</h2>
+            <div class="pick-message">
+              <div class="pick-quote-mark">"</div>
+              <p>{{ getLiyumiMessage(fav) }}</p>
+            </div>
+            <div class="pick-mood" *ngIf="fav.mood">
+              Estado de ánimo: <span class="mood-tag">{{ fav.mood }}</span>
+            </div>
+            <button class="pick-cta" (click)="goToBook(fav.slug)">
+              Explorar este libro →
+            </button>
+          </div>
+
+          <div class="liyumi-pick-deco">
+            <img src="assets/liyumi_avatar.png" alt="Liyumi leyendo" class="pick-deco-lottie">
+          </div>
+
         </div>
+      </section>
+    </ng-container>
 
-        <div class="liyumi-pick-center">
-          <div class="pick-eyebrow">
-            <img src="assets/liyumi_avatar.png" alt="Liyumi" class="pick-liyumi-avatar">
-            <span>El Favorito de Liyumi</span>
-          </div>
-          <h2 class="pick-title">{{ liyumiFavorite.title }}</h2>
-          <div class="pick-message">
-            <div class="pick-quote-mark">"</div>
-            <p>{{ getLiyumiMessage(liyumiFavorite) }}</p>
-          </div>
-          <div class="pick-mood" *ngIf="liyumiFavorite.mood">
-            Estado de ánimo: <span class="mood-tag">{{ liyumiFavorite.mood }}</span>
-          </div>
-          <button class="pick-cta" (click)="goToBook(liyumiFavorite.slug)">
-            Explorar este libro →
-          </button>
-        </div>
 
-        <div class="liyumi-pick-deco">
-          <img src="assets/liyumi_avatar.png" alt="Liyumi leyendo" class="pick-deco-lottie">
-        </div>
 
-      </div>
-    </section>
-
-  <!-- ═══════════════════════════════════════════════════════════
-       MOOD CHIPS — Filtro por Sentimiento
-  ═══════════════════════════════════════════════════════════ -->
-  <!-- Se oculta si hay búsqueda activa -->
-  <section class="mood-section" id="catalogo" *ngIf="!searchQuery">
-    <div class="section-header">
-      <h2 class="section-title">¿Cómo quieres sentirte hoy?</h2>
-      <p class="section-sub">Filtra por el estado de ánimo de la historia</p>
-    </div>
-    <div class="mood-chips-track">
-      <button
-        *ngFor="let mood of MOODS"
-        class="mood-chip"
-        [class.active]="activeMood === (mood.value || null)"
-        (click)="setMood(mood.value)">
-        <span class="chip-emoji">{{ mood.emoji }}</span>
-        <span class="chip-label">{{ mood.label }}</span>
-      </button>
-    </div>
-  </section>
-
-  <!-- ═══════════════════════════════════════════════════════════
+    <!-- ═══════════════════════════════════════════════════════════
        BUSCADOR SEMÁNTICO
   ═══════════════════════════════════════════════════════════ -->
-  <section class="search-section">
-    <div class="search-wrapper">
-      <div class="search-icon-wrap">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-        </svg>
+    <section class="search-section">
+      <div class="search-wrapper">
+        <div class="search-icon-wrap">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2">
+            <circle cx="11" cy="11" r="8" />
+            <path d="M21 21l-4.35-4.35" />
+          </svg>
+        </div>
+        <input id="semantic-search" type="text" class="search-input"
+          placeholder='Busca por tema, emoción o frase: "libros para reflexionar sobre la soledad"…'
+          [value]="searchQuery" (input)="onSearchChange($any($event.target).value)" autocomplete="off">
+        <button class="search-clear" *ngIf="searchQuery" (click)="clearSearch()"
+          aria-label="Limpiar búsqueda">✕</button>
       </div>
-      <input
-        id="semantic-search"
-        type="text"
-        class="search-input"
-        placeholder='Busca por tema, emoción o frase: "libros para reflexionar sobre la soledad"…'
-        [value]="searchQuery"
-        (input)="onSearchChange($any($event.target).value)"
-        autocomplete="off"
-      >
-      <button class="search-clear" *ngIf="searchQuery" (click)="clearSearch()" aria-label="Limpiar búsqueda">✕</button>
-    </div>
-    <div class="search-hint" *ngIf="!searchQuery">
-      <span *ngFor="let hint of ['libros oscuros', 'aventura épica', 'filosofía de vida']" class="hint-chip" (click)="onSearchChange(hint)">{{ hint }}</span>
-    </div>
-  </section>
+      <div class="search-hint" *ngIf="!searchQuery">
+        <span *ngFor="let hint of ['libros oscuros', 'aventura épica', 'filosofía de vida']" class="hint-chip"
+          (click)="onSearchChange(hint)">{{ hint }}</span>
+      </div>
+    </section>
 
     <!-- ═══════════════════════════════════════════════════════════
          GRID DE DESCUBRIMIENTO
     ═══════════════════════════════════════════════════════════ -->
     <section class="discovery-section">
       <div class="section-header">
-        <div class="section-label">🌟 Descubrimiento</div>
+        <div class="section-label"><svg lucideStar [size]="20" class="lucide-icon"></svg> Descubrimiento</div>
         <h2 class="section-title">
-          <span *ngIf="!activeMood && !searchQuery">Explora Toda la Colección</span>
-          <span *ngIf="activeMood">Libros con mood "{{ activeMood }}"</span>
-          <span *ngIf="!activeMood && searchQuery">Resultados para "{{ searchQuery }}"</span>
+          <span *ngIf="!searchQuery">Explora Toda la Colección</span>
+          <span *ngIf="searchQuery">Resultados para "{{ searchQuery }}"</span>
         </h2>
       </div>
 
@@ -220,21 +198,21 @@
       <div class="empty-state" *ngIf="filteredBooks.length === 0">
         <div class="aola-container" #aolaContainer></div>
         <p>Hmm... no encontré libros con ese filtro 😅<br>
-          <button class="reset-btn" (click)="setMood(''); clearSearch()">Ver todos los libros</button>
+          <button class="reset-btn" (click)="clearSearch()">Ver todos los libros</button>
         </p>
       </div>
 
       <div class="discovery-grid" *ngIf="filteredBooks.length > 0">
-        <div class="discovery-card"
-             *ngFor="let book of filteredBooks; trackBy: trackBySlug"
-             (click)="goToBook(book.slug)">
+        <div class="discovery-card" *ngFor="let book of filteredBooks; trackBy: trackBySlug"
+          (click)="goToBook(book.slug)">
           <div class="discovery-img-wrap">
             <img [src]="book.cover_image || 'assets/default_cover.jpg'" [alt]="book.title" loading="lazy">
             <div class="discovery-mood-badge" *ngIf="book.mood">{{ book.mood }}</div>
           </div>
           <div class="discovery-body">
             <h3 class="discovery-title">{{ book.title }}</h3>
-            <p class="discovery-synopsis">{{ (book.synopsis || '' | slice:0:90) }}{{ (book.synopsis || '').length > 90 ? '…' : '' }}</p>
+            <p class="discovery-synopsis">{{ (book.synopsis || '' | slice:0:90) }}{{ (book.synopsis || '').length > 90 ?
+              '…' : '' }}</p>
             <div class="discovery-tags" *ngIf="book.tags?.length">
               <span class="mini-tag" *ngFor="let tag of book.tags!.slice(0,3)">{{ tag.name }}</span>
             </div>

@@ -145,6 +145,7 @@ class BookSaveView(APIView):
         data = request.data
         epub_file = request.FILES.get('epub')
         cover_file = request.FILES.get('cover')
+        pdf_file = request.FILES.get('pdf_file')
 
         if not epub_file:
             return Response({'error': 'Se requiere el archivo EPUB.'}, status=400)
@@ -190,9 +191,15 @@ class BookSaveView(APIView):
                     synopsis=data.get('synopsis', ''),
                     mood=data.get('mood', '')[:20] if data.get('mood') else '',
                     status=data.get('status', Book.StatusChoices.DRAFT),
+                    difficulty_level=data.get('difficulty_level', Book.DifficultyChoices.INTERMEDIATE),
+                    copyright_notice=data.get('copyright_notice', ''),
                     is_published=data.get('is_published', 'true').lower() == 'true',
                     is_featured=data.get('is_featured', 'false').lower() == 'true',
                 )
+
+                # PDF Opcional
+                if pdf_file:
+                    book.pdf_file.save(f'book_{book.pk}.pdf', pdf_file, save=True)
 
                 # Portada
                 if cover_file:
@@ -273,21 +280,27 @@ class BookDetailAdminView(APIView):
         except Book.DoesNotExist:
             return Response({'error': 'Libro no encontrado'}, status=404)
 
-        edition = book.editions.first()
+        # Edición principal para metadatos
+        main_edition = book.editions.first()
+
+        # Obtener personajes de TODAS las ediciones del libro
         avatars = []
-        if edition:
-            avatars = [
-                {
+        for ed in book.editions.all():
+            for av in ed.avatars.all():
+                avatars.append({
                     'id': str(av.pk),
-                    'name': av.name,
-                    'description': av.description,
-                    'system_prompt': av.system_prompt,
-                    'greeting_message': av.greeting_message,
+                    'edition_id': str(ed.pk),
+                    'name': str(av.name),
+                    'description': str(av.description),
+                    'system_prompt': str(av.system_prompt),
+                    'behavioral_context': str(av.behavioral_context),
+                    'sample_dialogues': str(av.sample_dialogues),
+                    'greeting_message': str(av.greeting_message),
+                    'unlock_at_chapter': av.unlock_at_chapter,
+                    'is_major_character': av.is_major_character,
                     'is_author': av.is_author,
                     'avatar_image': request.build_absolute_uri(av.avatar_image.url) if av.avatar_image else None,
-                }
-                for av in edition.avatars.all()
-            ]
+                })
 
         return Response({
             'id': str(book.pk),
@@ -295,9 +308,12 @@ class BookDetailAdminView(APIView):
             'slug': book.slug,
             'synopsis': book.synopsis,
             'mood': book.mood,
+            'difficulty_level': book.difficulty_level,
+            'copyright_notice': book.copyright_notice,
             'is_published': book.is_published,
             'is_featured': book.is_featured,
             'cover': request.build_absolute_uri(book.cover_image.url) if book.cover_image else None,
+            'pdf_file': request.build_absolute_uri(book.pdf_file.url) if book.pdf_file else None,
             'authors': [{'id': str(a.pk), 'name': a.full_name} for a in book.authors.all()],
             'tags': [t.name for t in book.tags.all()],
             'chapters': [
@@ -312,11 +328,11 @@ class BookDetailAdminView(APIView):
             ],
             'avatars': avatars,
             'edition': {
-                'id': str(edition.pk),
-                'format': edition.format,
-                'price': str(edition.price),
-                'language': edition.language,
-            } if edition else None,
+                'id': str(main_edition.pk),
+                'format': main_edition.format,
+                'price': str(main_edition.price),
+                'language': main_edition.language,
+            } if main_edition else None,
         })
 
     def put(self, request, pk):
@@ -341,6 +357,15 @@ class BookDetailAdminView(APIView):
                 book.is_featured = str(data['is_featured']).lower() == 'true'
             if 'status' in data:
                 book.status = data['status']
+            if 'difficulty_level' in data:
+                book.difficulty_level = data['difficulty_level']
+            if 'copyright_notice' in data:
+                book.copyright_notice = data['copyright_notice']
+            
+            # PDF Opcional
+            pdf_file = request.FILES.get('pdf_file')
+            if pdf_file:
+                book.pdf_file.save(f'book_{book.pk}.pdf', pdf_file, save=True)
             
             # Actualizar autor
             author_id = data.get('author_id')
@@ -363,6 +388,20 @@ class BookDetailAdminView(APIView):
                     print(f"Error actualizando géneros: {ge}")
 
             book.save()
+
+            # Actualizar metadatos de la edición (Precio e Idioma)
+            edition = book.editions.first()
+            if edition:
+                if 'price' in data:
+                    try:
+                        # Limpiamos el valor (por si viene con coma de la UI) y convertimos a float
+                        price_val = str(data['price']).replace(',', '.')
+                        edition.price = float(price_val)
+                    except (ValueError, TypeError):
+                        pass
+                if 'language' in data:
+                    edition.language = data['language'][:10]
+                edition.save()
 
             # Portada
             cover_file = request.FILES.get('cover')
@@ -581,7 +620,11 @@ class AvatarAdminView(APIView):
             name=request.data.get('name', 'Personaje')[:100],
             description=request.data.get('description', ''),
             system_prompt=request.data.get('system_prompt', ''),
+            behavioral_context=request.data.get('behavioral_context', ''),
+            sample_dialogues=request.data.get('sample_dialogues', ''),
             greeting_message=request.data.get('greeting_message', '¡Hola!'),
+            unlock_at_chapter=int(request.data.get('unlock_at_chapter', 0)),
+            is_major_character=request.data.get('is_major_character', 'true').lower() == 'true',
             is_author=request.data.get('is_author', 'false').lower() == 'true',
         )
         img = request.FILES.get('avatar_image')
@@ -589,6 +632,32 @@ class AvatarAdminView(APIView):
             avatar.avatar_image.save(f'avatar_{avatar.pk}.jpg', img, save=True)
 
         return Response({'id': str(avatar.pk), 'name': avatar.name}, status=201)
+
+    def get(self, request, pk):
+        from ai_engine.models import AIAvatar
+        try:
+            av = AIAvatar.objects.select_related('edition').get(pk=pk)
+        except AIAvatar.DoesNotExist:
+            return Response({'error': 'Personaje no encontrado.'}, status=404)
+
+        return Response({
+            'id': str(av.pk),
+            'edition_id': str(av.edition.pk),
+            'name': str(av.name),
+            'description': str(av.description),
+            'system_prompt': str(av.system_prompt),
+            'behavioral_context': str(av.behavioral_context),
+            'sample_dialogues': str(av.sample_dialogues),
+            'greeting_message': str(av.greeting_message),
+            'temperature': float(av.temperature),
+            'model_name': str(av.model_name),
+            'unlock_at_chapter': av.unlock_at_chapter,
+            'is_major_character': av.is_major_character,
+            'is_author': av.is_author,
+            'chat_count': av.chat_count,
+            'avatar_image': request.build_absolute_uri(av.avatar_image.url) if av.avatar_image else None,
+            'video_avatar': request.build_absolute_uri(av.video_avatar.url) if av.video_avatar else None,
+        })
 
     def put(self, request, pk):
         from ai_engine.models import AIAvatar
@@ -600,12 +669,29 @@ class AvatarAdminView(APIView):
         avatar.name = request.data.get('name', avatar.name)[:100]
         avatar.description = request.data.get('description', avatar.description)
         avatar.system_prompt = request.data.get('system_prompt', avatar.system_prompt)
+        avatar.behavioral_context = request.data.get('behavioral_context', avatar.behavioral_context)
+        avatar.sample_dialogues = request.data.get('sample_dialogues', avatar.sample_dialogues)
         avatar.greeting_message = request.data.get('greeting_message', avatar.greeting_message)
+        if 'unlock_at_chapter' in request.data:
+            avatar.unlock_at_chapter = int(request.data['unlock_at_chapter'])
+        if 'is_major_character' in request.data:
+            avatar.is_major_character = str(request.data['is_major_character']).lower() == 'true'
+        if 'temperature' in request.data:
+            try:
+                avatar.temperature = float(request.data['temperature'])
+            except (ValueError, TypeError):
+                pass
+        if 'model_name' in request.data:
+            avatar.model_name = request.data['model_name'][:100]
         avatar.save()
 
         img = request.FILES.get('avatar_image')
         if img:
             avatar.avatar_image.save(f'avatar_{avatar.pk}.jpg', img, save=True)
+
+        video = request.FILES.get('video_avatar')
+        if video:
+            avatar.video_avatar.save(f'video_{avatar.pk}.mp4', video, save=True)
 
         return Response({'success': True})
 

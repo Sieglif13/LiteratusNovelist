@@ -1,0 +1,192 @@
+<div class="avatar-editor-page">
+
+  <!-- HEADER CON NAVEGACIÓN -->
+  <header class="page-header">
+    <button class="back-btn" (click)="goBack()">
+      ← Volver al Libro
+    </button>
+    <div class="header-info">
+      <h1>{{ isNew ? '✨ Nuevo Personaje' : '✏️ Editar Personaje' }}</h1>
+      <p class="subtitle">Configura la personalidad y comportamiento de la IA</p>
+    </div>
+    <div class="header-stats" *ngIf="!isNew && avatar.chat_count !== undefined">
+      <span class="stat-badge">💬 {{ avatar.chat_count }} conversaciones</span>
+    </div>
+  </header>
+
+  <!-- ESTADO DE CARGA -->
+  <div class="loading-overlay" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Cargando personaje...</p>
+  </div>
+
+  <!-- ALERTAS -->
+  <div class="alert alert-error" *ngIf="errorMsg">⚠️ {{ errorMsg }}</div>
+  <div class="alert alert-success" *ngIf="successMsg">✅ {{ successMsg }}</div>
+
+  <!-- FORMULARIO PRINCIPAL -->
+  <div class="editor-grid" *ngIf="!loading">
+
+    <!-- COLUMNA IZQUIERDA: IDENTIDAD VISUAL -->
+    <div class="card section-card">
+      <h2 class="section-title">🖼️ Identidad Visual</h2>
+
+      <!-- Imagen -->
+      <div class="avatar-image-wrapper">
+        <div class="avatar-img-preview" *ngIf="avatarPreview">
+          <img [src]="avatarPreview" alt="Avatar" onerror="this.onerror=null;this.src='assets/placeholder-avatar.png'">
+          <button class="remove-img-btn" (click)="removeImage()" title="Quitar imagen">×</button>
+        </div>
+        <div class="file-upload" *ngIf="!avatarPreview">
+          <input type="file" (change)="onImageSelected($event)" accept="image/*" id="avatar-img-input">
+          <label for="avatar-img-input">
+            <span class="upload-icon">🖼️</span>
+            <span>Subir Imagen del Personaje</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Video del Avatar -->
+      <div class="form-group">
+        <label>Video Avatar <span style="color:#4a5568;font-weight:400">— MP4 en bucle para simular habla</span></label>
+        <p class="field-hint">Video corto (2-5 seg) que se reproduce en bucle mientras el personaje "habla". Opcional.</p>
+        <div class="video-preview" *ngIf="videoPreview">
+          <video [src]="videoPreview" autoplay loop [muted]="isMuted" controls playsinline style="width:100%;border-radius:8px;max-height:220px;object-fit:contain;background:#000;"></video>
+          <button class="remove-img-btn" style="top:6px;right:6px;" (click)="removeVideo()">×</button>
+        </div>
+        <div class="file-upload" *ngIf="!videoPreview">
+          <input type="file" (change)="onVideoSelected($event)" accept="video/mp4,video/*" id="avatar-video-input">
+          <label for="avatar-video-input">
+            <span class="upload-icon">🎬</span>
+            <span>Subir Video MP4</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Nombre -->
+      <div class="form-group">
+        <label>Nombre del Personaje <span class="required">*</span></label>
+        <input type="text" [(ngModel)]="avatar.name" placeholder="Ej: Drácula, Sherlock Holmes...">
+      </div>
+
+      <!-- Descripción -->
+      <div class="form-group">
+        <label>Descripción Pública</label>
+        <p class="field-hint">Lo que el lector verá al elegir este personaje</p>
+        <textarea [(ngModel)]="avatar.description" rows="3" placeholder="Apariencia, rol en la historia, habilidades..."></textarea>
+      </div>
+
+      <!-- Flags de identidad -->
+      <div class="flags-group">
+        <label class="toggle-label">
+          <input type="checkbox" [(ngModel)]="avatar.is_author">
+          <span class="toggle-slider"></span>
+          <div class="toggle-text">
+            <strong>¿Es el Autor / Narrador?</strong>
+            <small>Aparece en una sección propia del panel</small>
+          </div>
+        </label>
+        <label class="toggle-label">
+          <input type="checkbox" [(ngModel)]="avatar.is_major_character">
+          <span class="toggle-slider"></span>
+          <div class="toggle-text">
+            <strong>¿Es Personaje Principal?</strong>
+            <small>Aparece destacado sobre los secundarios</small>
+          </div>
+        </label>
+      </div>
+
+      <!-- Capítulo de desbloqueo -->
+      <div class="form-group">
+        <label>Capítulo de Desbloqueo</label>
+        <p class="field-hint">El personaje se activa cuando el lector alcanza este capítulo (0 = disponible desde el inicio)</p>
+        <input type="number" [(ngModel)]="avatar.unlock_at_chapter" min="0" placeholder="0">
+      </div>
+    </div>
+
+    <!-- COLUMNA DERECHA: CONFIGURACIÓN DE IA -->
+    <div class="card section-card">
+      <h2 class="section-title">🤖 Configuración de IA</h2>
+
+      <!-- Mensaje de saludo -->
+      <div class="form-group">
+        <label>Mensaje de Saludo</label>
+        <p class="field-hint">Primer mensaje que el personaje envía al iniciar un chat nuevo</p>
+        <textarea [(ngModel)]="avatar.greeting_message" rows="2" placeholder="Ej: Bienvenido a mi castillo, viajero..."></textarea>
+      </div>
+
+      <!-- System Prompt -->
+      <div class="form-group highlight-group">
+        <label>System Prompt <span class="badge-ia">IA</span></label>
+        <p class="field-hint">Instrucciones base que definen quién es y cómo habla este personaje. Es el campo más importante.</p>
+        <textarea [(ngModel)]="avatar.system_prompt" rows="6" placeholder="Eres [Nombre], un personaje de [Obra]. Tu voz es [descripción]. Tu vocabulario es [descripción]. Siempre hablas en primera persona y..."></textarea>
+      </div>
+
+      <!-- Contexto emocional -->
+      <div class="form-group">
+        <label>Contexto Emocional / Motivaciones <span class="badge-ia">IA</span></label>
+        <p class="field-hint">Información "secreta" que la IA conoce pero el personaje no revela directamente. Define su estado interno.</p>
+        <textarea [(ngModel)]="avatar.behavioral_context" rows="3" placeholder="Ej: Está atormentado por la culpa de haber abandonado a su familia. Bajo su apariencia fría, desea ser comprendido."></textarea>
+      </div>
+
+      <!-- Diálogos de ejemplo -->
+      <div class="form-group">
+        <label>Diálogos de Ejemplo <span class="badge-ia">IA</span></label>
+        <p class="field-hint">Fragmentos reales de la obra para que la IA imite el estilo literario del personaje con precisión.</p>
+        <textarea [(ngModel)]="avatar.sample_dialogues" rows="3" placeholder="Ej: &quot;¡Por todos los santos!&quot;, exclamó. &quot;El tiempo no espera a nadie, mucho menos a los cobardes.&quot;"></textarea>
+      </div>
+
+      <!-- Configuración técnica del modelo -->
+      <div class="model-config">
+        <h3 class="subsection-title">⚙️ Parámetros del Modelo</h3>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>Modelo LLM</label>
+            <p class="field-hint">Motor de IA a usar para este personaje</p>
+            <select [(ngModel)]="avatar.model_name">
+              <option value="gemini-2.5-flash">Gemini 2.5 Flash (recomendado)</option>
+              <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+              <option value="gemini-flash-latest">Gemini Flash Latest</option>
+              <option value="deepseek-chat">DeepSeek Chat (backup)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Temperatura: <strong>{{ avatar.temperature }}</strong></label>
+            <p class="field-hint">0.0 = preciso / 1.0 = creativo</p>
+            <input type="range" [(ngModel)]="avatar.temperature" min="0" max="1" step="0.05" class="range-slider">
+            <div class="range-labels">
+              <span>Preciso</span>
+              <span>Creativo</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER DE ACCIONES -->
+  <footer class="page-footer" *ngIf="!loading">
+    <button class="btn-secondary" (click)="goBack()">Cancelar</button>
+    <button class="btn-primary" [disabled]="saving" (click)="save()">
+      <span *ngIf="!saving">💾 Guardar Personaje</span>
+      <span *ngIf="saving">Guardando...</span>
+    </button>
+  </footer>
+
+  <!-- ZONA DE PELIGRO -->
+  <div class="danger-zone card" *ngIf="!isNew">
+    <div class="danger-header">
+      <span class="icon">⚠️</span>
+      <div class="text">
+        <h4>Zona de Peligro</h4>
+        <p>Esta acción eliminará permanentemente a este personaje y todo su historial de conversaciones.</p>
+      </div>
+    </div>
+    <div class="danger-actions">
+      <button class="delete-btn-danger" (click)="deleteAvatar()">
+        🗑️ Eliminar permanentemente a {{ avatar.name }}
+      </button>
+    </div>
+  </div>
+
+</div>

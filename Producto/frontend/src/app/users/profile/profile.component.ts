@@ -48,6 +48,9 @@ export class ProfileComponent implements OnInit {
           });
           this.avatarUrl = profile.avatar;
           this.updateInitials();
+          if (profile.ink_balance !== undefined) {
+            this.chatService.updateInkBalance(profile.ink_balance);
+          }
         }
       }
     });

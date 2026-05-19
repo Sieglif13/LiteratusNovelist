@@ -60,15 +60,10 @@ class ChatMessageSerializer(serializers.ModelSerializer):
 class ChatInteractionSerializer(serializers.Serializer):
     """
     Serializador para la entrada del endpoint de chat.
-    Valida session_id (UUID), mensaje y modo de comportamiento.
+    Valida session_id (UUID) y mensaje.
     """
     session_id = serializers.UUIDField(required=True)
     message = serializers.CharField(required=True, max_length=2000)
-    mode = serializers.ChoiceField(
-        choices=['roleplay', 'tutor', 'critical'],
-        default='roleplay',
-        required=False
-    )
 
 class GlobalHubAvatarSerializer(serializers.ModelSerializer):
     """Serializer para el Hub Global de Personajes (Character.ai style)."""

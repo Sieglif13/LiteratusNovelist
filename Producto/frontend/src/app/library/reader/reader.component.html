@@ -7,7 +7,7 @@
 
     <!-- Izquierda: Volver + Info + Personajes -->
     <div class="toolbar-left">
-      <button class="back-btn" routerLink="/catalog" title="Volver al catálogo">
+      <button class="back-btn" routerLink="/library" title="Volver a mi biblioteca">
         <span class="icon">✕</span>
       </button>
       <div class="book-info">
@@ -144,11 +144,6 @@
 
       <!-- Desbloqueado -->
       <div *ngIf="selectedAvatar.is_unlocked" class="profile-actions">
-        <div class="mode-pills">
-          <button class="mode-pill" [class.active]="chatMode === 'roleplay'" (click)="setMode('roleplay')">🎭 Roleplay</button>
-          <button class="mode-pill" [class.active]="chatMode === 'tutor'"    (click)="setMode('tutor')">📚 Tutor</button>
-          <button class="mode-pill" [class.active]="chatMode === 'critical'" (click)="setMode('critical')">🔍 Crítico</button>
-        </div>
         <button class="start-chat-cta" (click)="startChat(selectedAvatar)">
           💬 Iniciar Conversación
         </button>
@@ -169,20 +164,28 @@
         </div>
         <div class="topbar-info">
           <span class="topbar-name">{{ selectedAvatar?.name }}</span>
-          <span class="topbar-mode">{{ chatMode | titlecase }}</span>
+          <span class="topbar-mode">En línea</span>
         </div>
-        <!-- Botón de Video (Teléfono) - Manual -->
-        <button class="topbar-video-btn" 
-                [class.active]="showVideoAvatar"
-                (click)="toggleVideoAvatar()" 
-                title="Activar/Desactivar Avatar">
+        <!-- Indicador de Estado IA Minimalista -->
+        <div class="ai-status-indicator" 
+             [class]="'status-' + aiStatus" 
+             [title]="'Motor IA: ' + (aiProvider | titlecase)">
+          <span class="ai-pulse"></span>
+          <span class="ai-label">{{ aiProvider === 'gemini' ? 'G' : 'D' }}</span>
+        </div>
+        <!-- Botón de Modo Llamada (Voz) -->
+        <button class="topbar-call-btn" 
+                [class.active]="isCallMode"
+                (click)="toggleCallMode()" 
+                title="Modo Llamada (Voz Inmersiva)">
           📞
         </button>
+
         <button class="topbar-close-btn" (click)="isChatOpen = false; isCharPanelOpen = false">✕</button>
       </div>
 
-      <!-- PANEL DE VIDEO (solo si está activo manualmente) -->
-      <div class="chat-video-panel" *ngIf="showVideoAvatar && selectedAvatar?.video_avatar_url">
+      <!-- PANEL DE VIDEO (solo si está activo manualmente o en Modo Llamada) -->
+      <div class="chat-video-panel" *ngIf="(showVideoAvatar || isCallMode) && selectedAvatar?.video_avatar_url" [class.immersive-video]="isCallMode">
         <video #avatarVideo 
                [src]="selectedAvatar.video_avatar_url" 
                [autoplay]="false" 
@@ -194,8 +197,24 @@
         <div class="chat-video-shine"></div>
       </div>
 
-      <!-- Mensajes -->
-      <div class="chat-messages-area" #chatBody>
+      <!-- PANEL DE MANGA PORTRAIT (Efecto Novela Visual / Manga) -->
+      <div class="chat-manga-panel" *ngIf="selectedAvatar?.avatar_image_url?.includes('manga_assets')" [class.immersive-manga]="isCallMode">
+        <div class="manga-portrait-container">
+          <img [src]="getMangaFrameUrl()" 
+               [alt]="selectedAvatar?.name"
+               class="chat-manga-img"
+               [class.speaking]="isVideoSpeaking"
+               [class.thinking]="isSendingMessage">
+          <div class="manga-glow-effect"></div>
+        </div>
+        <div class="manga-status-tag" *ngIf="isSendingMessage || isVideoSpeaking">
+          <span class="status-label" *ngIf="isSendingMessage">🧠 Pensando...</span>
+          <span class="status-label" *ngIf="isVideoSpeaking">🗣️ Hablando...</span>
+        </div>
+      </div>
+
+      <!-- Mensajes (Se ocultan en Modo Llamada) -->
+      <div class="chat-messages-area" #chatBody *ngIf="!isCallMode">
         <div *ngFor="let msg of chatMessages" 
              class="chat-msg-row"
              [class.user-msg]="msg.role === 'user'"
@@ -206,19 +225,34 @@
             <img *ngIf="selectedAvatar?.avatar_image_url" [src]="selectedAvatar.avatar_image_url">
           </div>
           
-          <div class="msg-bubble" [class.user-bubble]="msg.role === 'user'" [class.ai-bubble]="msg.role !== 'user'">
-            {{ msg.content }}
+          <div class="msg-bubble" [class.user-bubble]="msg.role === 'user'" [class.ai-bubble]="msg.role !== 'user'" [innerHTML]="formatMessage(msg.content)">
           </div>
         </div>
       </div>
 
-      <!-- Input -->
-      <div class="chat-footer">
+      <!-- Input y Controles de Voz -->
+      <div class="chat-footer" [class.immersive-footer]="isCallMode">
+        
+        <!-- VISUALIZADOR DE ONDAS (Solo en Modo Llamada) -->
+        <div class="voice-controls" *ngIf="isCallMode">
+          <app-audio-visualizer 
+            [isActive]="(speechService.isListening$ | async) ?? false" 
+            [level]="audioLevel">
+          </app-audio-visualizer>
+          <p class="partial-transcript" *ngIf="partialTranscript">
+            <i>{{ partialTranscript }}</i>
+          </p>
+          <p class="listening-status" *ngIf="!(speechService.isListening$ | async)">
+            <span *ngIf="isVideoSpeaking">Personaje hablando...</span>
+            <span *ngIf="!isVideoSpeaking && !isSendingMessage">Micrófono pausado</span>
+          </p>
+        </div>
+
         <div class="chat-input-box">
           <input type="text"
                  [(ngModel)]="chatInput"
                  (keyup.enter)="sendMessage()"
-                 [placeholder]="'Mensaje ' + (selectedAvatar?.name || 'personaje') + '...'"
+                 [placeholder]="isCallMode ? 'Escribe aquí si el micrófono falla...' : ('Mensaje ' + (selectedAvatar?.name || 'personaje') + '...')"
                  [disabled]="isSendingMessage"
                  class="chat-text-input">
           <button class="chat-send-btn" 
@@ -276,7 +310,7 @@
       <div class="voice-option" [class.active]="currentAudioMode === 'piper'" (click)="currentAudioMode = 'piper'">
         <div class="voice-info">
           <span>Voz Local</span>
-          <small>Piper TTS - México</small>
+          <small>Piper TTS - España</small>
         </div>
         <span class="ink-cost unlocked-badge">Nuevo</span>
       </div>
@@ -323,11 +357,9 @@
 
     <!-- Selector de voz local (solo modo piper) -->
     <div class="audio-config" *ngIf="currentAudioMode === 'piper'">
-      <label class="config-label">🎹 Modelo de Voz</label>
       <select class="voice-dropdown"
-              [value]="piperVoice.modelPath.includes('davefx') ? 'es' : 'mx'"
-              (change)="piperVoice.setVoice($any($event.target).value === 'es' ? 'assets/voices/sp-voice-man/es_ES-davefx-medium.onnx' : 'assets/voices/mx-voice-man/es_MX-ald-medium.onnx', $any($event.target).value === 'es' ? 'assets/voices/sp-voice-man/es_ES-davefx-medium.onnx.json' : 'assets/voices/mx-voice-man/es_MX-ald-medium.onnx.json')">
-        <option value="mx">Aldo (Español México)</option>
+              [value]="'es'"
+              (change)="piperVoice.setVoice('assets/voices/sp-voice-man/es_ES-davefx-medium.onnx', 'assets/voices/sp-voice-man/es_ES-davefx-medium.onnx.json')">
         <option value="es">Davefx (Español España)</option>
       </select>
     </div>
@@ -348,12 +380,12 @@
 
     <!-- Controles de reproducción -->
     <div class="audio-main-controls">
-      <button class="audio-btn stop" (click)="stopAudio()" title="Detener">⏹</button>
+      <button class="audio-btn reset" (click)="confirmRestartAudio()" title="Reiniciar audio del capítulo">↺</button>
 
       <!-- Estado 1: Pausado → botón REANUDAR (verde) -->
       <button class="audio-btn resume"
               *ngIf="currentAudioMode === 'piper' ? (piperVoice.isPaused$ | async) : !(audioService.isPlaying$ | async) && (audioService.isPaused$ | async)"
-              (click)="currentAudioMode === 'piper' ? piperVoice.resume() : audioService.resume()"
+              (click)="resumeAudio()"
               title="Reanudar donde lo dejaste">
         ▶
       </button>
@@ -419,38 +451,50 @@
       </figure>
 
       <h1 *ngIf="block.tag === 'h1'" class="chapter-heading">
-        <ng-container *ngFor="let tok of block.tokens; trackBy: trackByToken">
-          <span *ngIf="tok.isWord"
-                [id]="'word-' + tok.idx"
-                class="word"
-                [class.active-word]="tok.idx === currentWordIndex"
-                (click)="onWordClick(tok.idx)">{{ tok.text }}</span>
-          <ng-container *ngIf="!tok.isWord && !tok.isImg">{{ tok.text }}</ng-container>
-          <img *ngIf="tok.isImg" [src]="tok.src" [alt]="tok.alt || ''" class="inline-img" loading="lazy" (click)="openImageModal(tok.src)">
+        <ng-container *ngFor="let sentence of block.sentences">
+          <span [class.active-paragraph-text]="isActiveSentence(sentence)">
+            <ng-container *ngFor="let tok of sentence.tokens; trackBy: trackByToken">
+              <span *ngIf="tok.isWord"
+                    [id]="'word-' + tok.idx"
+                    class="word"
+                    (click)="onWordClick(tok.idx)">{{ tok.text }}</span>
+              <ng-container *ngIf="!tok.isWord && !tok.isImg && !tok.isBr">{{ tok.text }}</ng-container>
+              <br *ngIf="tok.isBr">
+              <img *ngIf="tok.isImg" [src]="tok.src" [alt]="tok.alt || ''" class="inline-img" loading="lazy" (click)="openImageModal(tok.src)">
+            </ng-container>
+          </span>
         </ng-container>
       </h1>
 
       <h2 *ngIf="block.tag === 'h2'" class="chapter-heading">
-        <ng-container *ngFor="let tok of block.tokens; trackBy: trackByToken">
-          <span *ngIf="tok.isWord"
-                [id]="'word-' + tok.idx"
-                class="word"
-                [class.active-word]="tok.idx === currentWordIndex"
-                (click)="onWordClick(tok.idx)">{{ tok.text }}</span>
-          <ng-container *ngIf="!tok.isWord && !tok.isImg">{{ tok.text }}</ng-container>
-          <img *ngIf="tok.isImg" [src]="tok.src" [alt]="tok.alt || ''" class="inline-img" loading="lazy" (click)="openImageModal(tok.src)">
+        <ng-container *ngFor="let sentence of block.sentences">
+          <span [class.active-paragraph-text]="isActiveSentence(sentence)">
+            <ng-container *ngFor="let tok of sentence.tokens; trackBy: trackByToken">
+              <span *ngIf="tok.isWord"
+                    [id]="'word-' + tok.idx"
+                    class="word"
+                    (click)="onWordClick(tok.idx)">{{ tok.text }}</span>
+              <ng-container *ngIf="!tok.isWord && !tok.isImg && !tok.isBr">{{ tok.text }}</ng-container>
+              <br *ngIf="tok.isBr">
+              <img *ngIf="tok.isImg" [src]="tok.src" [alt]="tok.alt || ''" class="inline-img" loading="lazy" (click)="openImageModal(tok.src)">
+            </ng-container>
+          </span>
         </ng-container>
       </h2>
 
       <p *ngIf="block.tag === 'p' || block.tag === 'div' || block.tag === 'blockquote'">
-        <ng-container *ngFor="let tok of block.tokens; trackBy: trackByToken">
-          <span *ngIf="tok.isWord"
-                [id]="'word-' + tok.idx"
-                class="word"
-                [class.active-word]="tok.idx === currentWordIndex"
-                (click)="onWordClick(tok.idx)">{{ tok.text }}</span>
-          <ng-container *ngIf="!tok.isWord && !tok.isImg">{{ tok.text }}</ng-container>
-          <img *ngIf="tok.isImg" [src]="tok.src" [alt]="tok.alt || ''" class="inline-img" loading="lazy" (click)="openImageModal(tok.src)">
+        <ng-container *ngFor="let sentence of block.sentences">
+          <span [class.active-paragraph-text]="isActiveSentence(sentence)">
+            <ng-container *ngFor="let tok of sentence.tokens; trackBy: trackByToken">
+              <span *ngIf="tok.isWord"
+                    [id]="'word-' + tok.idx"
+                    class="word"
+                    (click)="onWordClick(tok.idx)">{{ tok.text }}</span>
+              <ng-container *ngIf="!tok.isWord && !tok.isImg && !tok.isBr">{{ tok.text }}</ng-container>
+              <br *ngIf="tok.isBr">
+              <img *ngIf="tok.isImg" [src]="tok.src" [alt]="tok.alt || ''" class="inline-img" loading="lazy" (click)="openImageModal(tok.src)">
+            </ng-container>
+          </span>
         </ng-container>
       </p>
 
@@ -479,6 +523,9 @@
     </button>
     <button class="menu-action-btn" (click)="saveBookmark()">
       <span class="icon">🔖</span> Guardar Marcador
+    </button>
+    <button class="menu-action-btn" (click)="playAudioFromSelection()">
+      <span class="icon">▶️</span> Narrar desde aquí
     </button>
     <button class="menu-action-btn" (click)="askCharacter()" [disabled]="characterAvatars.length === 0">
       <span class="icon">🎭</span> Preguntar a Personaje
@@ -528,6 +575,23 @@
   <div class="image-lightbox-overlay" *ngIf="showImageModal" (click)="closeImageModal()">
     <button class="close-lightbox-btn" (click)="closeImageModal()">✕</button>
     <img [src]="modalImageSrc" class="lightbox-img" (click)="$event.stopPropagation()">
+  </div>
+
+  <!-- MODAL DE CONFIRMACIÓN PARA REINICIAR AUDIO -->
+  <div class="restart-modal-overlay" *ngIf="showRestartModal" (click)="closeRestartModal()">
+    <div class="restart-modal-card glass-panel" (click)="$event.stopPropagation()">
+      <div class="restart-modal-header">
+        <span class="restart-modal-icon">↺</span>
+        <h4>¿Reiniciar Audio?</h4>
+      </div>
+      <div class="restart-modal-body">
+        <p>¿Deseas reiniciar el audio de este capítulo desde el inicio?</p>
+      </div>
+      <div class="restart-modal-actions">
+        <button class="restart-modal-btn cancel-btn" (click)="closeRestartModal()">Cancelar</button>
+        <button class="restart-modal-btn confirm-btn" (click)="restartAudio()">Reiniciar</button>
+      </div>
+    </div>
   </div>
 
 </div>

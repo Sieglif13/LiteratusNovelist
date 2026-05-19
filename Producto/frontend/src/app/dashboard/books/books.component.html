@@ -22,9 +22,9 @@
 
   <!-- GRID DE LIBROS -->
   <div class="books-grid" *ngIf="!loading; else loadingState">
-    <div class="book-card card" *ngFor="let book of filteredBooks">
+    <div class="book-card card clickable" *ngFor="let book of filteredBooks" [routerLink]="[book.id, 'edit']">
       <div class="book-cover">
-        <img [src]="book.cover || 'assets/no-cover.jpg'" alt="Cover">
+        <img [src]="book.cover || 'assets/no-cover.jpg'" alt="Cover" onerror="this.onerror=null;this.src='assets/no-cover.jpg'">
         <div class="status-badge" [class.published]="book.is_published">
           {{ book.is_published ? 'Publicado' : 'Borrador' }}
         </div>
@@ -42,11 +42,6 @@
             <span class="label">Vistas</span>
             <span class="value">{{ book.view_count }}</span>
           </div>
-        </div>
-
-        <div class="book-actions">
-          <button class="action-btn edit" [routerLink]="[book.id, 'edit']">✏️ Editar</button>
-          <button class="action-btn delete" (click)="deleteBook(book)">🗑️</button>
         </div>
       </div>
     </div>

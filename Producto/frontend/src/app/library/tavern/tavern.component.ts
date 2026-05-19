@@ -1,5 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { ApiService } from '../../core/services/api.service';
+import { ChatService } from '../../core/services/chat.service';
 
 @Component({
   selector: 'app-tavern',
@@ -8,6 +9,7 @@ import { ApiService } from '../../core/services/api.service';
 })
 export class TavernComponent implements OnInit {
   private api = inject(ApiService);
+  private chatService = inject(ChatService);
 
   inkBalance: number = 0;
   displayBalance: number = 0;
@@ -16,9 +18,9 @@ export class TavernComponent implements OnInit {
   adTimer: number = 0;
 
   chests = [
-    { title: 'Cofre de Aprendiz', amount: 500, price: '$2.000', icon: '📦', color: '#00ccff' },
-    { title: 'Cofre de Erudito', amount: 1500, price: '$5.000', icon: '🏛️', color: '#8b5cf6' },
-    { title: 'Cofre de Maestro', amount: 5000, price: '$14.990', icon: '👑', color: '#ffd700' }
+    { title: 'Cofre de Aprendiz', amount: 500, price: '$2.000', icon: 'package', color: '#00ccff' },
+    { title: 'Cofre de Erudito', amount: 1500, price: '$5.000', icon: 'landmark', color: '#8b5cf6' },
+    { title: 'Cofre de Maestro', amount: 5000, price: '$14.990', icon: 'crown', color: '#ffd700' }
   ];
 
   ngOnInit(): void {
@@ -29,6 +31,7 @@ export class TavernComponent implements OnInit {
     this.api.get<any>('users/profile/').subscribe({
       next: (res) => {
         this.inkBalance = res.ink_balance;
+        this.chatService.updateInkBalance(this.inkBalance);
         this.animateOdometer();
       }
     });
@@ -76,6 +79,7 @@ export class TavernComponent implements OnInit {
     this.api.post<any>('users/me/add_ink/', { amount: 10 }).subscribe({
       next: (res) => {
         this.inkBalance = res.ink_balance;
+        this.chatService.updateInkBalance(this.inkBalance);
         this.animateOdometer();
         this.adLoading = false;
       },

@@ -1,5 +1,5 @@
 <div class="chat-page-container">
-  
+
   <!-- PANEL IZQUIERDO: HISTORIAL / RECIENTES -->
   <aside class="side-panel history-panel">
     <div class="panel-header">
@@ -8,13 +8,12 @@
       </button>
       <h2 class="panel-title">Chats Recientes</h2>
     </div>
-    
+
     <div class="recent-list">
-      <div class="recent-item" 
-           *ngFor="let char of recentCharacters" 
-           [class.active]="char.id === avatarId"
-           (click)="selectCharacter(char.id)">
-        <img [src]="char.avatar_image_url || 'assets/liyumi_avatar.png'" class="mini-avatar" onerror="this.src='assets/liyumi_avatar.png'">
+      <div class="recent-item" *ngFor="let char of recentCharacters" [class.active]="char.id === avatarId"
+        (click)="selectCharacter(char.id)">
+        <img [src]="char.avatar_image_url || 'assets/liyumi_avatar.png'" class="mini-avatar"
+          onerror="this.src='assets/liyumi_avatar.png'">
         <div class="recent-info">
           <span class="recent-name">{{ char.name }}</span>
           <span class="recent-book">{{ char.book_title }}</span>
@@ -33,11 +32,12 @@
       <div class="chat-info" *ngIf="!avatar">
         <h2 class="chat-title">Cargando chat...</h2>
       </div>
-      
+
       <div class="chat-actions">
         <!-- VOZ PIPER -->
         <div class="voice-control" [class.active]="realTimeVoiceActive">
-          <button class="voice-btn" (click)="toggleVoice()" [title]="realTimeVoiceActive ? 'Desactivar voz' : 'Activar voz local'">
+          <button class="voice-btn" (click)="toggleVoice()"
+            [title]="realTimeVoiceActive ? 'Desactivar voz' : 'Activar voz local'">
             <span class="icon">🔊</span>
           </button>
           <div class="piper-status" *ngIf="realTimeVoiceActive">
@@ -51,12 +51,9 @@
     <div class="messages-container" #scrollMe>
       <!-- Mostrar mensajes solo si hay sesión -->
       <ng-container *ngIf="session; else loadingChat">
-        <div *ngFor="let msg of messages" 
-             [ngClass]="{'msg-user': msg.role === 'user', 'msg-ai': msg.role === 'assistant'}" 
-             class="message-wrapper">
-          <div class="message-bubble">
-            {{ msg.content }}
-          </div>
+        <div *ngFor="let msg of messages"
+          [ngClass]="{'msg-user': msg.role === 'user', 'msg-ai': msg.role === 'assistant'}" class="message-wrapper">
+          <div class="message-bubble" [innerHTML]="formatMessage(msg.content)"></div>
         </div>
       </ng-container>
 
@@ -65,7 +62,7 @@
           <p>Cargando historial de mensajes...</p>
         </div>
       </ng-template>
-      
+
       <!-- EFECTO TYPING -->
       <div class="message-wrapper msg-ai" *ngIf="isWriting">
         <div class="message-bubble typing-dots">
@@ -76,12 +73,9 @@
 
     <footer class="chat-footer">
       <div class="input-wrapper">
-        <input type="text" 
-               [(ngModel)]="newMessage" 
-               (keyup.enter)="sendMessage()"
-               placeholder="Envía un mensaje a {{ avatar?.name || 'el personaje' }}..."
-               class="chat-input"
-               [disabled]="!session">
+        <input type="text" [(ngModel)]="newMessage" (keyup.enter)="sendMessage()"
+          placeholder="Envía un mensaje a {{ avatar?.name || 'el personaje' }}..." class="chat-input"
+          [disabled]="!session">
         <button class="send-btn" [disabled]="!newMessage.trim() || isWriting || !session" (click)="sendMessage()">
           <span class="icon">✈️</span>
         </button>
@@ -93,14 +87,15 @@
   <aside class="side-panel profile-panel">
     <div class="profile-card" *ngIf="avatar; else loadingProfile">
       <div class="profile-img-container">
-        <img [src]="avatar.avatar_image_url || 'assets/liyumi_avatar.png'" class="profile-img" onerror="this.src='assets/liyumi_avatar.png'">
+        <img [src]="avatar.avatar_image_url || 'assets/liyumi_avatar.png'" class="profile-img"
+          onerror="this.src='assets/liyumi_avatar.png'">
         <div class="profile-overlay"></div>
       </div>
-      
+
       <div class="profile-details">
         <h1 class="profile-name">{{ avatar.name }}</h1>
         <p class="profile-book">{{ avatar.book_title }}</p>
-        
+
         <div class="profile-badges">
           <span class="badge" *ngFor="let tag of avatar.tags">{{ tag }}</span>
         </div>

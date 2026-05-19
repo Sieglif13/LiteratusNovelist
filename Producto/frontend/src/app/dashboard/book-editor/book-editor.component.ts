@@ -29,6 +29,7 @@ export class BookEditorComponent implements OnInit {
   editingAvatar: any = null;
   avatarFile: File | null = null;
   avatarPreview: string | null = null;
+  pdfFile: File | null = null;
   
   loading = false;
   saving = false;
@@ -47,6 +48,8 @@ export class BookEditorComponent implements OnInit {
       synopsis: ['', Validators.required],
       price: [990, [Validators.required, Validators.min(0)]],
       language: ['es', Validators.required],
+      difficulty_level: ['intermediate', Validators.required],
+      copyright_notice: ['Este libro electrónico está libre de restricciones de derechos de autor en Chile (según la Ley N° 17.336 de Propiedad Intelectual). Si no se encuentra en Chile, debe consultar las leyes locales para verificar que el contenido de este libro electrónico esté libre de restricciones en su país de residencia. Literatus Novelist promueve el acceso a la cultura respetando siempre los derechos vigentes.'],
       tags: [''],
       mood: [''],
       genres: [[]], // Array de IDs de géneros
@@ -94,6 +97,8 @@ export class BookEditorComponent implements OnInit {
           synopsis: book.synopsis,
           price: book.edition?.price || 990,
           language: book.edition?.language || 'es',
+          difficulty_level: book.difficulty_level || 'intermediate',
+          copyright_notice: book.copyright_notice || '',
           tags: book.tags.join(', '),
           mood: book.mood,
           genres: book.genres?.map((g: any) => g.id) || [],
@@ -152,6 +157,31 @@ export class BookEditorComponent implements OnInit {
     this.coverPreview = null;
   }
 
+  onPdfSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.pdfFile = file;
+    }
+  }
+
+  deleteBook(): void {
+    if (!this.bookId) return;
+    if (confirm('¿ESTÁS SEGURO? Esta acción eliminará permanentemente el libro, todos sus capítulos y personajes. Esta acción no se puede deshacer.')) {
+      this.loading = true;
+      this.bookService.deleteBook(this.bookId).subscribe({
+        next: () => {
+          this.loading = false;
+          alert('Libro eliminado correctamente.');
+          this.router.navigate(['/dashboard/books']);
+        },
+        error: (err) => {
+          this.loading = false;
+          alert('Error al eliminar: ' + (err.error?.error || 'Desconocido'));
+        }
+      });
+    }
+  }
+
   openChapterEditor(index: number): void {
     this.editingChapter = index;
   }
@@ -180,7 +210,13 @@ export class BookEditorComponent implements OnInit {
       chapters: this.chapters
     };
 
-    this.bookService.saveBook(data, this.epubFile || undefined, this.coverFile || undefined, this.bookId || undefined).subscribe({
+    this.bookService.saveBook(
+      data, 
+      this.epubFile || undefined, 
+      this.coverFile || undefined,
+      this.bookId || undefined,
+      this.pdfFile || undefined
+    ).subscribe({
       next: () => {
         localStorage.removeItem('book_editor_draft');
         alert('¡Libro guardado con éxito!');
@@ -226,7 +262,11 @@ export class BookEditorComponent implements OnInit {
       name: '',
       description: '',
       system_prompt: '',
+      behavioral_context: '',
+      sample_dialogues: '',
       greeting_message: '',
+      unlock_at_chapter: 0,
+      is_major_character: true,
       is_author: false
     };
   }

@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
 import { LiyumiService } from '../../core/services/liyumi.service';
+import { ChatService } from '../../core/services/chat.service';
 
 @Component({
   selector: 'app-book-detail-page',
@@ -23,6 +24,7 @@ export class BookDetailPageComponent implements OnInit, AfterViewInit, OnDestroy
   private api = inject(ApiService);
   private cdr = inject(ChangeDetectorRef);
   private liyumi = inject(LiyumiService);
+  private chatService = inject(ChatService);
   public auth = inject(AuthService);
 
   slug: string | null = null;
@@ -95,6 +97,7 @@ export class BookDetailPageComponent implements OnInit, AfterViewInit, OnDestroy
         this.book = data;
         this.isOwned = data.is_owned;
         this.userInkBalance = data.ink_balance;
+        this.chatService.updateInkBalance(this.userInkBalance);
         
         if (data.avatars && data.avatars.length > 0) {
           this.displayAvatars = [...data.avatars, ...data.avatars, ...data.avatars, ...data.avatars];
@@ -192,6 +195,7 @@ export class BookDetailPageComponent implements OnInit, AfterViewInit, OnDestroy
           this.isOwned = true;
           this.book.inventory_id = res.inventory_id;
           this.userInkBalance = res.ink_balance;
+          this.chatService.updateInkBalance(this.userInkBalance);
           this.purchaseLoading = false;
           this.showPurchaseModal = false;
           document.body.style.overflow = '';

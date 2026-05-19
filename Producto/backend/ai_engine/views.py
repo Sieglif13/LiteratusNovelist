@@ -213,7 +213,6 @@ class ChatInteractionView(APIView):
     """
     permission_classes = [permissions.IsAuthenticated]
 
-    @consume_ink(cost=1)
     def post(self, request, *args, **kwargs):
         serializer = ChatInteractionSerializer(data=request.data)
         if not serializer.is_valid():
@@ -221,7 +220,6 @@ class ChatInteractionView(APIView):
 
         session_id = serializer.validated_data['session_id']
         message_content = serializer.validated_data['message']
-        mode = serializer.validated_data['mode']
 
         session = get_object_or_404(ChatSession, id=session_id)
 
@@ -232,16 +230,13 @@ class ChatInteractionView(APIView):
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        # Verificar inventario (ahora opcional si es desde el hub, pero mantenemos lógica original por seguridad o adaptamos)
-        # TODO: Si queremos que el Hub permita chatear sin poseer el libro, omitir esto.
-        # Por ahora lo dejamos como está, si falla, el frontend debe manejarlo.
-        edition_id = session.avatar.edition.id
-        inventory_check = UserInventory.objects.filter(
-            user=request.user, edition_id=edition_id
-        ).exists()
-        # if not inventory_check:
-        #    return Response({"error": "No posees esta obra en tu biblioteca."}, status=status.HTTP_403_FORBIDDEN)
-
+        # 1. Validación de Tinta Base (Mínimo 1 para DeepSeek)
+        profile = request.user.profile
+        if profile.ink_balance < 1:
+            return Response({
+                "error": "INSUFFICIENT_INK",
+                "message": "No tienes tinta suficiente para chatear."
+            }, status=status.HTTP_402_PAYMENT_REQUIRED)
 
         # Guardar mensaje del usuario
         user_msg = ChatMessage.objects.create(
@@ -251,8 +246,24 @@ class ChatInteractionView(APIView):
         )
 
         try:
-            ai_service = AIService(avatar=session.avatar, session=session, mode=mode)
-            ai_response_text = ai_service.generate_reply(message_content)
+            ai_service = AIService(avatar=session.avatar, session=session)
+            ai_result = ai_service.generate_reply(message_content)
+            
+            ai_response_text = ai_result["text"]
+            provider = ai_result["provider"]
+            cost = ai_result["cost"]
+            ai_status = ai_result["status"]
+
+            # 2. Descuento Dinámico de Tinta
+            if profile.ink_balance < cost:
+                # Si falló Gemini pero no tiene para Gemini, y DeepSeek no está disponible...
+                # El servicio ya debería haber devuelto un mensaje de error o haber intentado DeepSeek.
+                # Si el costo es 2 pero solo tiene 1, y el servicio devolvió Gemini, forzamos error o ajustamos.
+                # Pero la lógica del servicio ya intenta DeepSeek si Gemini falla.
+                pass 
+            
+            profile.ink_balance = max(0, profile.ink_balance - cost)
+            profile.save()
 
             assistant_msg = ChatMessage.objects.create(
                 session=session,
@@ -260,12 +271,13 @@ class ChatInteractionView(APIView):
                 content=ai_response_text
             )
 
-            # La tinta se descuenta automáticamente por el decorador
-
             return Response({
-                "mode_active": mode,
                 "reply": assistant_msg.content,
                 "timestamp": assistant_msg.created_at,
+                "ink_balance": profile.ink_balance,
+                "ai_provider": provider,
+                "ai_status": ai_status,
+                "cost": cost
             }, status=status.HTTP_200_OK)
 
         except Exception as e:

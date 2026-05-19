@@ -42,7 +42,7 @@ class AIAvatar(TimeStampedModel):
         on_delete=models.CASCADE,
         related_name='avatars'
     ) # Referencia a la edición del libro a la que pertenece este avatar IA.
-    name = models.CharField(max_length=100) # Nombre del personaje o IA.
+    name = models.CharField(max_length=255) # Nombre del personaje o IA.
     # Descripción breve para mostrar en la ficha del personaje en el lector.
     description = models.TextField(
         blank=True,
@@ -58,9 +58,9 @@ class AIAvatar(TimeStampedModel):
         help_text="Creatividad del LLM. 0.0 = determinista, 1.0 = máxima creatividad."
     ) # Controla qué tan creativas (o erráticas) son las respuestas de la IA.
     model_name = models.CharField(
-        max_length=100,
-        default='gemini-2.5-flash',
-        help_text="Identificador del modelo LLM (e.g. 'gemini-2.5-flash', 'gpt-4o')."
+        max_length=255,
+        default='gemini-2.0-flash',
+        help_text="Identificador del modelo LLM (e.g. 'gemini-2.0-flash', 'gpt-4o')."
     ) # Especifica el modelo subyacente que responderá (ej. gemini, gpt).
     avatar_image = models.ImageField(
         upload_to='ai_avatars/',

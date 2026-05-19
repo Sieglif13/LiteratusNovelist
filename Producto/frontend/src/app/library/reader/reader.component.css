@@ -349,6 +349,7 @@
   flex: 1;
   overflow-y: auto;
   padding: 0.75rem;
+  padding-top: 55px; /* Empujar los personajes debajo del header absoluto */
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -634,28 +635,129 @@
   color: rgba(255,255,255,0.4);
 }
 
-.topbar-video-btn {
-  background: none;
-  border: 1px solid rgba(255,255,255,0.12);
-  color: rgba(255,255,255,0.6);
-  width: 34px;
-  height: 34px;
+/* INDICADOR IA MINIMALISTA */
+.ai-status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  cursor: help;
+}
+
+.ai-pulse {
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
+  background: #10b981;
+  position: relative;
+}
+
+.status-ok .ai-pulse {
+  background: #3b82f6;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+  animation: ai-glow-blue 2s infinite;
+}
+
+.status-warning .ai-pulse {
+  background: #f59e0b;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+  animation: ai-glow-orange 2s infinite;
+}
+
+.status-error .ai-pulse {
+  background: #ef4444;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+  animation: ai-glow-red 1s infinite;
+}
+
+.ai-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'Outfit', sans-serif;
+}
+
+@keyframes ai-glow-blue {
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 15px rgba(59, 130, 246, 0.8); }
+  100% { transform: scale(1); opacity: 0.8; }
+}
+
+@keyframes ai-glow-orange {
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 15px rgba(245, 158, 11, 0.8); }
+  100% { transform: scale(1); opacity: 0.8; }
+}
+
+@keyframes ai-glow-red {
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.5); opacity: 1; box-shadow: 0 0 20px rgba(239, 68, 68, 1); }
+  100% { transform: scale(1); opacity: 0.8; }
+}
+
+.topbar-call-btn {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.7);
+  font-size: 1rem;
   cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
-  transition: all 0.2s;
 }
 
-.topbar-video-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+.topbar-call-btn:hover { background: rgba(255,255,255,0.1); color: white; }
 
-.topbar-video-btn.active {
-  background: rgba(126, 87, 194, 0.4);
-  border-color: #a855f7;
-  color: white;
-  box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
+.topbar-call-btn.active {
+  background: rgba(16, 185, 129, 0.2); /* Verde para indicar llamada activa */
+  border-color: #10b981;
+  color: #10b981;
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+  animation: pulse-call 2s infinite;
+}
+
+@keyframes pulse-call {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.voice-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 12px;
+  width: 100%;
+}
+
+.partial-transcript {
+  font-size: 0.85rem;
+  color: #a855f7;
+  text-align: center;
+  margin: 0;
+  max-width: 90%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.listening-status {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.5);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .topbar-close-btn {
@@ -679,7 +781,16 @@
   background: #000;
   overflow: hidden;
   border-bottom: 1px solid rgba(255,255,255,0.07);
+  transition: all 0.5s ease-in-out;
 }
+
+.chat-video-panel.immersive-video {
+  flex: 1; /* Ocupa todo el espacio de los mensajes */
+  height: auto;
+  border-bottom: none;
+  box-shadow: inset 0 -50px 100px -20px rgba(0,0,0,0.8);
+}
+
 
 .chat-video-el {
   width: 100%;
@@ -767,6 +878,13 @@
   padding: 0.75rem 1rem;
   border-top: 1px solid rgba(255,255,255,0.07);
 }
+
+.chat-footer.immersive-footer {
+  border-top: none;
+  background: linear-gradient(to top, rgba(26,26,46,1), rgba(26,26,46,0.8));
+  padding-top: 2rem;
+}
+
 
 .chat-input-box {
   display: flex;
@@ -1945,26 +2063,13 @@
   text-shadow: 0 0 4px rgba(34, 211, 238, 0.4);
 }
 
-/* ↓ El efecto cian potente que el usuario pidió — texto Spotify neón */
+/* ↓ Resaltado sutil tipo ReadEra (sin distorsión ni reflow) */
 .active-word {
-  color: #22d3ee !important;
-  font-weight: 600;
-  text-shadow:
-    0 0 4px  rgba(34, 211, 238, 1.0),
-    0 0 10px rgba(34, 211, 238, 0.9),
-    0 0 20px rgba(34, 211, 238, 0.7),
-    0 0 40px rgba(34, 211, 238, 0.4),
-    0 0 60px rgba(168, 85, 247, 0.3),
-    0 0 80px rgba(168, 85, 247, 0.15);
-  background: rgba(34, 211, 238, 0.1);
+  background-color: rgba(234, 179, 8, 0.4) !important; /* Amarillo suave/cálido */
   border-radius: 3px;
-  padding: 0 3px;
-  animation: wordPulse 0.3s ease-out;
-}
-
-@keyframes wordPulse {
-  0%   { transform: scale(1.08); opacity: 0.7; }
-  100% { transform: scale(1);    opacity: 1; }
+  color: inherit !important;
+  transition: background-color 0.1s ease;
+  /* Eliminados padding, font-weight y animaciones de escala para EVITAR saltos de línea */
 }
 
 /* INTEGRATED SIDEBAR CHAT STYLES */
@@ -2547,4 +2652,269 @@
     border-left: 4px solid #3b82f6 !important; 
     padding-left: 1.5rem !important; 
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Modal de Reinicio */
+.restart-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.restart-modal-card {
+  width: 90%;
+  max-width: 400px;
+  background: rgba(30, 41, 59, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  text-align: center;
+  animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.restart-modal-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.restart-modal-icon {
+  font-size: 2.5rem;
+  color: var(--glow-purple, #8b5cf6);
+  animation: rotateLeft 0.5s ease-out;
+}
+
+.restart-modal-header h4 {
+  font-size: 1.4rem;
+  margin: 0;
+  color: #fff;
+  font-weight: 600;
+}
+
+.restart-modal-body p {
+  color: var(--text-muted, #94a3b8);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0 0 24px 0;
+}
+
+.restart-modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.restart-modal-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.restart-modal-btn.cancel-btn {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.restart-modal-btn.cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.restart-modal-btn.confirm-btn {
+  background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+}
+
+.restart-modal-btn.confirm-btn:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes rotateLeft {
+  from { transform: rotate(180deg); }
+  to { transform: rotate(0); }
+}
+
+/* Resaltado estilo ReadEra por párrafo (INLINE TEXT) */
+.active-paragraph-text {
+  background-color: rgba(234, 179, 8, 0.25) !important;
+  border-radius: 4px;
+  transition: background-color 0.4s ease;
+  /* Box decoration break allows background to wrap smoothly across lines without looking like a rigid box */
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  padding: 2px 0; /* Ligero padding vertical para que respire, no horizontal para no separar las palabras */
+}
+
+.theme-dark .active-paragraph-text {
+  background-color: rgba(234, 179, 8, 0.15) !important;
+}
+
+/* Sangría y espaciado de párrafos para evitar acoplamiento */
+.reader-content p {
+  text-indent: 1.5rem;
+  margin-bottom: 1.2rem;
+  line-height: 1.7;
+}
+
+/* El primer párrafo usualmente no lleva sangría en los libros */
+.reader-content p:first-of-type {
+  text-indent: 0;
+}
+
+/* ── ESTILOS EXCLUSIVOS MANGA / NOVELA VISUAL ── */
+.chat-manga-panel {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  background: radial-gradient(circle at center, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 10px 0;
+  transition: all 0.3s ease;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
+}
+
+.theme-light .chat-manga-panel {
+  background: radial-gradient(circle at center, rgba(241, 245, 249, 0.9) 0%, rgba(226, 232, 240, 0.95) 100%);
+  border-bottom: 1px solid rgba(168, 85, 247, 0.15);
+  box-shadow: inset 0 0 15px rgba(0,0,0,0.05);
+}
+
+.chat-manga-panel.immersive-manga {
+  height: 380px; /* Panel más grande y dramático en Modo Llamada */
+  border-bottom: none;
+}
+
+.manga-portrait-container {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 3px solid rgba(168, 85, 247, 0.4);
+  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.3), 0 0 15px rgba(168, 85, 247, 0.2);
+  background: rgba(15, 23, 42, 0.5);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.theme-light .manga-portrait-container {
+  background: rgba(255, 255, 255, 0.5);
+  border-color: rgba(168, 85, 247, 0.3);
+  box-shadow: 0 8px 24px rgba(168, 85, 247, 0.15);
+}
+
+.chat-manga-panel.immersive-manga .manga-portrait-container {
+  width: 260px;
+  height: 260px;
+  border-radius: 24px; /* Cuadrado con esquinas redondeadas tipo carta de colección */
+  border: 4px solid rgba(168, 85, 247, 0.6);
+  box-shadow: 0 12px 48px rgba(168, 85, 247, 0.5);
+}
+
+.chat-manga-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.05);
+  transition: transform 0.3s ease, filter 0.3s ease;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+}
+
+/* Efecto Respirar (Breathing) constante para que el personaje parezca vivo */
+.chat-manga-img:not(.thinking):not(.speaking) {
+  animation: breathing 4s ease-in-out infinite;
+}
+
+@keyframes breathing {
+  0%, 100% { transform: scale(1.05); }
+  50% { transform: scale(1.08); }
+}
+
+/* Pose Pensando: Añadir un suave desenfoque y efecto glow violeta */
+.chat-manga-img.thinking {
+  animation: thinkingPulse 2s infinite ease-in-out;
+  filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.8)) brightness(1.1);
+}
+
+@keyframes thinkingPulse {
+  0%, 100% { transform: scale(1.03) rotate(-1deg); filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.6)); }
+  50% { transform: scale(1.06) rotate(1deg); filter: drop-shadow(0 0 18px rgba(168, 85, 247, 0.9)); }
+}
+
+/* Pose Hablando: Pose estática con iluminación y sombreado cian */
+.chat-manga-img.speaking {
+  filter: brightness(1.05) drop-shadow(0 4px 12px rgba(6, 182, 212, 0.5));
+  border-color: rgba(6, 182, 212, 0.8);
+}
+
+.manga-glow-effect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.15) 100%);
+  pointer-events: none;
+}
+
+.manga-status-tag {
+  margin-top: 8px;
+  padding: 4px 12px;
+  background: rgba(168, 85, 247, 0.2);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  border-radius: 12px;
+  animation: fadeInOut 1s ease-in-out infinite alternate;
+}
+
+.status-label {
+  font-size: 0.75rem;
+  color: #c084fc;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.theme-light .status-label {
+  color: #7e22ce;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0.8; box-shadow: 0 0 5px rgba(168, 85, 247, 0.2); }
+  100% { opacity: 1; box-shadow: 0 0 15px rgba(168, 85, 247, 0.5); }
 }

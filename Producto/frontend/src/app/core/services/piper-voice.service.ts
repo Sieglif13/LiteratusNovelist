@@ -6,8 +6,8 @@ import * as ort from 'onnxruntime-web';
   providedIn: 'root'
 })
 export class PiperVoiceService {
-  public modelPath = 'assets/voices/mx-voice-man/es_MX-ald-medium.onnx';
-  public configPath = 'assets/voices/mx-voice-man/es_MX-ald-medium.onnx.json';
+  public modelPath = 'assets/voices/sp-voice-man/es_ES-davefx-medium.onnx';
+  public configPath = 'assets/voices/sp-voice-man/es_ES-davefx-medium.onnx.json';
   
   private session: ort.InferenceSession | null = null;
   private config: any = null;

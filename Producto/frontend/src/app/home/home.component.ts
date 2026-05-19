@@ -18,12 +18,6 @@ export interface Book {
   price?: number;
 }
 
-interface MoodChip {
-  label: string;
-  emoji: string;
-  value: string;
-}
-
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -90,22 +84,8 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   isLoading = true;
   isSearching = false;
   searchQuery = '';
-  activeMood: string | null = null;
   errorMsg = '';
 
-  readonly MOODS: MoodChip[] = [
-    { label: 'Todos',        emoji: '📚', value: '' },
-    { label: 'Filosófico',   emoji: '🤔', value: 'Filosófico' },
-    { label: 'Oscuro',       emoji: '🌑', value: 'Oscuro' },
-    { label: 'Inspirador',   emoji: '✨', value: 'Inspirador' },
-    { label: 'Melancólico',  emoji: '🌧️', value: 'Melancólico' },
-    { label: 'Misterioso',   emoji: '🔮', value: 'Misterioso' },
-    { label: 'Aventurero',   emoji: '🗺️', value: 'Aventurero' },
-    { label: 'Romántico',    emoji: '💕', value: 'Romántico' },
-    { label: 'Épico',        emoji: '⚔️', value: 'Épico' },
-    { label: 'Tenso',        emoji: '⚡', value: 'Tenso' },
-    { label: 'Feliz',        emoji: '😊', value: 'Feliz' },
-  ];
 
   readonly LIYUMI_PICKS: Record<string, string> = {
     'el-principito':           '🌹 Una obra que me rompió el corazón la primera vez que la "leí". El Principito enseña que lo esencial es invisible a los ojos.',
@@ -166,17 +146,8 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     this.filteredBooks = this.discoveryBooks;
   }
 
-  // ── MOOD FILTER ───────────────────────────────────────────────
-  setMood(mood: string): void {
-    this.activeMood = mood || null;
-    this.applyFilters();
-  }
-
   private applyFilters(): void {
     let base = this.discoveryBooks;
-    if (this.activeMood) {
-      base = base.filter(b => b.mood === this.activeMood);
-    }
     if (this.searchQuery.trim()) {
       const q = this.searchQuery.toLowerCase();
       base = base.filter(b =>

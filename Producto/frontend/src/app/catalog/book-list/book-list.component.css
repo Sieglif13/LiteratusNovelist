@@ -147,13 +147,16 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transition: transform 0.3s ease, border-color 0.3s ease;
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   height: 100%;
+  cursor: pointer;
+  text-decoration: none;
 }
 
 .book-card:hover {
-  transform: translateY(-5px);
-  border-color: rgba(59, 130, 246, 0.4);
+  transform: translateY(-6px);
+  border-color: rgba(139, 92, 246, 0.6);
+  box-shadow: 0 12px 40px rgba(139, 92, 246, 0.2);
 }
 
 /* Cover section */
@@ -213,15 +216,23 @@
 
 .card-actions {
   display: flex;
-  justify-content: stretch;
+  justify-content: flex-end;
 }
 
-.read-btn {
-  display: flex;
-  justify-content: center;
+.read-hint {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 0;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(139, 92, 246, 0.7);
+  letter-spacing: 0.5px;
+  transition: color 0.2s ease, gap 0.2s ease;
+}
+
+.book-card:hover .read-hint {
+  color: rgba(139, 92, 246, 1);
+  gap: 10px;
 }
 
 /* --- ESTADOS (Loading Skeletons) --- */

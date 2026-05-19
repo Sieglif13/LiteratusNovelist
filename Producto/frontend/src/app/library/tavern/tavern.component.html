@@ -12,7 +12,7 @@
       <div class="card-content">
         <span class="label">Balance de Tinta</span>
         <div class="counter-container">
-          <span class="ink-icon">✒️</span>
+          <span class="ink-icon"><svg lucidePenTool [size]="48" class="lucide-icon"></svg></span>
           <h2 class="odometer">{{ displayBalance }}</h2>
         </div>
         <p class="subtitle">Recursos disponibles para leer y chatear</p>
@@ -38,7 +38,11 @@
 
     <!-- CHESTS SECTION -->
     <div class="bento-item chest-card glass-panel" *ngFor="let chest of chests" [style.border-bottom-color]="chest.color">
-      <div class="chest-icon">{{ chest.icon }}</div>
+      <div class="chest-icon" [ngSwitch]="chest.icon">
+        <svg *ngSwitchCase="'package'" lucidePackage [size]="48" class="lucide-icon"></svg>
+        <svg *ngSwitchCase="'landmark'" lucideLandmark [size]="48" class="lucide-icon"></svg>
+        <svg *ngSwitchCase="'crown'" lucideCrown [size]="48" class="lucide-icon"></svg>
+      </div>
       <div class="chest-info">
         <h4>{{ chest.title }}</h4>
         <span class="amount">{{ chest.amount }} Tinta</span>

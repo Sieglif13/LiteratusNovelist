@@ -5,6 +5,7 @@ import { OverviewComponent } from './overview/overview.component';
 import { BooksComponent } from './books/books.component';
 import { BookEditorComponent } from './book-editor/book-editor.component';
 import { AuthorsComponent } from './authors/authors.component';
+import { AvatarEditorComponent } from './avatar-editor/avatar-editor.component';
 
 const routes: Routes = [
   {
@@ -16,6 +17,7 @@ const routes: Routes = [
       { path: 'books', component: BooksComponent },
       { path: 'books/new', component: BookEditorComponent },
       { path: 'books/:id/edit', component: BookEditorComponent },
+      { path: 'books/:id/avatars/:avatarId', component: AvatarEditorComponent },
       { path: 'authors', component: AuthorsComponent },
     ]
   }

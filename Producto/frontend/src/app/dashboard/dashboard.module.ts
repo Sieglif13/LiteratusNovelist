@@ -10,6 +10,7 @@ import { OverviewComponent } from './overview/overview.component';
 import { BooksComponent } from './books/books.component';
 import { BookEditorComponent } from './book-editor/book-editor.component';
 import { AuthorsComponent } from './authors/authors.component';
+import { AvatarEditorComponent } from './avatar-editor/avatar-editor.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { AuthorsComponent } from './authors/authors.component';
     BooksComponent,
     BookEditorComponent,
     AuthorsComponent,
+    AvatarEditorComponent,
   ],
   imports: [
     CommonModule,

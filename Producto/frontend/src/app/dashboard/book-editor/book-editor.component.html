@@ -76,17 +76,34 @@
           </div>
         <div class="form-row">
           <div class="form-group">
-            <label>Estado del Libro</label>
-            <select formControlName="status">
-              <option value="draft">Borrador (Solo Admin)</option>
-              <option value="published">Publicado (Visible)</option>
-              <option value="archived">Archivado</option>
+            <label>Nivel de Dificultad</label>
+            <select formControlName="difficulty_level">
+              <option value="beginner">Principiante (Lectura ligera)</option>
+              <option value="intermediate">Intermedio (Estándar)</option>
+              <option value="advanced">Avanzado (Complejo)</option>
+              <option value="master">Maestro (Académico/Filosófico)</option>
             </select>
           </div>
           <div class="form-group">
             <label>Idioma</label>
             <input type="text" formControlName="language" placeholder="Ej: es">
           </div>
+        </div>
+
+        <div class="form-group">
+          <label>Aviso Legal / Copyright</label>
+          <textarea formControlName="copyright_notice" rows="3" placeholder="Información sobre derechos de autor..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Descarga PDF (Opcional)</label>
+          <div class="file-upload mini" [class.has-file]="pdfFile">
+            <input type="file" (change)="onPdfSelected($event)" accept=".pdf" id="pdf-input">
+            <label for="pdf-input">
+              {{ pdfFile ? '📄 ' + pdfFile.name : '📤 Subir PDF de descarga' }}
+            </label>
+          </div>
+          <p class="help-text">Permite a los usuarios descargar la obra si tienen acceso.</p>
         </div>
     
         </div>
@@ -154,19 +171,19 @@
     <div class="avatars-section card" *ngIf="isEditing">
       <div class="section-header">
         <h3 class="section-title">Personajes (Avatares)</h3>
-        <button class="add-btn" (click)="openAvatarEditor()">+ Nuevo</button>
+        <button class="add-btn" (click)="router.navigate(['/dashboard/books', bookId, 'avatars', 'new'])">+ Nuevo</button>
       </div>
 
       <div class="avatars-list" *ngIf="avatars.length > 0; else noAvatars">
-        <div class="avatar-item" *ngFor="let avatar of avatars">
-          <img [src]="avatar.avatar_image || 'assets/placeholder-avatar.png'" alt="{{ avatar.name }}" class="avatar-thumb">
+        <div class="avatar-item clickable" *ngFor="let avatar of avatars" 
+             (click)="router.navigate(['/dashboard/books', bookId, 'avatars', avatar.id])">
+          <img [src]="avatar.avatar_image || 'assets/placeholder-avatar.png'" alt="{{ avatar.name }}" class="avatar-thumb" onerror="this.onerror=null;this.src='assets/placeholder-avatar.png'">
           <div class="avatar-info">
             <strong>{{ avatar.name }}</strong>
-            <span class="badge" *ngIf="avatar.is_author">Autor</span>
-          </div>
-          <div class="avatar-actions">
-            <button class="edit-btn" (click)="openAvatarEditor(avatar)">✏️</button>
-            <button class="delete-btn" (click)="removeAvatar(avatar.id)">×</button>
+            <div class="avatar-meta">
+              <span class="badge" *ngIf="avatar.is_author">Autor</span>
+              <span class="badge badge-secondary" *ngIf="!avatar.is_major_character">Secundario</span>
+            </div>
           </div>
         </div>
       </div>
@@ -243,58 +260,20 @@
     </div>
   </div>
 
-  <!-- MODAL DE EDICIÓN DE PERSONAJE -->
-  <div class="modal-overlay" *ngIf="editingAvatar !== null">
-    <div class="modal-content card avatar-modal">
-      <header class="modal-header">
-        <h3>{{ editingAvatar.id ? '✏️ Editar' : '✨ Nuevo' }} Personaje</h3>
-        <button (click)="editingAvatar = null">×</button>
-      </header>
-
-      <div class="modal-body nexus-form">
-        <!-- Imagen del personaje centrada arriba -->
-        <div class="form-group" style="align-items:center; text-align:center;">
-          <div class="cover-preview" style="width:100px;height:100px;border-radius:50%;margin:0 auto 4px;" *ngIf="avatarPreview">
-            <img [src]="avatarPreview" alt="Preview" class="avatar-preview-img">
-            <button class="remove-cover" (click)="avatarFile = null; avatarPreview = null">×</button>
-          </div>
-          <div class="file-upload mini" *ngIf="!avatarPreview">
-            <input type="file" (change)="onAvatarImageSelected($event)" accept="image/*" id="avatar-input">
-            <label for="avatar-input">
-              <span class="icon">🖼️</span>
-              <span class="text">Subir Imagen</span>
-            </label>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Nombre del Personaje</label>
-          <input type="text" [(ngModel)]="editingAvatar.name" placeholder="Ej: Drácula">
-        </div>
-        <div class="form-group">
-          <label>Descripción</label>
-          <textarea [(ngModel)]="editingAvatar.description" rows="2" placeholder="Apariencia, rol en la historia..."></textarea>
-        </div>
-        <div class="form-group">
-          <label>System Prompt (IA) <span style="color:#4a5568;font-weight:400">— cómo debe responder</span></label>
-          <textarea [(ngModel)]="editingAvatar.system_prompt" rows="3" placeholder="Eres el personaje X y actúas así..."></textarea>
-        </div>
-        <div class="form-group">
-          <label>Mensaje de Saludo</label>
-          <input type="text" [(ngModel)]="editingAvatar.greeting_message" placeholder="Ej: Bienvenido a mi castillo...">
-        </div>
-        <div class="checkbox-group">
-          <label class="switch">
-            <input type="checkbox" [(ngModel)]="editingAvatar.is_author">
-            <span class="slider"></span>
-            ¿Es el Autor / Narrador?
-          </label>
-        </div>
+  <!-- ZONA DE PELIGRO (Super Abajo) -->
+  <div class="danger-zone card" *ngIf="isEditing">
+    <div class="danger-header">
+      <span class="icon">⚠️</span>
+      <div class="text">
+        <h4>Zona de Peligro</h4>
+        <p>Acciones irreversibles que afectan permanentemente a este libro.</p>
       </div>
-
-      <footer class="modal-footer">
-        <button class="save-btn" (click)="saveAvatar()">💾 Guardar Personaje</button>
-      </footer>
+    </div>
+    <div class="danger-actions">
+      <button class="delete-book-btn" (click)="deleteBook()">
+        🗑️ Eliminar permanentemente este libro
+      </button>
     </div>
   </div>
+
 </div>

@@ -142,4 +142,10 @@ export class AiChatComponent implements OnInit, AfterViewChecked {
   goBack() {
     this.router.navigate(['/characters']);
   }
+
+  formatMessage(text: string): string {
+    if (!text) return '';
+    // Reemplaza **texto** por <strong>texto</strong>
+    return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  }
 }

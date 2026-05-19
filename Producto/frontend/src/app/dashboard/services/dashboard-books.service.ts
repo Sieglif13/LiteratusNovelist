@@ -34,13 +34,16 @@ export class DashboardBooksService {
     return this.http.post<any>(`${this.apiUrl}/books/parse-epub/`, formData);
   }
 
-  saveBook(bookData: any, epubFile?: File, coverFile?: File, id?: string): Observable<any> {
+  saveBook(bookData: any, epubFile?: File, coverFile?: File, id?: string, pdfFile?: File): Observable<any> {
     const formData = new FormData();
     if (epubFile) {
       formData.append('epub', epubFile);
     }
     if (coverFile) {
       formData.append('cover', coverFile);
+    }
+    if (pdfFile) {
+      formData.append('pdf_file', pdfFile);
     }
     
     // Añadir metadatos
@@ -54,6 +57,8 @@ export class DashboardBooksService {
     formData.append('price', bookData.price || '990');
     formData.append('tags', bookData.tags || '');
     formData.append('status', bookData.status || 'draft');
+    formData.append('difficulty_level', bookData.difficulty_level || 'intermediate');
+    formData.append('copyright_notice', bookData.copyright_notice || '');
     formData.append('is_published', String(bookData.is_published));
     formData.append('is_featured', String(bookData.is_featured));
     
@@ -80,16 +85,29 @@ export class DashboardBooksService {
     return this.http.delete<any>(`${this.apiUrl}/books/${id}/`);
   }
 
-  saveAvatar(data: any, file?: File, editionId?: string, avatarId?: string): Observable<any> {
+  getAvatarDetail(id: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/avatars/${id}/`);
+  }
+
+  saveAvatar(data: any, file?: File, editionId?: string, avatarId?: string, videoFile?: File): Observable<any> {
     const formData = new FormData();
     if (file) {
       formData.append('avatar_image', file);
     }
+    if (videoFile) {
+      formData.append('video_avatar', videoFile);
+    }
     formData.append('name', data.name);
     formData.append('description', data.description || '');
     formData.append('system_prompt', data.system_prompt || '');
+    formData.append('behavioral_context', data.behavioral_context || '');
+    formData.append('sample_dialogues', data.sample_dialogues || '');
     formData.append('greeting_message', data.greeting_message || '');
     formData.append('is_author', String(data.is_author || false));
+    formData.append('is_major_character', String(data.is_major_character !== false));
+    formData.append('unlock_at_chapter', String(data.unlock_at_chapter || 0));
+    formData.append('temperature', String(data.temperature ?? 0.70));
+    formData.append('model_name', data.model_name || 'gemini-2.5-flash');
     if (editionId) {
       formData.append('edition_id', editionId);
     }

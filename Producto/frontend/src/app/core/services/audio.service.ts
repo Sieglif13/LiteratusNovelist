@@ -92,10 +92,27 @@ export class AudioService {
   }
 
   // ── MODO NATIVO ──────────────────────────────────────────────────
-  playNative(text: string) {
+  playNative(text: string, startWordIndex: number = 0) {
     this.currentText = text;
-    this.lastCharIndex = 0;
-    this.playNativeFrom(text, 0);
+    if (startWordIndex > 0) {
+      const words = text.split(/(\s+)/);
+      let charIdx = 0;
+      let wordCount = 0;
+      for (let i = 0; i < words.length; i++) {
+        if (words[i].trim().length > 0) {
+          if (wordCount === startWordIndex) {
+            break;
+          }
+          wordCount++;
+        }
+        charIdx += words[i].length;
+      }
+      this.lastCharIndex = charIdx;
+      this.playNativeFrom(text, charIdx);
+    } else {
+      this.lastCharIndex = 0;
+      this.playNativeFrom(text, 0);
+    }
   }
 
   private playNativeFrom(text: string, fromChar: number) {

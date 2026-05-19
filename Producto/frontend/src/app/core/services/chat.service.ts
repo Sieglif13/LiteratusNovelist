@@ -39,15 +39,24 @@ export class ChatService {
     return this.http.get<any>(`${environment.apiUrl}users/profile/`);
   }
 
+  private isFetchingInk = false;
+
   // Carga inicial del balance desde el perfil
   loadInitialInk() {
+    if (this.isFetchingInk) return;
+    
+    this.isFetchingInk = true;
     this.http.get<any>(`${environment.apiUrl}users/profile/`).subscribe({
       next: (profile) => {
         if (profile && profile.ink_balance !== undefined) {
           this.inkBalanceSubject.next(profile.ink_balance);
         }
+        this.isFetchingInk = false;
       },
-      error: (err) => console.error("Error cargando balance inicial", err)
+      error: (err) => {
+        console.error("Error cargando balance inicial", err);
+        this.isFetchingInk = false;
+      }
     });
   }
 

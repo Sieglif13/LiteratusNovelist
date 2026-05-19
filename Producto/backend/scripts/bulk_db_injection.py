@@ -1,4 +1,8 @@
 import os
+import sys
+import os
+# Add parent directory to path to allow importing django config
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import django
 import sys
 import json
@@ -72,8 +76,9 @@ def get_structural_chapters(book_epub, book_slug):
         for item in items:
             if isinstance(item, tuple): walk_toc(item)
             elif isinstance(item, epub.Link):
+                import urllib.parse
                 href_parts = item.href.split('#')
-                file_name = href_parts[0]
+                file_name = urllib.parse.unquote(href_parts[0])
                 anchor = href_parts[1] if len(href_parts) > 1 else None
                 doc = book_epub.get_item_with_href(file_name)
                 if not doc: continue
@@ -170,7 +175,7 @@ def main():
     print(f"\n✅ TERMINADO. Contenido inyectado sin portadas de terceros.")
 
 def sync_categories():
-    json_path = Path("elejandria_master.json")
+    json_path = Path("json_data/elejandria_master.json")
     if not json_path.exists(): return
     with open(json_path, 'r', encoding='utf-8') as f:
         master_map = json.load(f)

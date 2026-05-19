@@ -4,7 +4,7 @@
     <a routerLink="/" class="logo" style="text-decoration: none;">
       <span class="literatus">Literatus</span><span class="novelist">Novelist</span>
     </a>
-    
+
     <!-- Hamburger icon for mobile -->
     <div class="menu-icon" (click)="toggleMenu()">
       <span class="bar" [class.open]="menuOpen"></span>
@@ -17,11 +17,13 @@
       <li><a routerLink="/catalog" routerLinkActive="active-link" (click)="menuOpen = false">Explorar</a></li>
       <li><a routerLink="/authors" routerLinkActive="active-link" (click)="menuOpen = false">Autores</a></li>
       <li><a routerLink="/characters" routerLinkActive="active-link" (click)="menuOpen = false">Personajes</a></li>
-      <li *ngIf="isLoggedIn"><a routerLink="/library" routerLinkActive="active-link" (click)="menuOpen = false">Mi Biblioteca</a></li>
-      
+      <li *ngIf="isLoggedIn"><a routerLink="/library" routerLinkActive="active-link" (click)="menuOpen = false">Mi
+          Biblioteca</a></li>
+
       <li *ngIf="!isLoggedIn" class="auth-btn"><a routerLink="/login" (click)="menuOpen = false">Login</a></li>
-      <li *ngIf="!isLoggedIn" class="auth-btn highlight"><a routerLink="/register" (click)="menuOpen = false">Registrarse</a></li>
-      
+      <li *ngIf="!isLoggedIn" class="auth-btn highlight"><a routerLink="/register"
+          (click)="menuOpen = false">Registrarse</a></li>
+
       <!-- User Controls (Loggeado) -->
       <ng-container *ngIf="isLoggedIn">
         <!-- La Taberna (Ink Widget) -->
@@ -33,7 +35,8 @@
         <!-- User Profile Dropdown -->
         <li class="profile-dropdown-container">
           <button mat-icon-button [matMenuTriggerFor]="profileMenu" class="avatar-btn">
-            <img *ngIf="userAvatarUrl" [src]="userAvatarUrl" alt="Avatar" class="user-avatar" onerror="this.src='assets/images/default-avatar.png'">
+            <img *ngIf="userAvatarUrl" [src]="userAvatarUrl" alt="Avatar" class="user-avatar"
+              onerror="this.src='assets/images/default-avatar.png'">
             <div *ngIf="!userAvatarUrl" class="initials-avatar">{{ userInitials }}</div>
           </button>
           <mat-menu #profileMenu="matMenu" class="dark-premium-menu">
@@ -61,4 +64,3 @@
 <main class="container" [class.dashboard-mode]="isDashboard" [@routeAnimations]="prepareRoute(outlet)">
   <router-outlet #outlet="outlet"></router-outlet>
 </main>
-

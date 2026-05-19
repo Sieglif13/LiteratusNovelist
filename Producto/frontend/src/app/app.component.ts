@@ -46,10 +46,13 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.isLoggedIn) {
-      this.chatService.loadInitialInk();
-      this.loadUserProfile();
-    }
+    // Escuchar cambios en el estado de login para cargar datos
+    this.authService.isLoggedIn$.subscribe(loggedIn => {
+      if (loggedIn) {
+        this.chatService.loadInitialInk();
+        this.loadUserProfile();
+      }
+    });
 
     // Suscribirse a cambios de tinta para animar
     this.inkBalance$.subscribe(val => {

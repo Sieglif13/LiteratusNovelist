@@ -24,6 +24,7 @@ import { PaymentFailureComponent } from './catalog/payment-failure/payment-failu
 import { LibraryListComponent } from './library/library-list/library-list.component';
 import { CharacterHubComponent } from './characters/character-hub/character-hub.component';
 import { TavernDialogComponent } from './library/tavern-dialog/tavern-dialog.component';
+import { AudioVisualizerComponent } from './core/components/audio-visualizer/audio-visualizer.component';
 
 
 import { MatMenuModule } from '@angular/material/menu';
@@ -34,6 +35,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ProfileComponent } from './users/profile/profile.component';
 import { AuthorListComponent } from './catalog/author-list/author-list.component';
+import { LucideSparkles, LucideFlame, LucideStar, LucideShoppingCart, LucideBookOpen, LucidePenTool, LucideLock, LucideLandmark, LucideShieldCheck, LucideCreditCard, LucideUser, LucideUsers, LucideLogOut, LucideBarChart2, LucideHome, LucideCheck, LucideX, LucideFileText, LucidePlus, LucidePlay, LucidePause, LucideSquare, LucideInfo, LucideSearch, LucideBookmark, LucideHelpCircle, LucideMessageSquare, LucidePackage, LucideCrown, LucideCheckCircle, LucideLibrary, LucideXCircle, LucideRefreshCcw, LucideMessageCircle, LucideClock } from '@lucide/angular';
 
 @NgModule({
   declarations: [
@@ -53,7 +55,8 @@ import { AuthorListComponent } from './catalog/author-list/author-list.component
     CharacterHubComponent,
     TavernDialogComponent,
     ProfileComponent,
-    AuthorListComponent
+    AuthorListComponent,
+    AudioVisualizerComponent
   ],
   imports: [
     BrowserModule,
@@ -69,7 +72,8 @@ import { AuthorListComponent } from './catalog/author-list/author-list.component
     MatButtonModule,
     MatDividerModule,
     MatDialogModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    LucideSparkles, LucideFlame, LucideStar, LucideShoppingCart, LucideBookOpen, LucidePenTool, LucideLock, LucideLandmark, LucideShieldCheck, LucideCreditCard, LucideUser, LucideUsers, LucideLogOut, LucideBarChart2, LucideHome, LucideCheck, LucideX, LucideFileText, LucidePlus, LucidePlay, LucidePause, LucideSquare, LucideInfo, LucideSearch, LucideBookmark, LucideHelpCircle, LucideMessageSquare, LucidePackage, LucideCrown, LucideCheckCircle, LucideLibrary, LucideXCircle, LucideRefreshCcw, LucideMessageCircle, LucideClock
   ],
   providers: [
     provideHttpClient(withInterceptors([authInterceptor]))
