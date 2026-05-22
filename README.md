@@ -1,11 +1,16 @@
 <div align="center">
-  <h1>📚 Literatus Novelist</h1>
+  <h1>Literatus Novelist</h1>
   <p><b>Plataforma inmersiva de lectura interactiva potenciada por Inteligencia Artificial</b></p>
+  
+  [![Angular](https://img.shields.io/badge/Angular-18+-DD0031?style=for-the-badge&logo=angular&logoColor=white)](https://angular.io/)
+  [![Django](https://img.shields.io/badge/Django-6.x-092E20?style=for-the-badge&logo=django&logoColor=white)](https://www.djangoproject.com/)
+  [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+  [![Gemini](https://img.shields.io/badge/Google%20Gemini-8E75B2?style=for-the-badge&logo=google&logoColor=white)](https://deepmind.google/technologies/gemini/)
 </div>
 
 <br>
 
-## 📝 ¿Qué es Literatus Novelist y qué problema resuelve?
+## ¿Qué es Literatus Novelist y qué problema resuelve?
 
 En la actualidad, los hábitos de lectura tradicionales compiten constantemente contra medios de entretenimiento altamente estimulantes y de recompensa inmediata (redes sociales, videojuegos, plataformas de streaming). Esto ha generado una disminución en el interés por la literatura clásica y la lectura profunda, especialmente en el público joven.
 
@@ -13,33 +18,33 @@ En la actualidad, los hábitos de lectura tradicionales compiten constantemente 
 
 ---
 
-## 🚀 Lo que tenemos hasta el momento (Funcionalidades)
+## Lo que tenemos hasta el momento (Funcionalidades)
 
 El proyecto cuenta con una arquitectura robusta y características de vanguardia ya implementadas:
 
-- 📖 **Lector EPUB Inmersivo (Audio-Sync):** Motor de lectura web propio con sincronización de audio palabra por palabra (estilo karaoke), utilizando metadatos de alineación de tiempo generados por modelos Whisper. Incluye un **Visualizador de Ondas de Audio** interactivo que reacciona en tiempo real a la voz del personaje.
-- 🤖 **Motor de Inteligencia Artificial (Art-Engine):**
+- **Lector EPUB Inmersivo (Audio-Sync):** Motor de lectura web propio con sincronización de audio palabra por palabra (estilo karaoke), utilizando metadatos de alineación de tiempo generados por modelos Whisper. Incluye un **Visualizador de Ondas de Audio** interactivo que reacciona en tiempo real a la voz del personaje.
+- **Motor de Inteligencia Artificial (Art-Engine):**
   - **Chat Contextual:** Integración con Google Gemini 2.0 para permitir a los usuarios conversar de forma natural con los avatares de los personajes (ej. El Principito), respetando su personalidad e historia.
   - **Reconocimiento de Voz (STT):** Dictado y transcripción por voz (Web Speech API) integrado en el chat para permitir una conversación bidireccional completamente hablada con los personajes.
   - **Generación Automática:** Automatización de perfiles psicológicos, estilos de voz y sinopsis utilizando DeepSeek.
   - **Síntesis de Voz (TTS):** Narraciones generadas dinámicamente con Piper TTS para dotar a cada personaje de una voz única y expresiva.
-- 💳 **Pasarela de Pago (Transbank):** Pagos reales integrados con Webpay Plus, manejando transacciones atómicas seguras (`select_for_update`) para la adquisición de obras y recargas de billetera.
-- 🪙 **Sistema Económico (La Taberna):** Sistema de moneda virtual ("Tinta") que incentiva el uso de la plataforma, permite adquirir contenido premium y gestionar el inventario del usuario.
-- 🎛️ **Dashboard Administrativo (Literatus Nexus):** Panel de control exclusivo para la gestión de relaciones Libro-Autor, carga masiva de archivos EPUB, multimedia, administración del catálogo y un **Editor de Avatares** dedicado para cargar, recortar y asignar dinámicamente imágenes de perfil a personajes y autores.
-- ✨ **Diseño Premium UI/UX:** Interfaz desarrollada en Angular utilizando la estética *Glassmorphism*, modo oscuro (Dark Mode), tipografías modernas y animaciones fluidas para una experiencia de usuario de primera clase.
+- **Pasarela de Pago (Transbank):** Pagos reales integrados con Webpay Plus, manejando transacciones atómicas seguras (`select_for_update`) para la adquisición de obras y recargas de billetera.
+- **Sistema Económico (La Taberna):** Sistema de moneda virtual ("Tinta") que incentiva el uso de la plataforma, permite adquirir contenido premium y gestionar el inventario del usuario.
+- **Dashboard Administrativo (Literatus Nexus):** Panel de control exclusivo para la gestión de relaciones Libro-Autor, carga masiva de archivos EPUB, multimedia, administración del catálogo y un **Editor de Avatares** dedicado para cargar, recortar y asignar dinámicamente imágenes de perfil a personajes y autores.
+- **Diseño Premium UI/UX:** Interfaz desarrollada en Angular utilizando la estética *Glassmorphism*, modo oscuro (Dark Mode), tipografías modernas y animaciones fluidas para una experiencia de usuario de primera clase.
 
 ---
 
-## 🏗️ Registro de Avance (Hitos)
+## Registro de Avance (Hitos)
 
 - **Fase 1-5:** Cimientos, API REST y Frontend Base.
 - **Fase 6:** Integración con Gemini 2.0 y Chat de Personajes.
 - **Fase 7:** Migración a Vista Detalle Full-Page y Rediseño Glassmorphism.
-- **Fase 8:** Implementación de Economía de Tinta, La Taberna y Estabilización de Sesión. ✅
+- **Fase 8:** Implementación de Economía de Tinta, La Taberna y Estabilización de Sesión.
 
 ---
 
-## 🚧 Lo que falta agregar (Próximos Pasos)
+## Lo que falta agregar (Próximos Pasos)
 
 Aún existen áreas de crecimiento planeadas para completar el ciclo de vida del producto:
 
@@ -51,7 +56,7 @@ Aún existen áreas de crecimiento planeadas para completar el ciclo de vida del
 
 ---
 
-## 🛠 Stack Tecnológico
+## Stack Tecnológico
 
 | Capa | Tecnologías Clave |
 | :--- | :--- |
@@ -63,7 +68,7 @@ Aún existen áreas de crecimiento planeadas para completar el ciclo de vida del
 
 ---
 
-## 📁 Estructura del Repositorio
+## Estructura del Repositorio
 
 Cumpliendo con los estándares académicos y organizativos requeridos, el repositorio se divide en tres áreas:
 
@@ -81,7 +86,7 @@ LiteratusNovelist/
 
 ---
 
-## ⚙️ Guía de Instalación y Uso Local
+## Guía de Instalación y Uso Local
 
 Para ejecutar el proyecto en tu entorno local, dirígete a la carpeta `Producto/` y sigue estos pasos:
 
@@ -107,7 +112,7 @@ npm start
 
 ---
 
-## 🤝 Guía para Colaboradores y Pruebas (ZIP)
+## Guía para Colaboradores y Pruebas (ZIP)
 
 Si has recibido este proyecto mediante un archivo ZIP para colaborar o realizar pruebas, sigue estos pasos para configurar el entorno rápidamente:
 
@@ -124,7 +129,7 @@ Si has recibido este proyecto mediante un archivo ZIP para colaborar o realizar 
 
 ---
 
-## 👥 Equipo de Desarrollo
+## Equipo de Desarrollo
 
 Para consultar la nómina completa del equipo de desarrollo, roles y el acta de definición del proyecto, por favor revisa el archivo **`Gestion/Integrantes.txt`** y los recursos en la carpeta **`Gestion/`**.
 
@@ -134,6 +139,6 @@ Para consultar la nómina completa del equipo de desarrollo, roles y el acta de 
 
 ---
 
-## 📄 Licencia
+## Licencia
 
 Proyecto académico — Duoc UC *(Año académico 2025-2026)*
