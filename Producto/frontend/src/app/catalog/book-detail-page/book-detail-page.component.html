@@ -71,10 +71,6 @@
           <span class="badge difficulty-badge" [ngClass]="book.difficulty_level">
             {{ book.difficulty_level | titlecase }}
           </span>
-          <!-- MOOD BADGE -->
-          <span class="badge mood-badge" *ngIf="book.mood">
-            {{ getMoodEmoji(book.mood) }} {{ book.mood }}
-          </span>
           <span class="badge time-badge" *ngIf="book.estimated_reading_time">
             ⏳ {{ book.estimated_reading_time }} 
             <span class="word-count">({{ book.total_words | number }} palabras)</span>

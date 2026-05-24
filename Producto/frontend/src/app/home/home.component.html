@@ -56,7 +56,6 @@
           <div class="trending-cover-wrap">
             <img [src]="book.cover_image || 'assets/default_cover.jpg'" [alt]="book.title" class="trending-cover">
             <div class="trending-overlay">
-              <div class="overlay-mood" *ngIf="book.mood">{{ book.mood }}</div>
               <button class="overlay-cta">Ver Libro →</button>
             </div>
             <div class="neon-border"></div>
@@ -84,7 +83,6 @@
       <div class="recommended-track">
         <div class="recommended-card" *ngFor="let book of recommendedBooks; trackBy: trackBySlug"
           (click)="goToBook(book.slug)">
-          <div class="recommended-badge" *ngIf="book.mood">{{ book.mood }}</div>
           <div class="recommended-cover-box">
             <img [src]="book.cover_image || 'assets/default_cover.jpg'" [alt]="book.title">
           </div>
@@ -140,9 +138,6 @@
             <div class="pick-message">
               <div class="pick-quote-mark">"</div>
               <p>{{ getLiyumiMessage(fav) }}</p>
-            </div>
-            <div class="pick-mood" *ngIf="fav.mood">
-              Estado de ánimo: <span class="mood-tag">{{ fav.mood }}</span>
             </div>
             <button class="pick-cta" (click)="goToBook(fav.slug)">
               Explorar este libro →
@@ -207,7 +202,6 @@
           (click)="goToBook(book.slug)">
           <div class="discovery-img-wrap">
             <img [src]="book.cover_image || 'assets/default_cover.jpg'" [alt]="book.title" loading="lazy">
-            <div class="discovery-mood-badge" *ngIf="book.mood">{{ book.mood }}</div>
           </div>
           <div class="discovery-body">
             <h3 class="discovery-title">{{ book.title }}</h3>

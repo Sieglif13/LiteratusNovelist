@@ -104,7 +104,6 @@ class BookViewsStatsView(APIView):
                 'title': b.title,
                 'views': b.view_count,
                 'downloads': b.download_count,
-                'mood': b.mood,
             }
             for b in books
         ]

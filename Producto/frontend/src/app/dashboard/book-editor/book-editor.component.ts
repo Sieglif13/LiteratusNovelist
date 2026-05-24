@@ -51,7 +51,6 @@ export class BookEditorComponent implements OnInit {
       difficulty_level: ['intermediate', Validators.required],
       copyright_notice: ['Este libro electrónico está libre de restricciones de derechos de autor en Chile (según la Ley N° 17.336 de Propiedad Intelectual). Si no se encuentra en Chile, debe consultar las leyes locales para verificar que el contenido de este libro electrónico esté libre de restricciones en su país de residencia. Literatus Novelist promueve el acceso a la cultura respetando siempre los derechos vigentes.'],
       tags: [''],
-      mood: [''],
       genres: [[]], // Array de IDs de géneros
       status: ['draft', Validators.required],
       is_published: [true],
@@ -100,7 +99,6 @@ export class BookEditorComponent implements OnInit {
           difficulty_level: book.difficulty_level || 'intermediate',
           copyright_notice: book.copyright_notice || '',
           tags: book.tags.join(', '),
-          mood: book.mood,
           genres: book.genres?.map((g: any) => g.id) || [],
           status: book.status || 'published',
           is_published: book.is_published,

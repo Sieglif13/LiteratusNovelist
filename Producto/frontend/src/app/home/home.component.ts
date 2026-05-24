@@ -13,7 +13,6 @@ export interface Book {
   synopsis: string;
   is_featured: boolean;
   cover_image: string | null;
-  mood?: string;
   tags?: { name: string; slug: string }[];
   price?: number;
 }
