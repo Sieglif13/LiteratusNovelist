@@ -213,7 +213,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 GOOGLE_API_KEY = env('GOOGLE_API_KEY', default=None)
 GOOGLE_API_KEY_2 = env('GOOGLE_API_KEY_2', default=None)
 DEEPSEEK_API_KEY = env('DEEPSEEK_API_KEY', default=None)
-HUGGINGFACE_API_KEY = env('HUGGINGFACE_API_KEY', default=None)
 
 # ---------------------------------------------------------------------------
 # Webpay / Transbank
@@ -226,6 +225,4 @@ WEBPAY_RETURN_URL = env('WEBPAY_RETURN_URL', default='http://localhost:8000/api/
 FRONTEND_URL = env('FRONTEND_URL', default='http://localhost:4200')
 ELEVENLABS_API_KEY = env('ELEVENLABS_API_KEY', default='PLACEHOLDER_KEY')
 
-# RapidAPI (Gutenberg alternativo)
-RAPIDAPI_KEY = env('RAPIDAPI_KEY', default=None)
-RAPIDAPI_HOST = env('RAPIDAPI_HOST', default=None)
+

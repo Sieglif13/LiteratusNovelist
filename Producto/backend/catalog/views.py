@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django_filters.rest_framework import DjangoFilterBackend
 from library.models import UserInventory
-from .models import Book, Author, Genre
+from .models import Book, Author, Genre, Tag
 from .serializers import (
     BookListSerializer, BookDetailSerializer, BookDetailFullSerializer, 
     AuthorDetailSerializer, AuthorReadSerializer, GenreSerializer
@@ -83,7 +83,7 @@ class BookViewSet(viewsets.ReadOnlyModelViewSet):
     def recommendations(self, request):
         """
         SERVICIO DE RECOMENDACIONES INTELIGENTE.
-        Calcula el perfil del usuario basado en Mood y Tags de sus compras.
+        Calcula el perfil del usuario basado en Géneros (Categorías) y Tags de sus compras.
         """
         if not request.user.is_authenticated:
             # Usuarios anónimos ven los destacados
@@ -98,33 +98,52 @@ class BookViewSet(viewsets.ReadOnlyModelViewSet):
         ).values_list('edition__book_id', flat=True)
         
         if not owned_book_ids:
-            return Response(self.get_serializer(self.get_queryset()[:6], many=True).data)
+            # Si no tiene libros, devolver destacados o más populares
+            qs = self.get_queryset().filter(is_featured=True)[:6]
+            if not qs.exists(): qs = self.get_queryset()[:6]
+            return Response(self.get_serializer(qs, many=True).data)
 
-        # 2. Calcular "Perfil de Interés"
-        user_books = Book.objects.filter(id__in=owned_book_ids)
+        # 2. Calcular "Perfil de Interés" por Géneros y Tags
+        from django.db.models import Count, Q
         
-        # Estado de ánimo favorito
-        from django.db.models import Count
-        favorite_mood = user_books.values('mood').annotate(
-            count=Count('mood')
-        ).exclude(mood__isnull=True).order_by('-count').first()
+        # Géneros favoritos
+        favorite_genres = Genre.objects.filter(
+            books__id__in=owned_book_ids
+        ).annotate(
+            genre_count=Count('books')
+        ).order_by('-genre_count')
         
         # Tags de interés
-        user_tags = user_books.values_list('tags', flat=True).distinct()
-        user_tags = [t for t in user_tags if t is not None]
+        user_tags = Tag.objects.filter(books__id__in=owned_book_ids).values_list('id', flat=True)
 
         # 3. Buscar candidatos (excluyendo lo que ya tiene)
         candidates = self.get_queryset().exclude(id__in=owned_book_ids)
         
-        # Prioridad 1: Mismo Mood
-        if favorite_mood:
-            mood_matches = candidates.filter(mood=favorite_mood['mood'])
-            if mood_matches.count() >= 3:
-                candidates = mood_matches
+        # Si tiene géneros favoritos, filtrar/anotar por ellos
+        if favorite_genres.exists():
+            genre_ids = list(favorite_genres.values_list('id', flat=True))
+            candidates = candidates.filter(genres__id__in=genre_ids).annotate(
+                matching_genres=Count('genres', filter=Q(genres__id__in=genre_ids))
+            )
+            # Ordenar por el número de géneros coincidentes
+            order_by_fields = ['-matching_genres']
+        else:
+            order_by_fields = []
 
-        # Prioridad 2: Tags similares (si no hay suficientes con el mismo mood)
+        # Si además tiene tags de interés, podemos ordenar o filtrar secundariamente
         if user_tags:
-            candidates = candidates.filter(tags__in=user_tags).distinct()
+            tag_ids = list(user_tags)
+            candidates = candidates.annotate(
+                matching_tags=Count('tags', filter=Q(tags__id__in=tag_ids))
+            )
+            order_by_fields.append('-matching_tags')
+            
+        order_by_fields.extend(['-view_count', '-id'])
+        
+        if order_by_fields:
+            candidates = candidates.order_by(*order_by_fields).distinct()
+        else:
+            candidates = candidates.order_by('-view_count').distinct()
 
         # 4. Limitar y enviar
         serializer = self.get_serializer(candidates[:10], many=True)

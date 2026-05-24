@@ -45,8 +45,8 @@ class ChapterInline(admin.TabularInline):
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    list_display = ['title', 'mood', 'is_published', 'is_featured', 'difficulty_level']
-    list_filter = ['is_published', 'is_featured', 'difficulty_level', 'mood']
+    list_display = ['title', 'is_published', 'is_featured', 'difficulty_level']
+    list_filter = ['is_published', 'is_featured', 'difficulty_level']
     search_fields = ['title', 'synopsis']
     prepopulated_fields = {'slug': ('title',)}
     filter_horizontal = ['tags', 'genres']

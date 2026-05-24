@@ -87,7 +87,7 @@ class BookListSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Book
-        fields = ['id', 'title', 'slug', 'synopsis', 'is_featured', 'cover_image', 'genres', 'tags', 'mood', 'price']
+        fields = ['id', 'title', 'slug', 'synopsis', 'is_featured', 'cover_image', 'genres', 'tags', 'price']
 
     def get_price(self, obj):
         edition = obj.editions.first()
@@ -152,7 +152,7 @@ class BookDetailFullSerializer(BookDetailSerializer):
             'difficulty_level', 'is_published', 'reviews', 'avatars', 'estimated_reading_time',
             'is_owned', 'inventory_id', 'ink_balance', 'price', 'has_premium_narration', 
             'total_words', 'copyright_notice', 'view_count', 'download_count', 'created_at',
-            'tags', 'mood'
+            'tags'
         ]
 
     def get_avatars(self, obj):

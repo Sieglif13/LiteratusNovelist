@@ -40,7 +40,7 @@ if (Test-Path $masterJson) {
     Copy-Item $masterJson -Destination "$BackupDir/elejandria_master.json"
     Write-Host "elejandria_master.json OK." -ForegroundColor Green
 }
-Copy-Item "backend/bulk_db_injection.py" -Destination "$BackupDir/bulk_db_injection.py" -ErrorAction SilentlyContinue
+Copy-Item "backend/scripts/db_setup/bulk_db_injection.py" -Destination "$BackupDir/bulk_db_injection.py" -ErrorAction SilentlyContinue
 
 # 4. Finalizar
 Copy-Item $envFile -Destination "$BackupDir/env_reference.txt"

@@ -237,20 +237,7 @@ class Book(TimeStampedModel):
     view_count = models.PositiveIntegerField(default=0, help_text="Número total de visualizaciones de la ficha del libro.")
     download_count = models.PositiveIntegerField(default=0, help_text="Número total de descargas de la obra.")
 
-    # ── CAMPOS DE INTEGRACIÓN GUTENBERG ──────────────────────────────────────
-    gutenberg_id = models.IntegerField(
-        unique=True,
-        null=True,
-        blank=True,
-        help_text="ID numérico del libro en Project Gutenberg. Usado para sincronización y deduplicación."
-    )
-    text_file_path = models.CharField(
-        max_length=512,
-        blank=True,
-        default='',
-        help_text="Ruta relativa dentro de MEDIA_ROOT al archivo de texto completo guardado en el servidor (gutenberg_texts/{id}/full_text.txt)."
-    )
-    
+
     cover_image = models.ImageField(
         upload_to='book_covers/',
         null=True,
@@ -264,27 +251,6 @@ class Book(TimeStampedModel):
     # Recomendación Temática
     tags = models.ManyToManyField(Tag, related_name='books', blank=True)
     
-    class MoodChoices(models.TextChoices):
-        HAPPY = 'Feliz', 'Feliz'
-        SAD = 'Triste', 'Triste'
-        MYSTERIOUS = 'Misterioso', 'Misterioso'
-        TENSE = 'Tenso', 'Tenso'
-        ROMANTIC = 'Romántico', 'Romántico'
-        EPIC = 'Épico', 'Épico'
-        MELANCHOLIC = 'Melancólico', 'Melancólico'
-        INSPIRING = 'Inspirador', 'Inspirador'
-        PHILOSOPHICAL = 'Filosófico', 'Filosófico'
-        DARK = 'Oscuro', 'Oscuro'
-        ADVENTUROUS = 'Aventurero', 'Aventurero'
-
-    mood = models.CharField(
-        max_length=150,
-        choices=MoodChoices.choices,
-        blank=True,
-        null=True,
-        help_text="Estado de ánimo general de la obra para el recomendador."
-    )
-
     class Meta:
         verbose_name = 'Book'
         verbose_name_plural = 'Books'
@@ -324,33 +290,44 @@ class Book(TimeStampedModel):
     @staticmethod
     def get_recommended_for_user(user):
         """
-        Calcula el 'mood' favorito del usuario basado en su historial 
-        y recomienda libros no leídos con ese mood.
+        Calcula los géneros favoritos del usuario basados en su historial 
+        y recomienda libros no leídos de esos géneros y tags similares.
         """
         from library.models import UserInventory
-        from django.db.models import Count
-
-        # Obtener los moods de los libros del usuario (excluyendo vacíos)
-        user_books_moods = UserInventory.objects.filter(
-            user=user, 
-            edition__book__mood__isnull=False
-        ).values('edition__book__mood').annotate(
-            mood_count=Count('edition__book__mood')
-        ).order_by('-mood_count')
-
-        if not user_books_moods.exists():
-            return Book.objects.none()
-
-        favorite_mood = user_books_moods.first()['edition__book__mood']
+        from django.db.models import Count, Q
 
         # Obtener IDs de libros que el usuario ya tiene
         user_book_ids = UserInventory.objects.filter(user=user).values_list('edition__book_id', flat=True)
 
-        # Retornar libros con el mismo mood que no tenga
+        if not user_book_ids:
+            return Book.objects.filter(is_published=True, is_featured=True)[:5]
+
+        # Obtener los géneros de los libros que posee
+        favorite_genres = Genre.objects.filter(
+            books__id__in=user_book_ids
+        ).annotate(
+            genre_count=Count('books')
+        ).order_by('-genre_count')
+
+        if not favorite_genres.exists():
+            # Si no hay géneros, intentar con tags
+            user_tags = Tag.objects.filter(books__id__in=user_book_ids).distinct()
+            return Book.objects.filter(
+                is_published=True,
+                tags__in=user_tags
+            ).exclude(id__in=user_book_ids).distinct()[:5]
+
+        # Recomendar libros que compartan los géneros favoritos del usuario
+        # Ordenados por la cantidad de géneros favoritos que tienen en común y vistas
+        genre_ids = favorite_genres.values_list('id', flat=True)
         return Book.objects.filter(
-            mood=favorite_mood,
+            genres__id__in=genre_ids,
             is_published=True
-        ).exclude(id__in=user_book_ids)[:5]
+        ).exclude(
+            id__in=user_book_ids
+        ).annotate(
+            shared_genre_count=Count('genres', filter=Q(genres__id__in=genre_ids))
+        ).order_by('-shared_genre_count', '-view_count').distinct()[:5]
 
     def __str__(self):
         return self.title

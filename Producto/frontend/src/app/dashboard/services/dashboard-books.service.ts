@@ -53,7 +53,6 @@ export class DashboardBooksService {
       formData.append('author_id', bookData.author_id);
     }
     formData.append('synopsis', bookData.synopsis);
-    formData.append('mood', bookData.mood || '');
     formData.append('price', bookData.price || '990');
     formData.append('tags', bookData.tags || '');
     formData.append('status', bookData.status || 'draft');

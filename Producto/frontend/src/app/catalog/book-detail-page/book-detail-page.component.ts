@@ -160,15 +160,6 @@ export class BookDetailPageComponent implements OnInit, AfterViewInit, OnDestroy
     this.liyumi.stopSpeaking();
   }
 
-  getMoodEmoji(mood: string): string {
-    const moodMap: Record<string, string> = {
-      'Feliz': '😊', 'Triste': '😢', 'Misterioso': '🔮', 'Tenso': '⚡',
-      'Romántico': '💕', 'Épico': '⚔️', 'Melancólico': '🌧️',
-      'Inspirador': '✨', 'Filosófico': '🤔', 'Oscuro': '🌑', 'Aventurero': '🗺️'
-    };
-    return moodMap[mood] || '📖';
-  }
-
   handleAction(): void {
     if (!this.auth.isLoggedIn()) {
       this.router.navigate(['/login']);

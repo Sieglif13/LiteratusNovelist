@@ -31,7 +31,6 @@ def backup_book_to_media(book):
         'title': book.title,
         'slug': book.slug,
         'synopsis': book.synopsis,
-        'mood': book.mood,
         'authors': [a.full_name for a in book.authors.all()],
         'tags': [t.name for t in book.tags.all()],
         'chapters_count': book.chapters.count()
@@ -66,7 +65,6 @@ class BookListAdminView(APIView):
                 'id': str(b.pk),
                 'title': b.title,
                 'slug': b.slug,
-                'mood': b.mood,
                 'is_published': b.is_published,
                 'is_featured': b.is_featured,
                 'authors': [a.full_name for a in b.authors.all()],
@@ -189,7 +187,6 @@ class BookSaveView(APIView):
                     title=title,
                     slug=book_slug,
                     synopsis=data.get('synopsis', ''),
-                    mood=data.get('mood', '')[:20] if data.get('mood') else '',
                     status=data.get('status', Book.StatusChoices.DRAFT),
                     difficulty_level=data.get('difficulty_level', Book.DifficultyChoices.INTERMEDIATE),
                     copyright_notice=data.get('copyright_notice', ''),
@@ -307,7 +304,6 @@ class BookDetailAdminView(APIView):
             'title': book.title,
             'slug': book.slug,
             'synopsis': book.synopsis,
-            'mood': book.mood,
             'difficulty_level': book.difficulty_level,
             'copyright_notice': book.copyright_notice,
             'is_published': book.is_published,
@@ -348,8 +344,6 @@ class BookDetailAdminView(APIView):
                 book.title = data['title']
             if 'synopsis' in data:
                 book.synopsis = data['synopsis']
-            if 'mood' in data:
-                book.mood = data['mood'][:20]
             
             if 'is_published' in data:
                 book.is_published = str(data['is_published']).lower() == 'true'
