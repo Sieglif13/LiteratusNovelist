@@ -3052,4 +3052,40 @@
 .theme-sepia .progress-hide-dropdown option {
   background: #f4ecd8;
   color: #5b4636;
-}
+}
+
+/* LECTURA BIÓNICA Y COLORES DE CONTRASTE (SIN DESPLAZAMIENTO DE TEXTO) */
+.html-reader .bionic-bold {
+  display: inline;
+  font-weight: normal; /* Mantiene el ancho original de la fuente para que el texto NO salte */
+  text-shadow: 0.6px 0 0 currentColor; /* Simula la negrita de manera uniforme sin alterar el espaciado */
+}
+
+/* Modo Oscuro */
+.theme-dark .html-reader .bionic-bold {
+  color: #60a5fa; /* Azul brillante premium con excelente contraste en fondo oscuro */
+  text-shadow: 0.8px 0 0 currentColor; /* Un poco más de contraste simulado en oscuro */
+}
+.theme-dark .html-reader .bionic-muted {
+  opacity: 0.55;
+  color: #94a3b8;
+}
+
+/* Modo Claro */
+.theme-light .html-reader .bionic-bold {
+  color: #000000; /* Negro puro */
+}
+.theme-light .html-reader .bionic-muted {
+  opacity: 0.55;
+  color: #475569;
+}
+
+/* Modo Sepia */
+.theme-sepia .html-reader .bionic-bold {
+  color: #1e110a; /* Marrón oscuro muy profundo para contraste */
+}
+.theme-sepia .html-reader .bionic-muted {
+  opacity: 0.55;
+  color: #796a5f;
+}
+
