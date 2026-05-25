@@ -32,10 +32,15 @@
       <!-- Selector de Tipo de Letra -->
       <div class="font-family-selector">
         <select class="font-family-dropdown" [value]="currentFontFamily" (change)="setFontFamily($any($event.target).value)" title="Tipografía de lectura">
-          <option value="serif">📖 Serif (Libro)</option>
-          <option value="sans">Outfit (Moderna)</option>
-          <option value="dyslexic">Comic (Fácil lectura)</option>
-          <option value="medieval">🛡️ Medieval</option>
+          <option value="serif">Serif</option>
+          <option value="sans">Outfit</option>
+          <option value="dyslexic">Comic Neue</option>
+          <option value="medieval">Cinzel</option>
+          <option value="garamond">Garamond</option>
+          <option value="georgia">Georgia</option>
+          <option value="palatino">Palatino</option>
+          <option value="opensans">Open Sans</option>
+          <option value="helvetica">Helvetica</option>
         </select>
       </div>
 
@@ -43,24 +48,40 @@
         <button (click)="changeFontSize(-2)" title="Disminuir letra">A-</button>
         <button (click)="changeFontSize(2)" title="Aumentar letra">A+</button>
       </div>
-      <div class="theme-selector">
-        <button class="theme-btn dark"  (click)="setTheme('dark')"  [class.active]="currentTheme === 'dark'"></button>
-        <button class="theme-btn light" (click)="setTheme('light')" [class.active]="currentTheme === 'light'"></button>
-        <button class="theme-btn sepia" (click)="setTheme('sepia')" [class.active]="currentTheme === 'sepia'"></button>
+
+      <!-- Selector de Tema (Fondo) -->
+      <div class="theme-selector-dropdown">
+        <select class="theme-dropdown" [value]="currentTheme" (change)="setTheme($any($event.target).value)" title="Tema de fondo">
+          <option value="light">Claro</option>
+          <option value="sepia">Sepia</option>
+          <option value="dark">Oscuro</option>
+        </select>
       </div>
+
+      <!-- Selector de Comportamiento de Barra de Progreso -->
+      <div class="progress-hide-selector">
+        <select class="progress-hide-dropdown" [value]="hideProgressOnScroll ? 'hide' : 'keep'" (change)="setHideProgress($any($event.target).value === 'hide')" title="Comportamiento de barra de progreso">
+          <option value="hide">Ocultar línea</option>
+          <option value="keep">Fijar línea</option>
+        </select>
+      </div>
+
       <button class="toc-trigger-btn" (click)="toggleAudioPanel()" title="Narración AI" [class.active]="isAudioPanelOpen">
-        <span class="icon">🔊</span>
+        <svg lucideVolume2 [size]="20" class="lucide-icon"></svg>
       </button>
       <button class="toc-trigger-btn" (click)="toggleToc()" title="Índice de capítulos" [class.active]="isTocOpen">
         <span class="icon">☰</span>
       </button>
     </div>
-    
-    <!-- Barra de progreso de lectura (Wattpad style) -->
-    <div class="reading-progress-container">
-      <div class="reading-progress-bar" [style.width.%]="chapterScrollPercent"></div>
-    </div>
   </header>
+
+  <!-- Barra de progreso de lectura (Wattpad style) fuera del header para que no se oculte forzosamente -->
+  <div class="reading-progress-container"
+       [class.toolbar-hidden]="isToolbarHidden"
+       [class.hide-on-scroll]="hideProgressOnScroll">
+    <div class="reading-progress-bar" [style.width.%]="chapterScrollPercent"></div>
+  </div>
+
 
   <!-- ═══════════════════════════════════════════════════════════════ -->
   <!-- OVERLAY COMPARTIDO (click fuera cierra cualquier panel)         -->

@@ -63,10 +63,11 @@ export class ReaderComponent implements OnInit, OnDestroy {
   // ── UX ───────────────────────────────────────────────────────────
   fontSize: number = 18;
   currentTheme: 'dark' | 'light' | 'sepia' = 'dark';
-  currentFontFamily: 'sans' | 'serif' | 'dyslexic' | 'medieval' = 'serif';
+  currentFontFamily: 'sans' | 'serif' | 'dyslexic' | 'medieval' | 'garamond' | 'georgia' | 'palatino' | 'opensans' | 'helvetica' = 'serif';
   isTocOpen: boolean = false;
   lastScrollTop: number = 0;
   isToolbarHidden: boolean = false;
+  hideProgressOnScroll: boolean = true;
 
   // ── PERSONAJES / CHAT ─────────────────────────────────────────────
   isCharPanelOpen: boolean = false;
@@ -166,8 +167,14 @@ export class ReaderComponent implements OnInit, OnDestroy {
     this.loadInkBalance();
 
     const savedFont = localStorage.getItem('reader-font-family');
-    if (savedFont === 'sans' || savedFont === 'serif' || savedFont === 'dyslexic' || savedFont === 'medieval') {
-      this.currentFontFamily = savedFont;
+    const validFonts = ['sans', 'serif', 'dyslexic', 'medieval', 'garamond', 'georgia', 'palatino', 'opensans', 'helvetica'];
+    if (savedFont && validFonts.includes(savedFont)) {
+      this.currentFontFamily = savedFont as any;
+    }
+
+    const savedHide = localStorage.getItem('reader-hide-progress');
+    if (savedHide !== null) {
+      this.hideProgressOnScroll = savedHide === 'true';
     }
 
     // Auto-abrir chat si venimos redirigidos por un personaje
@@ -354,7 +361,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
     this.applyFontSize();
   }
 
-  setFontFamily(font: 'sans' | 'serif' | 'dyslexic' | 'medieval') {
+  setFontFamily(font: 'sans' | 'serif' | 'dyslexic' | 'medieval' | 'garamond' | 'georgia' | 'palatino' | 'opensans' | 'helvetica') {
     this.currentFontFamily = font;
     localStorage.setItem('reader-font-family', font);
   }
@@ -362,6 +369,11 @@ export class ReaderComponent implements OnInit, OnDestroy {
   setTheme(theme: 'dark' | 'light' | 'sepia') {
     this.currentTheme = theme;
     this.applyTheme();
+  }
+
+  setHideProgress(value: boolean) {
+    this.hideProgressOnScroll = value;
+    localStorage.setItem('reader-hide-progress', String(value));
   }
 
   private applyFontSize() {
