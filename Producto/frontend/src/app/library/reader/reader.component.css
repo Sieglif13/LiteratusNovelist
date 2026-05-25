@@ -957,9 +957,50 @@
 }
 
 .theme-light .char-sidebar {
-  background: rgba(248, 250, 252, 0.92);
+  background: #f8fafc;
   border-right: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 6px 0 40px rgba(0, 0, 0, 0.06);
 }
+
+.theme-light .char-sidebar .sidebar-title {
+  color: #0f172a;
+}
+
+.theme-light .char-sidebar .char-name {
+  color: #0f172a;
+}
+
+.theme-light .char-sidebar .char-role,
+.theme-light .char-sidebar .char-status {
+  color: #475569;
+}
+
+.theme-light .char-sidebar .char-arrow {
+  color: rgba(0, 0, 0, 0.35);
+}
+
+.theme-light .char-sidebar .char-list-item:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.theme-light .char-sidebar .profile-name {
+  color: #0f172a;
+  text-shadow: none;
+}
+
+.theme-light .char-sidebar .profile-desc {
+  color: #334155;
+}
+
+.theme-light .char-sidebar .profile-locked {
+  background: rgba(0, 0, 0, 0.03);
+  color: #475569;
+}
+
+.theme-light .char-sidebar .profile-hero::after {
+  background: linear-gradient(to top, #f8fafc, transparent);
+}
+
 
 /* LISTA DE AVATARES */
 .avatar-list {
