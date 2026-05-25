@@ -56,13 +56,15 @@
 
 /* BARRA DE PROGRESO DE LECTURA (Estilo Wattpad) */
 .reading-progress-container {
-  position: absolute;
-  bottom: 0;
+  position: fixed;
+  top: 60px;
   left: 0;
   width: 100%;
   height: 3px;
   background: rgba(255, 255, 255, 0.1);
   overflow: hidden;
+  z-index: 1099;
+  transition: top 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .theme-light .reading-progress-container {
@@ -75,6 +77,14 @@
   width: 0%;
   transition: width 0.1s ease-out;
   box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+}
+
+.reading-progress-container.toolbar-hidden {
+  top: 0px;
+}
+
+.reading-progress-container.toolbar-hidden.hide-on-scroll {
+  top: -3px;
 }
 
 .toolbar-left {
@@ -1320,6 +1330,21 @@
 }
 .reading-canvas.font-medieval {
   font-family: 'Cinzel', 'MedievalSharp', 'Georgia', serif;
+}
+.reading-canvas.font-garamond {
+  font-family: 'EB Garamond', 'Garamond', serif;
+}
+.reading-canvas.font-georgia {
+  font-family: 'Georgia', serif;
+}
+.reading-canvas.font-palatino {
+  font-family: 'Palatino', 'Palatino Linotype', 'Book Antiqua', serif;
+}
+.reading-canvas.font-opensans {
+  font-family: 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+.reading-canvas.font-helvetica {
+  font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
 }
 
 .html-reader ::ng-deep p {
@@ -2941,12 +2966,16 @@
   100% { opacity: 1; box-shadow: 0 0 15px rgba(168, 85, 247, 0.5); }
 }
 
-/* SELECTOR DE FUENTES (TOOLBAR) */
-.font-family-selector {
+/* SELECTOR DE FUENTES, TEMAS Y PROGRESO (TOOLBAR) */
+.font-family-selector,
+.theme-selector-dropdown,
+.progress-hide-selector {
   margin-right: 0.5rem;
 }
 
-.font-family-dropdown {
+.font-family-dropdown,
+.theme-dropdown,
+.progress-hide-dropdown {
   background: rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: inherit;
@@ -2961,44 +2990,66 @@
   backdrop-filter: blur(8px);
 }
 
-.theme-light .font-family-dropdown {
+.theme-light .font-family-dropdown,
+.theme-light .theme-dropdown,
+.theme-light .progress-hide-dropdown {
   background: rgba(0, 0, 0, 0.05);
   border-color: rgba(0, 0, 0, 0.12);
 }
 
-.theme-sepia .font-family-dropdown {
+.theme-sepia .font-family-dropdown,
+.theme-sepia .theme-dropdown,
+.theme-sepia .progress-hide-dropdown {
   background: rgba(91, 70, 54, 0.08);
   border-color: rgba(91, 70, 54, 0.18);
 }
 
 .font-family-dropdown:hover,
-.font-family-dropdown:focus {
+.font-family-dropdown:focus,
+.theme-dropdown:hover,
+.theme-dropdown:focus,
+.progress-hide-dropdown:hover,
+.progress-hide-dropdown:focus {
   border-color: var(--glow-accent, #3b82f6);
   background: rgba(0, 0, 0, 0.4);
 }
 
 .theme-light .font-family-dropdown:hover,
-.theme-light .font-family-dropdown:focus {
+.theme-light .font-family-dropdown:focus,
+.theme-light .theme-dropdown:hover,
+.theme-light .theme-dropdown:focus,
+.theme-light .progress-hide-dropdown:hover,
+.theme-light .progress-hide-dropdown:focus {
   background: rgba(0, 0, 0, 0.08);
 }
 
 .theme-sepia .font-family-dropdown:hover,
-.theme-sepia .font-family-dropdown:focus {
+.theme-sepia .font-family-dropdown:focus,
+.theme-sepia .theme-dropdown:hover,
+.theme-sepia .theme-dropdown:focus,
+.theme-sepia .progress-hide-dropdown:hover,
+.theme-sepia .progress-hide-dropdown:focus {
   background: rgba(91, 70, 54, 0.15);
 }
 
 /* Opciones del select en modo oscuro y claro */
-.font-family-dropdown option {
+.font-family-dropdown option,
+.theme-dropdown option,
+.progress-hide-dropdown option {
   background: #1e293b;
   color: #f1f5f9;
 }
 
-.theme-light .font-family-dropdown option {
+.theme-light .font-family-dropdown option,
+.theme-light .theme-dropdown option,
+.theme-light .progress-hide-dropdown option {
   background: #ffffff;
   color: #1e293b;
 }
 
-.theme-sepia .font-family-dropdown option {
+.theme-sepia .font-family-dropdown option,
+.theme-sepia .theme-dropdown option,
+.theme-sepia .progress-hide-dropdown option {
   background: #f4ecd8;
   color: #5b4636;
-}
+}
