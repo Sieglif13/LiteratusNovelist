@@ -66,6 +66,11 @@
         </select>
       </div>
 
+      <!-- Toggle de Lectura Biónica -->
+      <button class="toc-trigger-btn" (click)="setBionicReading(!bionicReadingActive)" title="Lectura Biónica" [class.active]="bionicReadingActive">
+        <svg lucideEye [size]="20" class="lucide-icon"></svg>
+      </button>
+
       <button class="toc-trigger-btn" (click)="toggleAudioPanel()" title="Narración AI" [class.active]="isAudioPanelOpen">
         <svg lucideVolume2 [size]="20" class="lucide-icon"></svg>
       </button>
@@ -467,7 +472,10 @@
               [id]="'word-' + tok.idx"
               class="word"
               [class.active-word]="tok.idx === currentWordIndex"
-              (click)="onWordClick(tok.idx)">{{ tok.text }}</span>
+              (click)="onWordClick(tok.idx)">
+          <ng-container *ngIf="!bionicReadingActive">{{ tok.text }}</ng-container>
+          <ng-container *ngIf="bionicReadingActive"><strong>{{ tok.bionicBold }}</strong>{{ tok.bionicNormal }}</ng-container>
+        </span>
         <ng-container *ngIf="!tok.isWord && !tok.isImg">{{ tok.text }}</ng-container>
         <img *ngIf="tok.isImg" [src]="tok.src" [alt]="tok.alt || ''" class="inline-img" loading="lazy" (click)="openImageModal(tok.src)">
       </ng-container>
@@ -489,7 +497,10 @@
               <span *ngIf="tok.isWord"
                     [id]="'word-' + tok.idx"
                     class="word"
-                    (click)="onWordClick(tok.idx)">{{ tok.text }}</span>
+                    (click)="onWordClick(tok.idx)">
+                <ng-container *ngIf="!bionicReadingActive">{{ tok.text }}</ng-container>
+                <ng-container *ngIf="bionicReadingActive"><strong>{{ tok.bionicBold }}</strong>{{ tok.bionicNormal }}</ng-container>
+              </span>
               <ng-container *ngIf="!tok.isWord && !tok.isImg && !tok.isBr">{{ tok.text }}</ng-container>
               <br *ngIf="tok.isBr">
               <img *ngIf="tok.isImg" [src]="tok.src" [alt]="tok.alt || ''" class="inline-img" loading="lazy" (click)="openImageModal(tok.src)">
@@ -505,7 +516,10 @@
               <span *ngIf="tok.isWord"
                     [id]="'word-' + tok.idx"
                     class="word"
-                    (click)="onWordClick(tok.idx)">{{ tok.text }}</span>
+                    (click)="onWordClick(tok.idx)">
+                <ng-container *ngIf="!bionicReadingActive">{{ tok.text }}</ng-container>
+                <ng-container *ngIf="bionicReadingActive"><strong>{{ tok.bionicBold }}</strong>{{ tok.bionicNormal }}</ng-container>
+              </span>
               <ng-container *ngIf="!tok.isWord && !tok.isImg && !tok.isBr">{{ tok.text }}</ng-container>
               <br *ngIf="tok.isBr">
               <img *ngIf="tok.isImg" [src]="tok.src" [alt]="tok.alt || ''" class="inline-img" loading="lazy" (click)="openImageModal(tok.src)">
@@ -521,7 +535,10 @@
               <span *ngIf="tok.isWord"
                     [id]="'word-' + tok.idx"
                     class="word"
-                    (click)="onWordClick(tok.idx)">{{ tok.text }}</span>
+                    (click)="onWordClick(tok.idx)">
+                <ng-container *ngIf="!bionicReadingActive">{{ tok.text }}</ng-container>
+                <ng-container *ngIf="bionicReadingActive"><strong>{{ tok.bionicBold }}</strong>{{ tok.bionicNormal }}</ng-container>
+              </span>
               <ng-container *ngIf="!tok.isWord && !tok.isImg && !tok.isBr">{{ tok.text }}</ng-container>
               <br *ngIf="tok.isBr">
               <img *ngIf="tok.isImg" [src]="tok.src" [alt]="tok.alt || ''" class="inline-img" loading="lazy" (click)="openImageModal(tok.src)">

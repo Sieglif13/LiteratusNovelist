@@ -35,7 +35,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ProfileComponent } from './users/profile/profile.component';
 import { AuthorListComponent } from './catalog/author-list/author-list.component';
-import { LucideSparkles, LucideFlame, LucideStar, LucideShoppingCart, LucideBookOpen, LucidePenTool, LucideLock, LucideLandmark, LucideShieldCheck, LucideCreditCard, LucideUser, LucideUsers, LucideLogOut, LucideBarChart2, LucideHome, LucideCheck, LucideX, LucideFileText, LucidePlus, LucidePlay, LucidePause, LucideSquare, LucideInfo, LucideSearch, LucideBookmark, LucideHelpCircle, LucideMessageSquare, LucidePackage, LucideCrown, LucideCheckCircle, LucideLibrary, LucideXCircle, LucideRefreshCcw, LucideMessageCircle, LucideClock, LucideVolume2 } from '@lucide/angular';
+import { LucideSparkles, LucideFlame, LucideStar, LucideShoppingCart, LucideBookOpen, LucidePenTool, LucideLock, LucideLandmark, LucideShieldCheck, LucideCreditCard, LucideUser, LucideUsers, LucideLogOut, LucideBarChart2, LucideHome, LucideCheck, LucideX, LucideFileText, LucidePlus, LucidePlay, LucidePause, LucideSquare, LucideInfo, LucideSearch, LucideBookmark, LucideHelpCircle, LucideMessageSquare, LucidePackage, LucideCrown, LucideCheckCircle, LucideLibrary, LucideXCircle, LucideRefreshCcw, LucideMessageCircle, LucideClock, LucideVolume2, LucideEye } from '@lucide/angular';
 
 @NgModule({
   declarations: [
@@ -73,7 +73,7 @@ import { LucideSparkles, LucideFlame, LucideStar, LucideShoppingCart, LucideBook
     MatDividerModule,
     MatDialogModule,
     MatSnackBarModule,
-    LucideSparkles, LucideFlame, LucideStar, LucideShoppingCart, LucideBookOpen, LucidePenTool, LucideLock, LucideLandmark, LucideShieldCheck, LucideCreditCard, LucideUser, LucideUsers, LucideLogOut, LucideBarChart2, LucideHome, LucideCheck, LucideX, LucideFileText, LucidePlus, LucidePlay, LucidePause, LucideSquare, LucideInfo, LucideSearch, LucideBookmark, LucideHelpCircle, LucideMessageSquare, LucidePackage, LucideCrown, LucideCheckCircle, LucideLibrary, LucideXCircle, LucideRefreshCcw, LucideMessageCircle, LucideClock, LucideVolume2
+    LucideSparkles, LucideFlame, LucideStar, LucideShoppingCart, LucideBookOpen, LucidePenTool, LucideLock, LucideLandmark, LucideShieldCheck, LucideCreditCard, LucideUser, LucideUsers, LucideLogOut, LucideBarChart2, LucideHome, LucideCheck, LucideX, LucideFileText, LucidePlus, LucidePlay, LucidePause, LucideSquare, LucideInfo, LucideSearch, LucideBookmark, LucideHelpCircle, LucideMessageSquare, LucidePackage, LucideCrown, LucideCheckCircle, LucideLibrary, LucideXCircle, LucideRefreshCcw, LucideMessageCircle, LucideClock, LucideVolume2, LucideEye
   ],
   providers: [
     provideHttpClient(withInterceptors([authInterceptor]))

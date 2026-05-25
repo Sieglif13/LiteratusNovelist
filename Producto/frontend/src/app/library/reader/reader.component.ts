@@ -68,6 +68,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
   lastScrollTop: number = 0;
   isToolbarHidden: boolean = false;
   hideProgressOnScroll: boolean = true;
+  bionicReadingActive: boolean = false;
 
   // ── PERSONAJES / CHAT ─────────────────────────────────────────────
   isCharPanelOpen: boolean = false;
@@ -117,6 +118,8 @@ export class ReaderComponent implements OnInit, OnDestroy {
         idx: number;
         src?: string;
         alt?: string;
+        bionicBold?: string;
+        bionicNormal?: string;
       }>;
     }>;
   }> = [];
@@ -175,6 +178,11 @@ export class ReaderComponent implements OnInit, OnDestroy {
     const savedHide = localStorage.getItem('reader-hide-progress');
     if (savedHide !== null) {
       this.hideProgressOnScroll = savedHide === 'true';
+    }
+
+    const savedBionic = localStorage.getItem('reader-bionic-reading');
+    if (savedBionic !== null) {
+      this.bionicReadingActive = savedBionic === 'true';
     }
 
     // Auto-abrir chat si venimos redirigidos por un personaje
@@ -376,6 +384,42 @@ export class ReaderComponent implements OnInit, OnDestroy {
     localStorage.setItem('reader-hide-progress', String(value));
   }
 
+  setBionicReading(value: boolean) {
+    this.bionicReadingActive = value;
+    localStorage.setItem('reader-bionic-reading', String(value));
+  }
+
+  getBionicSplit(word: string): { bold: string; normal: string } {
+    if (!word) return { bold: '', normal: '' };
+    let cleanWord = word;
+    let prefix = '';
+    let suffix = '';
+    const match = word.match(/^([^\w]*)(.*?)([^\w]*)$/);
+    if (match) {
+      prefix = match[1];
+      cleanWord = match[2];
+      suffix = match[3];
+    }
+    if (cleanWord.length === 0) {
+      return { bold: prefix, normal: suffix };
+    }
+    let boldLength = 1;
+    const len = cleanWord.length;
+    if (len === 1) {
+      boldLength = 1;
+    } else if (len === 2) {
+      boldLength = 1;
+    } else if (len === 3) {
+      boldLength = 2;
+    } else {
+      boldLength = Math.ceil(len * 0.45);
+    }
+    return {
+      bold: prefix + cleanWord.substring(0, boldLength),
+      normal: cleanWord.substring(boldLength) + suffix
+    };
+  }
+
   private applyFontSize() {
     document.documentElement.style.setProperty('--font-size-reader', `${this.fontSize}px`);
   }
@@ -473,8 +517,18 @@ export class ReaderComponent implements OnInit, OnDestroy {
           const parts = (child.textContent || '').split(/(\s+)/);
           parts.forEach(part => {
             if (part.trim().length > 0) {
-              tokens.push({ text: part, isWord: true, isImg: false, isBr: false, idx: wordIdx++ });
-            } else if (part.length > 0) {
+              const split = this.getBionicSplit(part);
+              tokens.push({
+                text: part,
+                isWord: true,
+                isImg: false,
+                isBr: false,
+                idx: wordIdx++,
+                bionicBold: split.bold,
+                bionicNormal: split.normal
+              });
+            }
+ else if (part.length > 0) {
               tokens.push({ text: part, isWord: false, isImg: false, isBr: false, idx: -1 });
             }
           });
