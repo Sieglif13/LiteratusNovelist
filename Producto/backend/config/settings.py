@@ -149,12 +149,12 @@ PRIVATE_MEDIA_ROOT = BASE_DIR / 'private_media'
 # CORS
 # ---------------------------------------------------------------------------
 
-CORS_ALLOWED_ORIGINS = [
+CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[
     'http://localhost:3000',
     'http://localhost:5173',
     'http://localhost:4200',
     'http://192.168.1.8:4200',
-]
+])
 CORS_ALLOW_CREDENTIALS = True
 
 # ---------------------------------------------------------------------------
