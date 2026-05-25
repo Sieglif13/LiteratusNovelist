@@ -63,7 +63,10 @@ export class ReaderComponent implements OnInit, OnDestroy {
   // ── UX ───────────────────────────────────────────────────────────
   fontSize: number = 18;
   currentTheme: 'dark' | 'light' | 'sepia' = 'dark';
+  currentFontFamily: 'sans' | 'serif' | 'dyslexic' | 'medieval' = 'serif';
   isTocOpen: boolean = false;
+  lastScrollTop: number = 0;
+  isToolbarHidden: boolean = false;
 
   // ── PERSONAJES / CHAT ─────────────────────────────────────────────
   isCharPanelOpen: boolean = false;
@@ -161,6 +164,11 @@ export class ReaderComponent implements OnInit, OnDestroy {
     this.applyTheme();
     this.applyFontSize();
     this.loadInkBalance();
+
+    const savedFont = localStorage.getItem('reader-font-family');
+    if (savedFont === 'sans' || savedFont === 'serif' || savedFont === 'dyslexic' || savedFont === 'medieval') {
+      this.currentFontFamily = savedFont;
+    }
 
     // Auto-abrir chat si venimos redirigidos por un personaje
     this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
@@ -315,13 +323,23 @@ export class ReaderComponent implements OnInit, OnDestroy {
 
   onCanvasScroll(event: any) {
     const el = event.target;
+    const scrollTop = el.scrollTop;
+    
+    // Ocultar/mostrar barra superior al hacer scroll
+    if (scrollTop > this.lastScrollTop && scrollTop > 80) {
+      this.isToolbarHidden = true;
+    } else {
+      this.isToolbarHidden = false;
+    }
+    this.lastScrollTop = scrollTop;
+
     // Calcular porcentaje de scroll del contenedor actual
     const scrollHeight = el.scrollHeight - el.clientHeight;
-    const scrollPercent = scrollHeight > 0 ? el.scrollTop / scrollHeight : 0;
+    const scrollPercent = scrollHeight > 0 ? scrollTop / scrollHeight : 0;
     
     // Actualizar barra de progreso visual y botón "Siguiente"
     this.chapterScrollPercent = Math.min(100, Math.max(0, scrollPercent * 100));
-    this.isNearEnd = scrollPercent >= 0.98 || (scrollHeight - el.scrollTop) < 50;
+    this.isNearEnd = scrollPercent >= 0.98 || (scrollHeight - scrollTop) < 50;
 
     // Calcular página decimal exacta (ej. 1.5 significa mitad de capítulo 1)
     const exactPage = (this.currentPage - 1) + scrollPercent;
@@ -334,6 +352,11 @@ export class ReaderComponent implements OnInit, OnDestroy {
   changeFontSize(delta: number) {
     this.fontSize = Math.min(Math.max(this.fontSize + delta, 12), 32);
     this.applyFontSize();
+  }
+
+  setFontFamily(font: 'sans' | 'serif' | 'dyslexic' | 'medieval') {
+    this.currentFontFamily = font;
+    localStorage.setItem('reader-font-family', font);
   }
 
   setTheme(theme: 'dark' | 'light' | 'sepia') {

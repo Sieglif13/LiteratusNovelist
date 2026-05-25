@@ -39,7 +39,15 @@
   background: rgba(15, 23, 42, 0.6);
   backdrop-filter: blur(12px);
   z-index: 1100;
-  position: relative; /* Para la barra de progreso absoluta */
+  position: absolute; /* Posicionamiento absoluto para que no altere el flujo al ocultarse */
+  top: 0;
+  left: 0;
+  width: 100%;
+  transition: transform 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.toolbar.hidden {
+  transform: translateY(-100%);
 }
 
 .theme-light .toolbar {
@@ -1295,9 +1303,23 @@
 .reading-canvas {
   flex: 1;
   overflow-y: auto;
-  padding: 2rem calc((100% - 70ch) / 2) 150px calc((100% - 70ch) / 2); /* Mantenemos el ancho óptimo y damos espacio al botón final */
+  padding: 80px calc((100% - 70ch) / 2) 150px calc((100% - 70ch) / 2); /* Incrementado top a 80px por toolbar absoluta */
   scroll-behavior: smooth;
   scrollbar-width: thin;
+}
+
+/* CONFIGURACIÓN DINÁMICA DE FUENTES */
+.reading-canvas.font-serif {
+  font-family: 'Merriweather', 'Georgia', serif;
+}
+.reading-canvas.font-sans {
+  font-family: 'Outfit', 'Montserrat', sans-serif;
+}
+.reading-canvas.font-dyslexic {
+  font-family: 'Comic Neue', 'Comic Sans MS', sans-serif;
+}
+.reading-canvas.font-medieval {
+  font-family: 'Cinzel', 'MedievalSharp', 'Georgia', serif;
 }
 
 .html-reader ::ng-deep p {
@@ -1306,7 +1328,7 @@
   margin-bottom: 0.8em;
   text-align: justify;
   text-indent: 2em; /* Sangría de primera línea */
-  font-family: 'Merriweather', 'Georgia', serif;
+  font-family: inherit; /* Hereda de la clase del canvas */
 }
 
 .html-reader ::ng-deep h1 + p, 
@@ -1332,14 +1354,14 @@
 .chapter-heading {
   margin-top: 3.5rem;
   margin-bottom: 2rem;
-  font-family: 'Outfit', sans-serif;
+  font-family: inherit; /* Hereda de la clase del canvas */
   text-align: center;
   font-weight: 700;
   line-height: 1.3;
 }
 
 .chapter-title-main {
-  font-family: 'Outfit', sans-serif;
+  font-family: inherit; /* Hereda de la clase del canvas */
   font-size: calc(var(--font-size-reader) * 1.8);
   font-weight: 800;
   text-align: center;
@@ -2917,4 +2939,66 @@
 @keyframes fadeInOut {
   0% { opacity: 0.8; box-shadow: 0 0 5px rgba(168, 85, 247, 0.2); }
   100% { opacity: 1; box-shadow: 0 0 15px rgba(168, 85, 247, 0.5); }
+}
+
+/* SELECTOR DE FUENTES (TOOLBAR) */
+.font-family-selector {
+  margin-right: 0.5rem;
+}
+
+.font-family-dropdown {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: inherit;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.theme-light .font-family-dropdown {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+.theme-sepia .font-family-dropdown {
+  background: rgba(91, 70, 54, 0.08);
+  border-color: rgba(91, 70, 54, 0.18);
+}
+
+.font-family-dropdown:hover,
+.font-family-dropdown:focus {
+  border-color: var(--glow-accent, #3b82f6);
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.theme-light .font-family-dropdown:hover,
+.theme-light .font-family-dropdown:focus {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.theme-sepia .font-family-dropdown:hover,
+.theme-sepia .font-family-dropdown:focus {
+  background: rgba(91, 70, 54, 0.15);
+}
+
+/* Opciones del select en modo oscuro y claro */
+.font-family-dropdown option {
+  background: #1e293b;
+  color: #f1f5f9;
+}
+
+.theme-light .font-family-dropdown option {
+  background: #ffffff;
+  color: #1e293b;
+}
+
+.theme-sepia .font-family-dropdown option {
+  background: #f4ecd8;
+  color: #5b4636;
 }
