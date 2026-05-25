@@ -3,7 +3,7 @@
   <!-- ═══════════════════════════════════════════════════════════════ -->
   <!-- TOOLBAR SUPERIOR (FIJO)                                         -->
   <!-- ═══════════════════════════════════════════════════════════════ -->
-  <header class="toolbar glass-panel">
+  <header class="toolbar glass-panel" [class.hidden]="isToolbarHidden">
 
     <!-- Izquierda: Volver + Info + Personajes -->
     <div class="toolbar-left">
@@ -28,6 +28,17 @@
         <span class="ink-icon">✒</span>
         <span class="ink-number">{{ inkBalance }}</span>
       </div>
+      
+      <!-- Selector de Tipo de Letra -->
+      <div class="font-family-selector">
+        <select class="font-family-dropdown" [value]="currentFontFamily" (change)="setFontFamily($any($event.target).value)" title="Tipografía de lectura">
+          <option value="serif">📖 Serif (Libro)</option>
+          <option value="sans">Outfit (Moderna)</option>
+          <option value="dyslexic">Comic (Fácil lectura)</option>
+          <option value="medieval">🛡️ Medieval</option>
+        </select>
+      </div>
+
       <div class="font-controls">
         <button (click)="changeFontSize(-2)" title="Disminuir letra">A-</button>
         <button (click)="changeFontSize(2)" title="Aumentar letra">A+</button>
@@ -426,7 +437,7 @@
   <!-- ═══════════════════════════════════════════════════════════════ -->
   <!-- LIENZO DE LECTURA (renderizado nativo Angular para highlighting) -->
   <!-- ═══════════════════════════════════════════════════════════════ -->
-  <main class="reading-canvas html-reader" (scroll)="onCanvasScroll($event)">
+  <main class="reading-canvas html-reader" [ngClass]="'font-' + currentFontFamily" (scroll)="onCanvasScroll($event)">
     <!-- Título principal del capítulo -->
     <!-- Título principal del capítulo con soporte para highlighting -->
     <h1 class="chapter-title-main">
