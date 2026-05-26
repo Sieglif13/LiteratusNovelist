@@ -819,6 +819,8 @@
 /* RESPONSIVE */
 @media (max-width: 900px) {
   .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
   }
   
   .left-col {
@@ -828,11 +830,12 @@
   }
   
   .cover-wrapper {
-    max-width: 300px;
+    max-width: 250px;
+    margin: 0 auto;
   }
   
   .book-title {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     text-align: center;
   }
   

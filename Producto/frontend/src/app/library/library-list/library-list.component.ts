@@ -21,8 +21,8 @@ export class LibraryListComponent implements OnInit {
     this.isLoading = true;
     this.api.get<any[]>('library/inventory/').subscribe({
       next: (res: any) => {
-        // Manejar tanto respuesta paginada como lista directa
-        this.inventoryItems = res.results || res;
+        // Asegurarnos de que asigne el arreglo correcto ya sea de paginación o directo
+        this.inventoryItems = Array.isArray(res) ? res : (res.results || []);
         this.isLoading = false;
       },
       error: (err) => {

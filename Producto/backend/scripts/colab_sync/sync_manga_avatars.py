@@ -31,8 +31,8 @@ def main():
     not_found = 0
 
     for uuid_folder in subfolders:
-        calm_image_relative = f"ai_avatars/manga_assets/{uuid_folder}/calm.webp"
-        calm_image_path = os.path.join('media', calm_image_relative)
+        calm_image_relative = f"manga_assets/{uuid_folder}/calm.webp"
+        calm_image_path = os.path.join('media', 'ai_avatars', calm_image_relative)
 
         # Verificar que la pose 'calm.webp' realmente exista
         if not os.path.exists(calm_image_path):
