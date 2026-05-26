@@ -11,19 +11,19 @@ django.setup()
 
 from catalog.models import Author
 
-def sync_portraits(portraits_dir='covers_finales'):
+def sync_portraits(portraits_dir='media/authors/photos'):
     """
     Sincroniza las imágenes generadas por la IA con los autores en la base de datos.
     Busca archivos .jpg cuyo nombre coincida con el slug del autor.
     """
     if not os.path.exists(portraits_dir):
-        print(f"❌ Error: No se encontró la carpeta '{portraits_dir}'. Asegúrate de extraer las imágenes ahí.")
+        print(f"Error: No se encontro la carpeta '{portraits_dir}'. Asegurate de extraer las imagenes ahi.")
         return
 
     authors_updated = 0
     not_found = 0
 
-    print(f"🚀 Iniciando sincronización desde la carpeta '{portraits_dir}'...")
+    print(f"Iniciando sincronizacion desde la carpeta '{portraits_dir}'...")
 
     for filename in os.listdir(portraits_dir):
         if not filename.endswith('.jpg'):
@@ -35,24 +35,24 @@ def sync_portraits(portraits_dir='covers_finales'):
         try:
             author = Author.objects.get(slug=slug)
             
-            # Abrimos la imagen y la asignamos al campo photo
-            file_path = os.path.join(portraits_dir, filename)
-            with open(file_path, 'rb') as f:
-                author.photo.save(filename, File(f), save=True)
+            # Asignamos la ruta relativa directamente al campo photo
+            author.photo = f"authors/photos/{filename}"
+            author.save(update_fields=['photo'])
             
-            print(f"✅ Foto asignada a: {author.full_name}")
+            print(f"Foto asignada a: {author.full_name}")
             authors_updated += 1
             
         except Author.DoesNotExist:
-            print(f"⚠️ Autor con slug '{slug}' no encontrado en la BD. Ignorando imagen.")
+            # print(f"Autor con slug '{slug}' no encontrado en la BD. Ignorando imagen.")
             not_found += 1
         except Exception as e:
-            print(f"❌ Error procesando {filename}: {e}")
+            print(f"Error procesando {filename}: {e}")
 
     print("\n--- RESUMEN ---")
     print(f"Autores actualizados: {authors_updated}")
-    print(f"Imágenes sin autor:   {not_found}")
-    print("¡Sincronización terminada! 🎉")
+    print(f"Imagenes sin autor:   {not_found}")
+    print("Sincronizacion terminada!")
 
 if __name__ == "__main__":
     sync_portraits()
+

@@ -22,55 +22,64 @@ django.setup()
 from ai_engine.models import AIAvatar
 
 # ── Configuración ──────────────────────────────────────────────────────────
-# Carpeta donde descomprimiste el ZIP de Colab
-IMAGES_FOLDER = 'media/avatars_generated'
+# Carpeta donde están los avatares
+IMAGES_FOLDER = 'media/avatars'
 
 # Carpeta destino dentro del proyecto (donde Django sirve las imágenes)
-DEST_FOLDER   = 'media/avatars'
+DEST_FOLDER   = 'media/ai_avatars'
 os.makedirs(DEST_FOLDER, exist_ok=True)
 # ──────────────────────────────────────────────────────────────────────────
 
 def main():
     if not os.path.exists(IMAGES_FOLDER):
-        print(f"❌ Carpeta no encontrada: {IMAGES_FOLDER}")
+        print(f"Carpeta no encontrada: {IMAGES_FOLDER}")
         return
 
     image_files = [f for f in os.listdir(IMAGES_FOLDER) if f.endswith('.png')]
-    print(f"📂 Imágenes encontradas en la carpeta: {len(image_files)}")
+    print(f"Imagenes encontradas en la carpeta: {len(image_files)}")
 
     synced   = 0
     missing  = 0
-    already  = 0
 
     for filename in image_files:
         avatar_id = filename.replace('.png', '')
 
         try:
-            avatar = AIAvatar.objects.get(id=avatar_id)
+            # First check if it is a valid UUID before trying to query database
+            import uuid
+            try:
+                val_uuid = uuid.UUID(avatar_id)
+            except ValueError:
+                print(f"  WARN: Ignorando archivo no-UUID: {filename}")
+                missing += 1
+                continue
+                
+            avatar = AIAvatar.objects.get(id=val_uuid)
         except AIAvatar.DoesNotExist:
-            print(f"  ⚠️  Sin match en DB: {filename}")
+            print(f"  WARN: Sin match en DB: {filename}")
             missing += 1
             continue
 
         # Copiar imagen al destino final
         src  = os.path.join(IMAGES_FOLDER, filename)
-        dest = os.path.join(DEST_FOLDER, filename)
+        dest = os.path.join(DEST_FOLDER, f"{avatar_id}.png")
         shutil.copy2(src, dest)
 
         # Asignar la ruta relativa al campo del modelo
-        # (ajusta el nombre del campo si es diferente en tu AIAvatar)
-        avatar.avatar_image = f'avatars/{filename}'
+        avatar.avatar_image = f'ai_avatars/{avatar_id}.png'
         avatar.save(update_fields=['avatar_image'])
 
         synced += 1
 
+
     print("\n" + "="*45)
-    print("📊 REPORTE DE SINCRONIZACIÓN")
+    print("REPORTE DE SINCRONIZACION")
     print("="*45)
-    print(f"✅ Avatares sincronizados : {synced}")
-    print(f"⚠️  Sin match en DB       : {missing}")
-    print(f"📊 Total imágenes         : {len(image_files)}")
+    print(f"Avatares sincronizados : {synced}")
+    print(f"Sin match en DB       : {missing}")
+    print(f"Total imagenes         : {len(image_files)}")
     print("="*45)
 
 if __name__ == '__main__':
     main()
+
