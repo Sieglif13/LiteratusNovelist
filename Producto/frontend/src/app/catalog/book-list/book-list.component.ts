@@ -36,6 +36,12 @@ export class BookListComponent implements OnInit {
   isLoading = true;
   errorMsg = '';
   totalCount = 0;
+  currentPage = 1;
+
+  get totalPages(): number {
+    const size = this.activeCategory || this.searchTerm ? 100 : 12;
+    return Math.ceil(this.totalCount / size);
+  }
 
   searchTerm = '';
   activeCategory: string | null = null;
@@ -107,9 +113,10 @@ export class BookListComponent implements OnInit {
       params = params.set('genres__name', dbName);
     }
     // Traer más resultados por página cuando hay filtro activo
-    params = params.set('page_size', this.activeCategory || this.searchTerm ? '100' : '20');
+    params = params.set('page_size', this.activeCategory || this.searchTerm ? '50' : '12');
+    params = params.set('page', this.currentPage);
 
-    this.api.get<PaginatedResponse>('catalog/books/', params).subscribe({
+    this.api.get<PaginatedResponse>(params ? 'catalog/books/' : 'catalog/books/', params).subscribe({
       next: (response) => {
         this.books = response.results;
         this.totalCount = response.count;
@@ -125,12 +132,21 @@ export class BookListComponent implements OnInit {
 
   onSearch(event: any) {
     this.searchTerm = event.target.value;
+    this.currentPage = 1;
     clearTimeout(this.searchTimeout);
     this.searchTimeout = setTimeout(() => this.fetchBooks(), 400);
   }
 
   setCategory(cat: string) {
     this.activeCategory = this.activeCategory === cat ? null : cat;
+    this.currentPage = 1;
     this.fetchBooks();
+  }
+
+  goToPage(page: number) {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.fetchBooks();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }

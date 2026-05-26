@@ -1,11 +1,12 @@
 """
 library/views.py — Vistas para la Biblioteca del Usuario.
 """
-from rest_framework import viewsets, permissions, status
+from rest_framework import viewsets, permissions, status, filters
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404
+from core.pagination import StandardResultsSetPagination
 
 from .models import UserInventory, ReadingProgress, UserBookmark
 from .serializers import UserInventorySerializer, ReadingProgressSerializer, UserBookmarkSerializer
@@ -13,15 +14,30 @@ from .serializers import UserInventorySerializer, ReadingProgressSerializer, Use
 class UserInventoryViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Gestiona la biblioteca personal del usuario autenticado.
-    No permite crear vía API (la compra se encarga de crear el UserInventory),
-    ni editar/borrar por seguridad en la auditoría.
+    - select_related: edition → book (FK directa, 1 JOIN).
+    - prefetch_related: cover_image, genres, tags y progreso de lectura (evita N+1).
+    - Paginado a 12 por página con búsqueda por título de libro.
     """
     serializer_class = UserInventorySerializer
     permission_classes = [permissions.IsAuthenticated]
+    pagination_class = StandardResultsSetPagination
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['edition__book__title', 'edition__book__synopsis']
+    ordering_fields = ['acquired_at', 'edition__book__title']
+    ordering = ['-acquired_at']
 
     def get_queryset(self):
         """Restringe el queryset estrictamente al dueño de la petición."""
-        return UserInventory.objects.filter(user=self.request.user).select_related('edition__book', 'progress')
+        return (
+            UserInventory.objects
+            .filter(user=self.request.user)
+            .select_related('edition__book', 'progress')
+            .prefetch_related(
+                'edition__book__genres',
+                'edition__book__tags',
+                'edition__avatars',
+            )
+        )
 
     @action(detail=True, methods=['GET'], url_path='download')
     def download_edition(self, request, pk=None):
