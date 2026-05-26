@@ -31,13 +31,21 @@ class GenreViewSet(viewsets.ModelViewSet):
 class AuthorViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Vista de Lectura del Catálogo de Autores.
-    Permite listar y obtener detalles completos de un autor y sus obras.
+    select_related: ninguna FK directa en Author, pero se deja preparado.
+    prefetch_related: books con sus géneros (evita N+1 al serializar la lista de obras).
     """
-    queryset = Author.objects.prefetch_related('author_books__book__genres')
+    queryset = (
+        Author.objects
+        .prefetch_related('author_books__book__genres', 'author_books__book__editions')
+        .order_by('full_name')
+    )
+    pagination_class = StandardResultsSetPagination
     lookup_field = 'slug'
-    filter_backends = [filters.SearchFilter]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['full_name', 'bio', 'nationality']
-    
+    ordering_fields = ['full_name', 'birth_year']
+    ordering = ['full_name']
+
     def get_serializer_class(self):
         if self.action == 'retrieve':
             return AuthorDetailSerializer
@@ -84,68 +92,62 @@ class BookViewSet(viewsets.ReadOnlyModelViewSet):
         """
         SERVICIO DE RECOMENDACIONES INTELIGENTE.
         Calcula el perfil del usuario basado en Géneros (Categorías) y Tags de sus compras.
+        Devuelve hasta 10 libros paginados.
         """
         if not request.user.is_authenticated:
-            # Usuarios anónimos ven los destacados
             qs = self.get_queryset().filter(is_featured=True)[:6]
-            if not qs.exists(): qs = self.get_queryset()[:6]
+            if not qs.exists():
+                qs = self.get_queryset()[:6]
             serializer = self.get_serializer(qs, many=True)
             return Response(serializer.data)
-        
+
         # 1. Obtener inventario del usuario
         owned_book_ids = UserInventory.objects.filter(
             user=request.user
         ).values_list('edition__book_id', flat=True)
-        
+
         if not owned_book_ids:
-            # Si no tiene libros, devolver destacados o más populares
             qs = self.get_queryset().filter(is_featured=True)[:6]
-            if not qs.exists(): qs = self.get_queryset()[:6]
+            if not qs.exists():
+                qs = self.get_queryset()[:6]
             return Response(self.get_serializer(qs, many=True).data)
 
-        # 2. Calcular "Perfil de Interés" por Géneros y Tags
+        # 2. Calcular perfil de interés
         from django.db.models import Count, Q
-        
-        # Géneros favoritos
+
         favorite_genres = Genre.objects.filter(
             books__id__in=owned_book_ids
-        ).annotate(
-            genre_count=Count('books')
-        ).order_by('-genre_count')
-        
-        # Tags de interés
-        user_tags = Tag.objects.filter(books__id__in=owned_book_ids).values_list('id', flat=True)
+        ).annotate(genre_count=Count('books')).order_by('-genre_count')
 
-        # 3. Buscar candidatos (excluyendo lo que ya tiene)
+        user_tags = Tag.objects.filter(
+            books__id__in=owned_book_ids
+        ).values_list('id', flat=True)
+
+        # 3. Candidatos (excluyendo los que ya posee)
         candidates = self.get_queryset().exclude(id__in=owned_book_ids)
-        
-        # Si tiene géneros favoritos, filtrar/anotar por ellos
+
+        order_by_fields = []
         if favorite_genres.exists():
             genre_ids = list(favorite_genres.values_list('id', flat=True))
             candidates = candidates.filter(genres__id__in=genre_ids).annotate(
                 matching_genres=Count('genres', filter=Q(genres__id__in=genre_ids))
             )
-            # Ordenar por el número de géneros coincidentes
-            order_by_fields = ['-matching_genres']
-        else:
-            order_by_fields = []
+            order_by_fields.append('-matching_genres')
 
-        # Si además tiene tags de interés, podemos ordenar o filtrar secundariamente
         if user_tags:
             tag_ids = list(user_tags)
             candidates = candidates.annotate(
                 matching_tags=Count('tags', filter=Q(tags__id__in=tag_ids))
             )
             order_by_fields.append('-matching_tags')
-            
-        order_by_fields.extend(['-view_count', '-id'])
-        
-        if order_by_fields:
-            candidates = candidates.order_by(*order_by_fields).distinct()
-        else:
-            candidates = candidates.order_by('-view_count').distinct()
 
-        # 4. Limitar y enviar
+        order_by_fields.extend(['-view_count', '-id'])
+        candidates = candidates.order_by(*order_by_fields).distinct()
+
+        # 4. Paginar y enviar
+        page = self.paginate_queryset(candidates[:10])
+        if page is not None:
+            return self.get_paginated_response(self.get_serializer(page, many=True).data)
         serializer = self.get_serializer(candidates[:10], many=True)
         return Response(serializer.data)
 

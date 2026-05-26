@@ -91,4 +91,18 @@
 
   </div>
 
+  <!-- Paginación -->
+  <div *ngIf="!isLoading && totalPages > 1" class="pagination-bar">
+    <span class="results-count">{{ totalCount }} libros encontrados</span>
+    <div class="pagination-controls">
+      <button class="page-btn" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+        ← Anterior
+      </button>
+      <span class="page-indicator">pág. {{ currentPage }} / {{ totalPages }}</span>
+      <button class="page-btn" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">
+        Siguiente →
+      </button>
+    </div>
+  </div>
+
 </div>
