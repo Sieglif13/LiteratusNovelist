@@ -20,8 +20,9 @@ export class LibraryListComponent implements OnInit {
   fetchInventory(): void {
     this.isLoading = true;
     this.api.get<any[]>('library/inventory/').subscribe({
-      next: (res) => {
-        this.inventoryItems = res;
+      next: (res: any) => {
+        // Manejar tanto respuesta paginada como lista directa
+        this.inventoryItems = res.results || res;
         this.isLoading = false;
       },
       error: (err) => {
