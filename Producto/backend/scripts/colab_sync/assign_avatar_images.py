@@ -33,15 +33,16 @@ for name, image_path in CHARACTER_IMAGES.items():
         print(f"✅ {name} → imagen asignada: {image_path}")
         updated += 1
     except AIAvatar.DoesNotExist:
-        print(f"⚠️  Personaje no encontrado: '{name}'")
+        print(f"WARN: Personaje no encontrado: '{name}'")
         not_found.append(name)
     except Exception as e:
-        print(f"❌ Error en '{name}': {e}")
+        print(f"Error en '{name}': {e}")
 
 print(f"\nResumen: {updated} personajes actualizados, {len(not_found)} no encontrados")
 if not_found:
     print(f"No encontrados: {not_found}")
     # Listar todos los avatares disponibles para referencia
     print("\nAvatares disponibles en la BD:")
-    for a in AIAvatar.objects.values_list('name', flat=True):
-        print(f"  - {a}")
+    for a in AIAvatar.objects.all():
+        print(f"  - Name: {a.name} | ID: {a.id} | Book: {a.edition.book.title}")
+

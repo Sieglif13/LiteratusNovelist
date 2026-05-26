@@ -90,7 +90,8 @@ class BookListSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'slug', 'synopsis', 'is_featured', 'cover_image', 'genres', 'tags', 'price']
 
     def get_price(self, obj):
-        edition = obj.editions.first()
+        editions = obj.editions.all()
+        edition = editions[0] if len(editions) > 0 else None
         return int(edition.price) if edition else 0
 
     def get_tags(self, obj):
@@ -111,7 +112,8 @@ class BookDetailSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'slug', 'synopsis', 'cover_image', 'genres', 'book_authors', 'editions', 'price', 'created_at']
 
     def get_price(self, obj):
-        edition = obj.editions.first()
+        editions = obj.editions.all()
+        edition = editions[0] if len(editions) > 0 else None
         return int(edition.price) if edition else 0
 
 class AIAvatarLightSerializer(serializers.ModelSerializer):

@@ -49,7 +49,7 @@ class BookViewSet(viewsets.ReadOnlyModelViewSet):
     Permite listar libros usando BookListSerializer (ligero)
     y detallar el libro uniendo autores y géneros (BookDetailSerializer).
     """
-    queryset = Book.objects.prefetch_related('genres', 'book_authors__author', 'editions')
+    queryset = Book.objects.prefetch_related('genres', 'book_authors__author', 'editions', 'tags')
     pagination_class = StandardResultsSetPagination
     # Filtros exactos: ?genres__name=Cuentos
     filterset_fields = {
@@ -67,7 +67,7 @@ class BookViewSet(viewsets.ReadOnlyModelViewSet):
     ordering = ['-is_featured', '-created_at'] # Por defecto los destacados y luego más nuevos
 
     def get_queryset(self):
-        qs = Book.objects.prefetch_related('genres', 'book_authors__author', 'editions')
+        qs = Book.objects.prefetch_related('genres', 'book_authors__author', 'editions', 'tags')
         genre_name = self.request.query_params.get('genres__name', None)
         if genre_name:
             qs = qs.filter(genres__name__iexact=genre_name).distinct()

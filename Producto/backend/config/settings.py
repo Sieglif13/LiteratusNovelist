@@ -141,7 +141,14 @@ USE_TZ = True
 # ---------------------------------------------------------------------------
 
 STATIC_URL = 'static/'
-MEDIA_URL = '/media/'
+
+# Si tenemos Supabase configurado, usamos su URL publica para los media files
+SUPABASE_URL = env('SUPABASE_URL', default=None)
+if SUPABASE_URL:
+    MEDIA_URL = f"{SUPABASE_URL}/storage/v1/object/public/literatus-media/"
+else:
+    MEDIA_URL = '/media/'
+
 MEDIA_ROOT = BASE_DIR / 'media'
 PRIVATE_MEDIA_ROOT = BASE_DIR / 'private_media'
 
@@ -226,3 +233,5 @@ FRONTEND_URL = env('FRONTEND_URL', default='http://localhost:4200')
 ELEVENLABS_API_KEY = env('ELEVENLABS_API_KEY', default='PLACEHOLDER_KEY')
 
 
+
+# Auto-reload trigger
