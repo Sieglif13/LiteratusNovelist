@@ -425,8 +425,16 @@ export class ReaderComponent implements OnInit, OnDestroy {
   }
 
   private applyTheme() {
+    // Aplicar en body para que los estilos globales funcionen
     document.body.classList.remove('theme-dark', 'theme-light', 'theme-sepia');
     document.body.classList.add(`theme-${this.currentTheme}`);
+    // Aplicar también en el workbench directamente para que los sidebars
+    // (position: fixed) hereden el tema aunque no estén dentro del flujo del body
+    const workbench = document.querySelector('.workbench-container');
+    if (workbench) {
+      workbench.classList.remove('theme-dark', 'theme-light', 'theme-sepia');
+      workbench.classList.add(`theme-${this.currentTheme}`);
+    }
   }
 
   // ── TOC ───────────────────────────────────────────────────────────
@@ -665,6 +673,11 @@ export class ReaderComponent implements OnInit, OnDestroy {
 
     this.totalWordCount = wordIdx;
     this.safeChapterHtml = this.sanitizer.bypassSecurityTrustHtml(''); // vaciar el fallback
+
+    // Resetear estado de scroll al cargar nuevo capítulo
+    this.chapterScrollPercent = 0;
+    this.isNearEnd = false;
+    this.lastScrollTop = 0;
 
     const viewer = document.querySelector('.reading-canvas');
     if (viewer) viewer.scrollTop = 0;
