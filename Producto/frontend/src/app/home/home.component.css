@@ -952,8 +952,16 @@
     grid-template-columns: 1fr;
     padding: 3rem 5vw 3rem;
     min-height: auto;
+    gap: 2rem;
   }
-  .hero-visual { display: none; }
+  .hero-visual { 
+    display: flex;
+    height: 300px;
+    margin-top: 1rem;
+  }
+  .hero-lottie-container {
+    max-width: 300px;
+  }
   .liyumi-pick-card { grid-template-columns: 1fr; }
   .liyumi-pick-left { display: none; }
   .liyumi-pick-deco { display: none; }
