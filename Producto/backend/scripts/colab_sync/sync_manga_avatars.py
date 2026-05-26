@@ -31,12 +31,12 @@ def main():
     not_found = 0
 
     for uuid_folder in subfolders:
-        calm_image_relative = f"ai_avatars/manga_assets/{uuid_folder}/calm.png"
+        calm_image_relative = f"ai_avatars/manga_assets/{uuid_folder}/calm.webp"
         calm_image_path = os.path.join('media', calm_image_relative)
 
-        # Verificar que la pose 'calm.png' realmente exista
+        # Verificar que la pose 'calm.webp' realmente exista
         if not os.path.exists(calm_image_path):
-            print(f"[WARN] Carpeta {uuid_folder} no tiene 'calm.png'. Saltando...")
+            print(f"[WARN] Carpeta {uuid_folder} no tiene 'calm.webp'. Saltando...")
             continue
 
         try:

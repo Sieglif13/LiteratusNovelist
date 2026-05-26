@@ -147,10 +147,12 @@ export class ReaderComponent implements OnInit, OnDestroy {
   showRestartModal: boolean = false;
   lastAudioWordIndex: number = 0;
 
-  // Video Avatar
+  // Video Avatar / Manga Avatar
   @ViewChild('avatarVideo') avatarVideoElement!: ElementRef<HTMLVideoElement>;
   showVideoAvatar: boolean = false;
   isVideoSpeaking: boolean = false;
+  activeTalkingFrame: number = 1;
+  private talkingInterval: any;
 
   // Estado IA
   aiProvider: string = 'gemini'; // 'gemini', 'deepseek', 'none'
@@ -239,7 +241,17 @@ export class ReaderComponent implements OnInit, OnDestroy {
     this.piperVoice.isSpeaking$.pipe(takeUntil(this.destroy$)).subscribe(isSpeaking => {
       this.isVideoSpeaking = isSpeaking;
       if (isSpeaking) {
-        this.activeTalkingFrame = Math.floor(Math.random() * 3) + 1;
+        if (!this.talkingInterval) {
+          this.talkingInterval = setInterval(() => {
+            this.activeTalkingFrame = Math.floor(Math.random() * 3) + 1;
+            this.cdr.detectChanges();
+          }, 200); // Cambia el frame de manga cada 200ms
+        }
+      } else {
+        if (this.talkingInterval) {
+          clearInterval(this.talkingInterval);
+          this.talkingInterval = null;
+        }
       }
       
       if (this.isCallMode && this.avatarVideoElement?.nativeElement) {
@@ -1059,24 +1071,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
     setTimeout(() => this.scrollChatToBottom(), 150);
   }
 
-  activeTalkingFrame: number = 1;
 
-  getMangaFrameUrl(): string | null {
-    if (!this.selectedAvatar || !this.selectedAvatar.avatar_image_url) return null;
-    const imgUrl = this.selectedAvatar.avatar_image_url;
-    if (!imgUrl.includes('manga_assets')) {
-      return imgUrl;
-    }
-    const lastSlashIndex = imgUrl.lastIndexOf('/');
-    const basePath = imgUrl.substring(0, lastSlashIndex);
-    if (this.isSendingMessage) {
-      return `${basePath}/thinking.png`;
-    } else if (this.isVideoSpeaking) {
-      return `${basePath}/talking_${this.activeTalkingFrame}.png`;
-    } else {
-      return `${basePath}/calm.png`;
-    }
-  }
 
   // ── CHAT ──────────────────────────────────────────────────────────
   startChat(avatar: any) {
@@ -1481,6 +1476,32 @@ export class ReaderComponent implements OnInit, OnDestroy {
   closeImageModal() {
     this.showImageModal = false;
     this.modalImageSrc = '';
+  }
+
+  // ── MANGA FRAME LOGIC ──────────────────────────────────────────────
+  getMangaFrameUrl(): string {
+    if (!this.selectedAvatar || !this.selectedAvatar.avatar_image_url) {
+      return '';
+    }
+    const url = this.selectedAvatar.avatar_image_url;
+    if (!url.includes('manga_assets')) {
+      return url; // Si no es un asset de manga, devolver tal cual
+    }
+    
+    // El base url es algo como .../manga_assets/uuid/calm.webp (o .png)
+    let base = url;
+    if (base.endsWith('calm.webp') || base.endsWith('calm.png')) {
+      base = base.substring(0, base.lastIndexOf('/') + 1);
+    } else {
+      if (!base.endsWith('/')) base += '/';
+    }
+
+    if (this.isSendingMessage) {
+      return base + 'thinking.webp';
+    } else if (this.isVideoSpeaking) {
+      return base + `talking_${this.activeTalkingFrame}.webp`;
+    }
+    return base + 'calm.webp'; // Por defecto
   }
 }
 
