@@ -45,6 +45,7 @@ export class AudioService {
   private currentMode: 'native' | 'pro' = 'native';
   private lastCharIndex: number = 0;  // Para reanudar desde posición
   private currentText:   string = '';
+  private nativeFallbackInterval: any = null;
 
   constructor() {
     this.loadVoices();
@@ -117,6 +118,10 @@ export class AudioService {
 
   private playNativeFrom(text: string, fromChar: number) {
     window.speechSynthesis.cancel();
+    if (this.nativeFallbackInterval) {
+      clearInterval(this.nativeFallbackInterval);
+      this.nativeFallbackInterval = null;
+    }
     this.currentMode = 'native';
 
     const slicedText = fromChar > 0 ? text.substring(fromChar) : text;
@@ -129,7 +134,15 @@ export class AudioService {
     this.utterance.rate  = this.playbackRate;
     if (this.selectedVoice) this.utterance.voice = this.selectedVoice;
 
+    let boundaryFired = false;
+    let simulatedIdx = 0;
+
     this.utterance.onboundary = (event: SpeechSynthesisEvent) => {
+      boundaryFired = true;
+      if (this.nativeFallbackInterval) {
+        clearInterval(this.nativeFallbackInterval);
+        this.nativeFallbackInterval = null;
+      }
       if (event.name === 'word') {
         // Guardar posición global de caracter para posible reanudación
         this.lastCharIndex = fromChar + event.charIndex;
@@ -141,7 +154,30 @@ export class AudioService {
       }
     };
 
+    this.utterance.onstart = () => {
+      // Fallback para Android Chrome que a menudo no dispara 'onboundary'
+      setTimeout(() => {
+        if (!boundaryFired && !this.nativeFallbackInterval) {
+          const currentWords = slicedText.split(/\s+/).filter(w => w.length > 0);
+          const msPerWord = 1000 / (2.5 * this.playbackRate);
+          this.nativeFallbackInterval = setInterval(() => {
+            if (!this.isPausedSubject.getValue()) {
+              if (simulatedIdx < currentWords.length) {
+                this.wordIndexSubject.next(baseWordOffset + simulatedIdx);
+                this.lastCharIndex = fromChar + (simulatedIdx * 5); // 5 chars promedio
+                simulatedIdx++;
+              }
+            }
+          }, msPerWord);
+        }
+      }, 500); // 500ms de gracia
+    };
+
     this.utterance.onend = () => {
+      if (this.nativeFallbackInterval) {
+        clearInterval(this.nativeFallbackInterval);
+        this.nativeFallbackInterval = null;
+      }
       this.isPlayingSubject.next(false);
       this.wordIndexSubject.next(-1);
       this.lastCharIndex = 0;
@@ -149,6 +185,10 @@ export class AudioService {
     };
 
     this.utterance.onerror = (e) => {
+      if (this.nativeFallbackInterval) {
+        clearInterval(this.nativeFallbackInterval);
+        this.nativeFallbackInterval = null;
+      }
       if (e.error !== 'interrupted') {
         this.isPlayingSubject.next(false);
       }
@@ -273,6 +313,10 @@ export class AudioService {
 
   private cancelAll() {
     window.speechSynthesis.cancel();
+    if (this.nativeFallbackInterval) {
+      clearInterval(this.nativeFallbackInterval);
+      this.nativeFallbackInterval = null;
+    }
     if (this.proAudio) {
       this.proAudio.pause();
       this.proAudio = null;
