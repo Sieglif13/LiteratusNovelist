@@ -1,3 +1,19 @@
+"""
+Script de Inyección Masiva de Base de Datos (bulk_db_injection.py)
+------------------------------------------------------------------
+Propósito:
+    Este script se utiliza para poblar la base de datos de LiteratusNovelist escaneando 
+    un directorio que contiene archivos EPUB (libros). Se encarga de crear Autores, 
+    Libros y Capítulos, extrayendo el contenido y los metadatos desde los EPUBs.
+
+Modificación (Mayo 2026):
+    Se actualizó la lógica de extracción de títulos y autores. Anteriormente, el script 
+    extraía el nombre del libro y el autor basándose únicamente en el nombre de la 
+    carpeta del EPUB (lo cual unía "Título Autor" en el título). Ahora, el script intenta 
+    leer el archivo de metadatos interno del EPUB (`.opf`) para extraer limpiamente el 
+    Título y el Autor por separado. Si no encuentra el OPF, utiliza expresiones regulares 
+    de respaldo para separar nombres.
+"""
 import os
 import sys
 import os
@@ -133,6 +149,28 @@ def manual_extract_chapters(epub_path, slug):
     except Exception as e: raise Exception(f"Manual falló: {e}")
     return chapters
 
+def get_metadata_from_opf(epub_path):
+    try:
+        with zipfile.ZipFile(epub_path, 'r') as z:
+            container = z.read('META-INF/container.xml').decode('utf-8')
+            opf_path = re.search(r'full-path="([^"]+)"', container).group(1)
+            opf_content = z.read(opf_path).decode('utf-8', errors='ignore')
+            
+            title_match = re.search(r'<dc:title[^>]*>(.*?)</dc:title>', opf_content, re.DOTALL | re.IGNORECASE)
+            title = title_match.group(1).strip() if title_match else None
+            
+            creator_match = re.search(r'<dc:creator[^>]*>(.*?)</dc:creator>', opf_content, re.DOTALL | re.IGNORECASE)
+            creator = creator_match.group(1).strip() if creator_match else None
+            
+            if title:
+                title = re.sub(r'<[^>]+>', '', title).strip()
+            if creator:
+                creator = re.sub(r'<[^>]+>', '', creator).strip()
+                
+            return title, creator
+    except:
+        return None, None
+
 def main():
     books_dir = Path("media/books")
     if os.path.exists(LOG_FILE): os.remove(LOG_FILE)
@@ -145,19 +183,29 @@ def main():
         epub_path = epub_files[0]
         try:
             extract_images(epub_path, folder)
+            book_title, author_name = get_metadata_from_opf(epub_path)
+            
             try:
                 book_epub = epub.read_epub(epub_path)
-                creators = book_epub.get_metadata('DC', 'creator')
-                author_name = str(creators[0][0]) if creators and isinstance(creators[0], tuple) else "Autor Desconocido"
+                if not author_name:
+                    creators = book_epub.get_metadata('DC', 'creator')
+                    author_name = str(creators[0][0]) if creators and isinstance(creators[0], tuple) else None
+                if not book_title:
+                    titles = book_epub.get_metadata('DC', 'title')
+                    book_title = str(titles[0][0]) if titles and isinstance(titles[0], tuple) else None
                 chapters_data = get_structural_chapters(book_epub, slug)
             except Exception:
                 chapters_data = manual_extract_chapters(epub_path, slug)
+
+            if not author_name:
                 author_name = "Autor Desconocido"
+            if not book_title:
+                book_title = slug.replace("-", " ").title()
 
             if not chapters_data: continue
 
             author_obj, _ = Author.objects.get_or_create(slug=slugify_fallback(author_name), defaults={'full_name': author_name[:100]})
-            book_obj, _ = Book.objects.get_or_create(slug=slug[:100], defaults={'title': slug.replace("-"," ").title()[:100], 'status':'published', 'is_published':True})
+            book_obj, _ = Book.objects.get_or_create(slug=slug[:100], defaults={'title': book_title[:100], 'status':'published', 'is_published':True})
             
             BookAuthor.objects.get_or_create(book=book_obj, author=author_obj)
             Edition.objects.get_or_create(book=book_obj, format='epub', defaults={'file': f"books/{slug}/{epub_path.name}", 'price': Decimal('0.00')})

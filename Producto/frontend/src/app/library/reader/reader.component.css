@@ -55,6 +55,10 @@
   background: rgba(255, 255, 255, 0.7);
 }
 
+.theme-sepia .toolbar {
+  background: rgba(244, 236, 216, 0.85);
+}
+
 /* BARRA DE PROGRESO DE LECTURA (Estilo Wattpad) */
 .reading-progress-container {
   position: fixed;
@@ -122,6 +126,11 @@
   border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
+.theme-sepia .back-btn {
+  background: rgba(91, 70, 54, 0.05);
+  border: 1px solid rgba(91, 70, 54, 0.15);
+}
+
 .back-btn:hover {
   background: rgba(59, 130, 246, 0.4);
   transform: translateX(-3px);
@@ -157,6 +166,14 @@
   padding: 2px;
 }
 
+.theme-light .font-controls {
+  background: rgba(0,0,0,0.05);
+}
+
+.theme-sepia .font-controls {
+  background: rgba(91, 70, 54, 0.08);
+}
+
 .font-controls button {
   background: transparent;
   border: none;
@@ -170,6 +187,14 @@
 
 .font-controls button:hover {
   background: rgba(255,255,255,0.1);
+}
+
+.theme-light .font-controls button:hover {
+  background: rgba(0,0,0,0.08);
+}
+
+.theme-sepia .font-controls button:hover {
+  background: rgba(91, 70, 54, 0.15);
 }
 
 .theme-selector {
@@ -217,6 +242,10 @@
   border-color: rgba(0,0,0,0.1);
 }
 
+.theme-sepia .toc-trigger-btn {
+  border-color: rgba(91, 70, 54, 0.15);
+}
+
 .toc-trigger-btn:hover,
 .toc-trigger-btn.active {
   background: rgba(59, 130, 246, 0.4);
@@ -238,6 +267,14 @@
   cursor: pointer;
   transition: all 0.2s;
   font-size: 1.2rem;
+}
+
+.theme-light .char-trigger-btn {
+  border-color: rgba(0,0,0,0.1);
+}
+
+.theme-sepia .char-trigger-btn {
+  border-color: rgba(91, 70, 54, 0.15);
 }
 
 .char-trigger-btn.active,
@@ -3105,6 +3142,7 @@
   background: #f4ecd8;
   color: #5b4636;
 }
+
 
 /* LECTURA BIÓNICA Y COLORES DE CONTRASTE (SIN DESPLAZAMIENTO DE TEXTO) */
 .html-reader .bionic-bold {
