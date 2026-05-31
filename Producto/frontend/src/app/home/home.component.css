@@ -970,10 +970,39 @@
 }
 
 @media (max-width: 600px) {
-  .hero-section { padding: 2rem 4vw 2rem; }
+  .hero-section { padding: 2rem 4vw 2rem; position: relative; }
+  
+  .hero-visual {
+    position: absolute;
+    top: 60px;
+    right: 5vw;
+    width: 80px;
+    height: 80px;
+    margin-top: 0;
+    display: flex;
+  }
+  .hero-lottie-container {
+    max-width: 100%;
+  }
+  
+  .hero-ctas {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  .cta-primary, .cta-ghost { 
+    min-height: 48px; 
+    padding: 0.5rem 0.5rem; 
+    font-size: 0.75rem; 
+    flex: 1;
+    justify-content: center;
+    text-align: center;
+  }
+  .cta-primary svg { width: 16px; height: 16px; }
+
   .inspirational-banner { grid-template-columns: 1fr; }
   .librito-container { display: none; }
   .trending-section, .discovery-section, .mood-section, .search-section, .liyumi-pick-section { padding-left: 4vw; padding-right: 4vw; }
   .discovery-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1rem; }
-  .cta-primary, .cta-ghost { min-height: 52px; }
 }

@@ -143,15 +143,13 @@ export class AudioService {
         clearInterval(this.nativeFallbackInterval);
         this.nativeFallbackInterval = null;
       }
-      if (event.name === 'word') {
-        // Guardar posición global de caracter para posible reanudación
-        this.lastCharIndex = fromChar + event.charIndex;
+      // Guardar posición global de caracter para posible reanudación
+      this.lastCharIndex = fromChar + event.charIndex;
 
-        // Calcular índice de palabra
-        const before = slicedText.substring(0, event.charIndex);
-        const localIdx = before.split(/\s+/).filter(w => w.length > 0).length;
-        this.wordIndexSubject.next(baseWordOffset + localIdx);
-      }
+      // Calcular índice de palabra
+      const before = slicedText.substring(0, event.charIndex);
+      const localIdx = before.split(/\s+/).filter(w => w.length > 0).length;
+      this.wordIndexSubject.next(baseWordOffset + localIdx);
     };
 
     this.utterance.onstart = () => {

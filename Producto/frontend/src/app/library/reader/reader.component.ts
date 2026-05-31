@@ -177,6 +177,20 @@ export class ReaderComponent implements OnInit, OnDestroy {
       this.currentFontFamily = savedFont as any;
     }
 
+    const savedTheme = localStorage.getItem('reader-theme');
+    const validThemes = ['dark', 'light', 'sepia'];
+    if (savedTheme && validThemes.includes(savedTheme)) {
+      this.currentTheme = savedTheme as any;
+    }
+
+    const savedFontSize = localStorage.getItem('reader-font-size');
+    if (savedFontSize) {
+      const parsedSize = parseInt(savedFontSize, 10);
+      if (!isNaN(parsedSize) && parsedSize >= 12 && parsedSize <= 32) {
+        this.fontSize = parsedSize;
+      }
+    }
+
     const savedHide = localStorage.getItem('reader-hide-progress');
     if (savedHide !== null) {
       this.hideProgressOnScroll = savedHide === 'true';
@@ -379,6 +393,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
   changeFontSize(delta: number) {
     this.fontSize = Math.min(Math.max(this.fontSize + delta, 12), 32);
     this.applyFontSize();
+    localStorage.setItem('reader-font-size', this.fontSize.toString());
   }
 
   setFontFamily(font: 'sans' | 'serif' | 'dyslexic' | 'medieval' | 'garamond' | 'georgia' | 'palatino' | 'opensans' | 'helvetica') {
@@ -389,6 +404,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
   setTheme(theme: 'dark' | 'light' | 'sepia') {
     this.currentTheme = theme;
     this.applyTheme();
+    localStorage.setItem('reader-theme', theme);
   }
 
   setHideProgress(value: boolean) {
