@@ -65,6 +65,8 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   isLoading = true;
   errorMsg = '';
 
+  private scrollIntervals: any[] = [];
+
   ngOnInit(): void {
     this.loadBooks();
   }
@@ -76,6 +78,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    this.scrollIntervals.forEach(interval => clearInterval(interval));
   }
 
   private loadBooks(): void {
@@ -87,6 +90,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
         this.allBooks = response.results || response;
         this.buildSections();
         this.isLoading = false;
+        setTimeout(() => this.initAutoScroll(), 500);
       },
       error: () => {
         this.errorMsg = 'No se pudo cargar el catálogo.';
@@ -98,6 +102,31 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
       next: (response) => {
         this.recommendedBooks = response.results || response;
       }
+    });
+  }
+
+  private initAutoScroll(): void {
+    const tracks = document.querySelectorAll('.trending-track, .recommended-track');
+    tracks.forEach((track: any) => {
+      let isInteracting = false;
+
+      track.addEventListener('mouseenter', () => isInteracting = true);
+      track.addEventListener('mouseleave', () => isInteracting = false);
+      track.addEventListener('touchstart', () => isInteracting = true, { passive: true });
+      track.addEventListener('touchend', () => { setTimeout(() => isInteracting = false, 2000); }, { passive: true });
+
+      const interval = setInterval(() => {
+        if (!isInteracting) {
+          const cardWidth = track.firstElementChild ? track.firstElementChild.clientWidth + 24 : 250;
+          if (track.scrollLeft + track.clientWidth >= track.scrollWidth - 10) {
+            track.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            track.scrollBy({ left: cardWidth, behavior: 'smooth' });
+          }
+        }
+      }, 4000);
+
+      this.scrollIntervals.push(interval);
     });
   }
 
