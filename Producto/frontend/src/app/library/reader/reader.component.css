@@ -144,12 +144,22 @@
   max-width: 250px;
 }
 
+.toolbar-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
+  margin: 0 1rem;
+}
+
 .book-title-container {
-  width: 100%;
+  max-width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
   white-space: nowrap;
   scrollbar-width: none; /* Firefox */
+  text-align: center;
 }
 
 .book-title-container::-webkit-scrollbar {

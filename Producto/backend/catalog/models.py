@@ -240,6 +240,7 @@ class Book(TimeStampedModel):
 
     cover_image = models.ImageField(
         upload_to='book_covers/',
+        max_length=512,
         null=True,
         blank=True
     ) # Imagen de portada de la obra.

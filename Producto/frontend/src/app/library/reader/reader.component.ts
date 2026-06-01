@@ -743,8 +743,10 @@ export class ReaderComponent implements OnInit, OnDestroy {
         this.scrollWordIntoView(this.currentWordIndex, true);
       }
 
-      this.isOverlayActive = false;
-      this.cdr.detectChanges();
+      setTimeout(() => {
+        this.isOverlayActive = false;
+        this.cdr.detectChanges();
+      }, 800); // Dar tiempo a que termine el smooth scroll
     }, 500); // Dar tiempo a Angular a renderizar el *ngFor
   }
 
