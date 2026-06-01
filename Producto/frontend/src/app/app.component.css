@@ -19,33 +19,56 @@
 }
 
 .logo {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 600;
   cursor: pointer;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0;
 }
 
 .literatus {
+  /*
+   * Cinzel: fuente romana clásíca inspirada en inscripciones del Imperio Romano.
+   * Perfecta para una marca literaria — comunica autoridad, atemporalidad, cultura.
+   * Contrasta elegantemente con la fuente sans-serif del resto de la UI.
+   */
+  font-family: var(--font-brand);
+  font-weight: 600;
+  font-size: 1.35rem;
   color: var(--text-main);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .novelist {
+  font-family: var(--font-brand);
+  font-weight: 400;  /* Lighter weight crea contraste elegante dentro del mismo logo */
+  font-size: 1.35rem;
   color: var(--glow-accent);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .nav-links {
   display: flex;
-  gap: 30px;
+  gap: 28px;
   list-style: none;
   align-items: center;
 }
 
 .nav-links a, .nav-links li.logout {
+  font-family: var(--font-ui);
+  font-weight: 500;           /* Plus Jakarta Sans 500 es la misma “Medium” que usa Linear, Vercel */
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;     /* Micro-tracking para elegancia */
   color: var(--text-muted);
   text-decoration: none;
-  font-weight: 400;
-  transition: color 0.3s;
+  transition: color 0.25s ease;
   cursor: pointer;
+  position: relative;
 }
 
 .nav-links a:hover, .nav-links li.logout:hover {
@@ -106,8 +129,14 @@
 /* --- Dark Premium Aesthetic Additions --- */
 .active-link {
   color: var(--text-main) !important;
-  border-bottom: 2px solid #fbbf24; /* Dorado Premium */
-  padding-bottom: 4px;
+  /*
+   * Subrayado dorado animado: en lugar del borde estático, usamos un gradiente
+   * en el pseudo-elemento para una línea más fina y elegante.
+   * El color dorado (#f59e0b) es la señal visual clásica de "seleccionado" en apps premium.
+   */
+  padding-bottom: 3px;
+  border-bottom: 1.5px solid var(--glow-gold);
+  transition: border-color 0.3s ease;
 }
 
 .ink-widget {
@@ -134,10 +163,32 @@
 }
 
 .ink-balance {
-  color: #facc15; /* Amarillo dorado */
-  font-weight: 800;
-  font-size: 1.1rem;
-  font-family: 'Inter', 'Roboto', sans-serif;
+  color: var(--glow-gold);
+  font-weight: 700;
+  font-size: 1rem;
+  font-family: var(--font-ui);
+  letter-spacing: 0.01em;
+}
+
+/* ── Material Symbols Rounded en el dropdown del perfil ── */
+.mat-symbol {
+  font-family: 'Material Symbols Rounded';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  color: var(--text-muted);
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+  transition: color 0.2s ease, font-variation-settings 0.2s ease;
 }
 
 .profile-dropdown-container {
@@ -190,32 +241,53 @@
   object-fit: cover;
 }
 
-/* Material Menu Overrides - Global variables should be set in styles.css but we scope what we can here */
+/* Material Menu Overrides — Dark Premium con Material Symbols Rounded */
 ::ng-deep .dark-premium-menu {
-  background: rgba(15, 23, 42, 0.9) !important; /* Negro profundo #0f172a */
-  backdrop-filter: blur(15px) !important;
-  -webkit-backdrop-filter: blur(15px) !important;
+  background: rgba(11, 15, 26, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 12px !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(139, 92, 246, 0.08) !important;
 }
 
 ::ng-deep .dark-premium-menu .mat-mdc-menu-item {
-  color: #e2e8f0 !important;
+  font-family: var(--font-ui) !important;
+  font-weight: 500 !important;
+  font-size: 0.9rem !important;
+  color: #cbd5e1 !important;
   transition: background 0.2s ease, color 0.2s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
 }
 
 ::ng-deep .dark-premium-menu .mat-mdc-menu-item:hover {
-  background: rgba(124, 58, 237, 0.2) !important; /* Hover púrpura */
+  background: rgba(124, 58, 237, 0.18) !important;
   color: #fff !important;
 }
 
+/* Material Symbols Rounded dentro del menu */
+::ng-deep .dark-premium-menu .mat-symbol {
+  color: #64748b !important;
+  font-size: 18px !important;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20 !important;
+  transition: color 0.2s ease, font-variation-settings 0.2s ease !important;
+}
+
+::ng-deep .dark-premium-menu .mat-mdc-menu-item:hover .mat-symbol {
+  color: var(--glow-gold) !important;
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20 !important; /* Se "rellena" al hover */
+}
+
+/* mat-icon legacy (por si queda alguno) */
 ::ng-deep .dark-premium-menu .mat-icon {
-  color: #94a3b8 !important;
+  color: #64748b !important;
+  font-size: 18px !important;
 }
 
 ::ng-deep .dark-premium-menu .mat-mdc-menu-item:hover .mat-icon {
-  color: #fbbf24 !important; /* Icono dorado al hover */
+  color: var(--glow-gold) !important;
 }
 
 .menu-header {

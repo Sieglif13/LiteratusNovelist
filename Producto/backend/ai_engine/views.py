@@ -176,8 +176,15 @@ class ChatSessionView(APIView):
         )
 
         if created:
-            avatar.chat_count += 1
-            avatar.save()
+            # CORRECCIÓN DE RACE CONDITION (Sección 8 — DB Audit):
+            # Usar avatar.chat_count += 1 / avatar.save() es inseguro bajo concurrencia:
+            # dos requests simultáneos leen el mismo valor (ej: 5), ambos suman 1
+            # y ambos guardan 6, perdiendo un incremento.
+            # La expresión F() delega la operación a PostgreSQL:
+            #   UPDATE ai_engine_aiavatar SET chat_count = chat_count + 1 WHERE id = '...'
+            # Esto es atómico a nivel de base de datos, sin importar la concurrencia.
+            from django.db.models import F
+            AIAvatar.objects.filter(pk=avatar.pk).update(chat_count=F('chat_count') + 1)
 
         # Añadir el greeting como primer mensaje si la sesión es nueva
         if not session.messages.exists():

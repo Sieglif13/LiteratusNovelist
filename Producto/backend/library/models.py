@@ -48,13 +48,19 @@ class UserInventory(TimeStampedModel):
         verbose_name = 'User Inventory'
         verbose_name_plural = 'User Inventories'
         constraints = [
-            # Un usuario no puede poseer la misma edición dos veces.
+            # CONSTRAINT PARCIAL (Soft Delete aware):
+            # Un usuario no puede poseer activamente la misma edición dos veces.
+            # El uso de condition=deleted_at__isnull=True es CRÍTICO para el Soft Delete:
+            # si un registro de inventario es borrado lógicamente (deleted_at IS NOT NULL),
+            # esta constraint lo ignora. Así, el usuario puede volver a comprar la misma
+            # edición sin recibir un error 500 por violación de unicidad.
             # Esta constraint en DB es la segunda línea de defensa tras
             # la validación en la view de compra.
             models.UniqueConstraint(
                 fields=['user', 'edition'],
-                name='unique_ownership',
-                violation_error_message="El usuario ya posee esta edición."
+                condition=models.Q(deleted_at__isnull=True),
+                name='unique_active_ownership',
+                violation_error_message="El usuario ya posee activamente esta edición."
             )
         ]
 

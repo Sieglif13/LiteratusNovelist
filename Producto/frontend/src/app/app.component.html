@@ -45,12 +45,14 @@
             </div>
             <mat-divider></mat-divider>
             <button mat-menu-item routerLink="/profile">
-              <mat-icon>person</mat-icon>
+              <!-- Material Symbols Rounded: 'person' con FILL=0 y wght ligero = minimalista -->
+              <span class="mat-symbol">manage_accounts</span>
               <span>Editar Perfil</span>
             </button>
             <mat-divider></mat-divider>
             <button mat-menu-item (click)="logout()" class="logout-btn">
-              <mat-icon>exit_to_app</mat-icon>
+              <!-- logout: icono de puerta con flecha, universalmente reconocible -->
+              <span class="mat-symbol">logout</span>
               <span>Cerrar Sesión</span>
             </button>
           </mat-menu>

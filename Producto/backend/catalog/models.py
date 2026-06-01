@@ -452,6 +452,16 @@ class Chapter(TimeStampedModel):
         verbose_name = 'Chapter'
         verbose_name_plural = 'Chapters'
         ordering = ['order']
+        constraints = [
+            # Garantiza que un libro no tenga dos capítulos con el mismo número de orden.
+            # Sin esta constraint, un error en la importación podría crear dos "Capítulo 1"
+            # y romper el flujo de lectura del usuario.
+            models.UniqueConstraint(
+                fields=['book', 'order'],
+                name='unique_chapter_order',
+                violation_error_message="Este libro ya tiene un capítulo con ese número de orden."
+            )
+        ]
 
     def __str__(self):
         return f"{self.book.title} - {self.title or f'Chapter {self.order}'}"
@@ -475,10 +485,16 @@ class Review(TimeStampedModel):
                 name='rating_range',
                 violation_error_message="La puntuación debe estar entre 1 y 5."
             ),
+            # CONSTRAINT PARCIAL (Soft Delete aware):
+            # Si usáramos una constraint simple, un usuario que soft-deletea su reseña
+            # no podría volver a reseñar el mismo libro (la constraint seguiría activa).
+            # condition=deleted_at__isnull=True hace que la constraint SOLO aplique
+            # sobre registros activos, ignorando los eliminados lógicamente.
             models.UniqueConstraint(
                 fields=['user', 'book'],
-                name='unique_review_per_book',
-                violation_error_message="El usuario ya ha reseñado este libro."
+                condition=models.Q(deleted_at__isnull=True),
+                name='unique_active_review_per_book',
+                violation_error_message="El usuario ya ha reseñado activamente este libro."
             )
         ]
         indexes = [
@@ -508,6 +524,16 @@ class ChapterAudio(TimeStampedModel):
         verbose_name = 'Chapter Audio'
         verbose_name_plural = 'Chapter Audios'
         ordering = ['chapter', 'voice_name']
+        constraints = [
+            # Impide registrar la misma voz dos veces para el mismo capítulo.
+            # Sin esta constraint, una re-importación duplicaría el audio disponible
+            # en el lector, confundiendo al usuario con opciones repetidas.
+            models.UniqueConstraint(
+                fields=['chapter', 'voice_name'],
+                name='unique_chapter_audio_voice',
+                violation_error_message="Ya existe un audio con esa voz para este capítulo."
+            )
+        ]
 
     def save(self, *args, **kwargs):
         if self.sync_file:
