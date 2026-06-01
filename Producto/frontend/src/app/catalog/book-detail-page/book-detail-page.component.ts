@@ -46,6 +46,12 @@ export class BookDetailPageComponent implements OnInit, AfterViewInit, OnDestroy
   isTalking = false;
   private ttsUtterance: SpeechSynthesisUtterance | null = null;
 
+  // Review State
+  reviewRating = 5;
+  reviewComment = '';
+  isSubmittingReview = false;
+  reviewErrorMsg = '';
+
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       this.slug = params.get('slug');
@@ -255,5 +261,37 @@ export class BookDetailPageComponent implements OnInit, AfterViewInit, OnDestroy
         carousel.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
       }
     }
+  }
+
+  setRating(rating: number): void {
+    this.reviewRating = rating;
+  }
+
+  submitReview(): void {
+    if (!this.slug || this.isSubmittingReview) return;
+    
+    this.isSubmittingReview = true;
+    this.reviewErrorMsg = '';
+
+    const payload = {
+      rating: this.reviewRating,
+      comment: this.reviewComment
+    };
+
+    this.api.post<any>(`catalog/books/${this.slug}/add_review/`, payload).subscribe({
+      next: (res) => {
+        this.isSubmittingReview = false;
+        if (!this.book.reviews) this.book.reviews = [];
+        this.book.reviews.unshift(res.review);
+        this.reviewComment = '';
+        this.reviewRating = 5;
+        this.liyumi.wave('¡Gracias por tu reseña! A la comunidad le encantará.');
+      },
+      error: (err) => {
+        this.isSubmittingReview = false;
+        this.reviewErrorMsg = err.error?.error || 'No se pudo publicar la reseña.';
+        console.error('Error submitting review:', err);
+      }
+    });
   }
 }

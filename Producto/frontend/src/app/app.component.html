@@ -66,3 +66,5 @@
 <main class="container" [class.dashboard-mode]="isDashboard" [@routeAnimations]="prepareRoute(outlet)">
   <router-outlet #outlet="outlet"></router-outlet>
 </main>
+
+<app-footer *ngIf="!isDashboard"></app-footer>

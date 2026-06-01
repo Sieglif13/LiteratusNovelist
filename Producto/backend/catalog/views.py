@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django_filters.rest_framework import DjangoFilterBackend
 from library.models import UserInventory
-from .models import Book, Author, Genre, Tag
+from .models import Book, Author, Genre, Tag, Review
 from .serializers import (
     BookListSerializer, BookDetailSerializer, BookDetailFullSerializer, 
     AuthorDetailSerializer, AuthorReadSerializer, GenreSerializer
@@ -260,3 +260,51 @@ class BookViewSet(viewsets.ReadOnlyModelViewSet):
             'message': 'Narración premium desbloqueada.', 
             'ink_balance': profile.ink_balance
         }, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['POST'])
+    def add_review(self, request, slug=None):
+        """
+        Añade una reseña a una obra.
+        Solo usuarios autenticados que posean la obra.
+        """
+        if not request.user.is_authenticated:
+            return Response({'error': 'Debes iniciar sesión para escribir una reseña.'}, status=status.HTTP_401_UNAUTHORIZED)
+            
+        book = self.get_object()
+        
+        # Verificar si el usuario posee la obra
+        owns_book = UserInventory.objects.filter(
+            user=request.user, 
+            edition__book=book
+        ).exists()
+        
+        if not owns_book:
+            return Response({'error': 'Debes adquirir la obra antes de poder reseñarla.'}, status=status.HTTP_403_FORBIDDEN)
+            
+        # Verificar si ya reseñó
+        if Review.objects.filter(user=request.user, book=book).exists():
+            return Response({'error': 'Ya has escrito una reseña para esta obra.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        rating = request.data.get('rating')
+        comment = request.data.get('comment', '')
+        
+        if not rating or not str(rating).isdigit() or int(rating) < 1 or int(rating) > 5:
+            return Response({'error': 'La calificación debe ser un número entre 1 y 5.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        review = Review.objects.create(
+            user=request.user,
+            book=book,
+            rating=int(rating),
+            comment=comment
+        )
+        
+        return Response({
+            'message': 'Reseña publicada con éxito.',
+            'review': {
+                'id': review.id,
+                'user': review.user.username,
+                'rating': review.rating,
+                'comment': review.comment,
+                'created_at': review.created_at
+            }
+        }, status=status.HTTP_201_CREATED)

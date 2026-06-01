@@ -195,6 +195,30 @@
           <p>Sé el primero en reseñar esta obra.</p>
         </div>
         
+        <!-- Formulario para dejar reseña -->
+        <div class="review-form-container neon-card" *ngIf="(auth.isLoggedIn$ | async) && isOwned">
+          <h4>Dejar una Reseña</h4>
+          <div class="star-rating-input">
+            <span class="star-input" *ngFor="let s of [1,2,3,4,5]" 
+                  [class.filled]="s <= reviewRating" 
+                  (click)="setRating(s)">★</span>
+          </div>
+          <textarea class="glass-input review-textarea" 
+                    [(ngModel)]="reviewComment" 
+                    placeholder="¿Qué te pareció esta obra? (Opcional)" 
+                    rows="3"></textarea>
+          
+          <div class="purchase-alert error" *ngIf="reviewErrorMsg">
+            {{ reviewErrorMsg }}
+          </div>
+          
+          <button class="glass-btn primary submit-review-btn" 
+                  (click)="submitReview()" 
+                  [disabled]="isSubmittingReview">
+            {{ isSubmittingReview ? 'Publicando...' : 'Publicar Reseña' }}
+          </button>
+        </div>
+
         <div class="comments-grid" *ngIf="book.reviews && book.reviews.length > 0">
           <div class="comment-card neon-card" *ngFor="let review of book.reviews">
             <div class="comment-header">
