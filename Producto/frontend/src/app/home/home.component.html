@@ -46,8 +46,7 @@
     ═══════════════════════════════════════════════════════════ -->
     <section class="trending-section" *ngIf="trendingBooks.length > 0">
       <div class="section-header">
-        <div class="section-label"><svg lucideFlame [size]="20" class="lucide-icon"></svg> Tendencias</div>
-        <h2 class="section-title">Lecturas del Momento</h2>
+        <h2 class="section-title"><svg lucideFlame [size]="28" class="lucide-icon" style="color: #f97316; margin-right: 8px;"></svg> Tendencias</h2>
       </div>
 
       <div class="trending-track">
@@ -75,9 +74,7 @@
     ═══════════════════════════════════════════════════════════ -->
     <section class="recommended-section" *ngIf="recommendedBooks.length > 0">
       <div class="section-header">
-        <div class="section-label"><svg lucideSparkles [size]="20" class="lucide-icon"></svg> IA Select</div>
-        <h2 class="section-title">Especialmente para Ti</h2>
-        <p class="section-sub">Basado en tus gustos y lecturas recientes</p>
+        <h2 class="section-title"><svg lucideStar [size]="28" class="lucide-icon" style="color: #eab308; margin-right: 8px;"></svg> Recomendados</h2>
       </div>
 
       <div class="recommended-track">
@@ -118,17 +115,16 @@
          SECCIÓN: DESCUBRIMIENTO (Botón + Carrusel Aleatorio)
     ═══════════════════════════════════════════════════════════ -->
     <section class="discovery-section">
-      <div class="section-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
+      <div class="section-header" style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 15px;">
         <div>
-          <div class="section-label"><svg lucideStar [size]="20" class="lucide-icon"></svg> Descubrimiento</div>
-          <h2 class="section-title">Explora Toda la Colección</h2>
+          <h2 class="section-title"><svg lucideCompass [size]="28" class="lucide-icon" style="color: #3b82f6; margin-right: 8px;"></svg> Descubrimiento</h2>
         </div>
-        <a routerLink="/catalog" class="cta-primary" style="margin-bottom: 0.25rem;">
-          Explorar Tienda
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M5 12h14M12 5l7 7-7 7" />
-          </svg>
-        </a>
+        <div class="explore-action-container" style="display: flex; align-items: center; gap: 10px;">
+          <span class="explore-hint" style="color: var(--text-muted); font-size: 0.95rem; font-style: italic;">Explora todo aquí ➔</span>
+          <a routerLink="/catalog" class="cta-primary" style="margin: 0;">
+            Explorar Tienda
+          </a>
+        </div>
       </div>
 
       <!-- Carrusel Aleatorio (Reutiliza el diseño de trending-track) -->

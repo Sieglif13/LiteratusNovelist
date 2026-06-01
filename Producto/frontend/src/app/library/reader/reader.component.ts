@@ -57,6 +57,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
   chapters: any[] = [];
   safeChapterHtml: SafeHtml = '';
   chapterTitle: string = 'Cargando libro...';
+  bookTitle: string = 'Cargando...';
   bookSlug: string = '';
   hasPremiumNarration: boolean = false;
   progressId: number | null = null;
@@ -350,6 +351,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
         this.isLoadingInitialData = false;
         this.isInitialDataLoaded = true;
         if (inventory && inventory.progress) {
+          this.bookTitle = inventory.book_title || inventory.edition?.book?.title || 'Libro';
           this.currentPage = inventory.progress.current_page || 1;
           this.progressId = inventory.progress.id;
           this.bookSlug = inventory.book_slug;

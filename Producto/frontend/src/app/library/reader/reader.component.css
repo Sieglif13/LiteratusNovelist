@@ -140,6 +140,29 @@
 .book-info {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  max-width: 250px;
+}
+
+.book-title-container {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  scrollbar-width: none; /* Firefox */
+}
+
+.book-title-container::-webkit-scrollbar {
+  display: none; /* Chrome/Safari/Edge */
+}
+
+.book-title-label {
+  display: inline-block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--glow-purple, #a855f7);
+  letter-spacing: 0.5px;
 }
 
 .chapter-label {

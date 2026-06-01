@@ -45,7 +45,7 @@
   max-width: 600px;
 }
 
-.search-box mat-icon {
+.search-box .search-icon {
   position: absolute;
   left: 20px;
   top: 50%;
@@ -54,6 +54,7 @@
   font-size: 1.5rem;
   width: 1.5rem;
   height: 1.5rem;
+  line-height: 1;
 }
 
 .search-input {

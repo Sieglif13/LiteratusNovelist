@@ -299,8 +299,8 @@
   grid-template-columns: 200px 1fr;
   align-items: center;
   gap: 2rem;
-  padding: 3rem 6vw;
-  margin: 0 2vw;
+  padding: 2rem 4vw;
+  margin: 1.5rem 4vw; /* Ajustado */
   border-radius: 28px;
   background: rgba(255,255,255,.03);
   border: 1px solid rgba(255,255,255,.07);
@@ -448,6 +448,26 @@
 .chip-emoji { font-size: 1.1rem; }
 
 /* ═══════════════════════════════════════════
+   DISCOVERY (EXPLORAR)
+═══════════════════════════════════════════ */
+.explore-action-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.explore-hint {
+  color: var(--text-muted, #94a3b8);
+  font-size: 0.95rem;
+  font-style: italic;
+  font-family: var(--font-ui, sans-serif);
+}
+
+@media (max-width: 600px) {
+  .explore-hint {
+    display: none; /* Ocultar en móviles para evitar amontonamiento */
+  }
+}
    BUSCADOR SEMÁNTICO
 ═══════════════════════════════════════════ */
 .search-section {
