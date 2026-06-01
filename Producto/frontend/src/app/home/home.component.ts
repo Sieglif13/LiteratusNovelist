@@ -1,8 +1,7 @@
 import { Component, OnInit, OnDestroy, inject, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
-import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
 import { ApiService } from '../core/services/api.service';
 import { AuthService } from '../core/services/auth.service';
-import { LiyumiService } from '../core/services/liyumi.service';
 import { Router } from '@angular/router';
 import lottie from 'lottie-web';
 
@@ -25,32 +24,15 @@ export interface Book {
 export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   private api = inject(ApiService);
   public auth = inject(AuthService);
-  private liyumi = inject(LiyumiService);
   private router = inject(Router);
   private destroy$ = new Subject<void>();
-  private searchInput$ = new Subject<string>();
 
   // State
   allBooks: Book[] = [];
   trendingBooks: Book[] = [];
   recommendedBooks: Book[] = []; // Nueva lista de recomendados
   discoveryBooks: Book[] = [];
-  liyumiFavorite: Book | null = null;
-  filteredBooks: Book[] = [];
-
-  private _aolaContainer?: ElementRef;
-  @ViewChild('aolaContainer') set aolaContainer(el: ElementRef) {
-    if (el && !this._aolaContainer) {
-      this._aolaContainer = el;
-      lottie.loadAnimation({
-        container: el.nativeElement,
-        renderer: 'svg',
-        loop: true,
-        autoplay: true,
-        path: 'assets/lottie/Aola.json'
-      });
-    }
-  }
+  randomDiscoveryBooks: Book[] = []; // Para el carrusel aleatorio
 
   private _readingContainer?: ElementRef;
   @ViewChild('readingContainer') set readingContainer(el: ElementRef) {
@@ -81,20 +63,10 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   isLoading = true;
-  isSearching = false;
-  searchQuery = '';
   errorMsg = '';
-
-
-  readonly LIYUMI_PICKS: Record<string, string> = {
-    'el-principito':           '🌹 Una obra que me rompió el corazón la primera vez que la "leí". El Principito enseña que lo esencial es invisible a los ojos.',
-    'el-principe-feliz':       '🏆 Sacrificio y belleza en igual medida. Oscar Wilde en su máxima expresión simbólica.',
-    'el-extrano-caso-del-dr-jekyll-y-mr-hyde': '🧬 La dualidad del ser humano narrada con un suspenso que no te suelta en ningún capítulo.',
-  };
 
   ngOnInit(): void {
     this.loadBooks();
-    this.setupSearch();
   }
 
   ngAfterViewInit(): void {
@@ -136,51 +108,12 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
       this.trendingBooks = this.allBooks.slice(0, 6);
     }
 
-    // Liyumi's Favorite: primer libro con texto personalizado
-    this.liyumiFavorite = this.allBooks.find(b => this.LIYUMI_PICKS[b.slug]) || this.allBooks[0] || null;
-
     // Discovery: todos menos los trending
     const trendingSlugs = new Set(this.trendingBooks.map(b => b.slug));
     this.discoveryBooks = this.allBooks.filter(b => !trendingSlugs.has(b.slug));
-    this.filteredBooks = this.discoveryBooks;
-  }
-
-  private applyFilters(): void {
-    let base = this.discoveryBooks;
-    if (this.searchQuery.trim()) {
-      const q = this.searchQuery.toLowerCase();
-      base = base.filter(b =>
-        b.title.toLowerCase().includes(q) ||
-        b.synopsis?.toLowerCase().includes(q) ||
-        b.tags?.some(t => t.name.toLowerCase().includes(q))
-      );
-    }
-    this.filteredBooks = base;
-  }
-
-  // ── SEMANTIC SEARCH ──────────────────────────────────────────
-  private setupSearch(): void {
-    this.searchInput$.pipe(
-      debounceTime(450),
-      distinctUntilChanged(),
-      takeUntil(this.destroy$)
-    ).subscribe(query => {
-      this.searchQuery = query;
-      this.applyFilters();
-    });
-  }
-
-  onSearchChange(value: string): void {
-    this.searchInput$.next(value);
-  }
-
-  clearSearch(): void {
-    this.searchQuery = '';
-    this.searchInput$.next('');
-  }
-
-  getLiyumiMessage(book: Book): string {
-    return this.LIYUMI_PICKS[book.slug] || '📖 Este libro es especial. ¡Te lo recomiendo con el corazón!';
+    
+    // Shuffle array para el carrusel aleatorio
+    this.randomDiscoveryBooks = [...this.allBooks].sort(() => 0.5 - Math.random());
   }
 
   scrollToCatalog(): void {
