@@ -11,6 +11,9 @@
         <span class="icon">✕</span>
       </button>
       <div class="book-info">
+        <div class="book-title-container">
+          <span class="book-title-label" [attr.title]="bookTitle">{{ bookTitle }}</span>
+        </div>
         <span class="chapter-label">{{ chapterTitle }}</span>
         <span class="progress-label">{{ currentPage - 1 > 0 ? 'Capítulo ' + (currentPage - 1) : 'Prólogo' }} · {{ currentPage }} de {{ totalPages }}</span>
       </div>
@@ -25,7 +28,7 @@
     <!-- Derecha: Fuente + Temas + TOC -->
     <div class="reader-settings">
       <div class="ink-counter" title="Ir a la Taberna (Recargar Tinta)" routerLink="/tavern">
-        <span class="ink-icon">✒</span>
+        <span class="ink-icon material-symbols-rounded" style="font-size: 1.1rem;">ink_pen</span>
         <span class="ink-number">{{ inkBalance }}</span>
       </div>
       
@@ -647,7 +650,7 @@
   <div class="reader-loading-overlay glass-panel" [class.hidden]="!isOverlayActive">
     <div class="reader-loading-content">
       <div class="loading-lottie-container" #loadingLottie></div>
-      <p class="loading-text">Cargando magia...</p>
+      <p class="loading-text">Cargando...</p>
     </div>
   </div>
 

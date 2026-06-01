@@ -14,7 +14,7 @@
     <div class="search-container">
       <!-- Input de Búsqueda -->
       <div class="search-box">
-        <mat-icon>search</mat-icon>
+        <span class="material-symbols-rounded search-icon">search</span>
         <input type="text" placeholder="Encuentra a tu autor favorito..." (keyup)="onSearch($event)"
           class="glass-input search-input">
       </div>
@@ -58,7 +58,7 @@
         <div class="author-image-wrapper">
           <img [src]="author.photo || 'assets/images/default-avatar.png'" [alt]="author.full_name" class="author-photo">
           <div class="book-badge" title="Libros disponibles">
-            <mat-icon>library_books</mat-icon>
+            <span class="material-symbols-rounded" style="font-size: 1.1rem; line-height: 1;">library_books</span>
             <span>{{ author.books?.length || 0 }}</span>
           </div>
         </div>

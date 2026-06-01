@@ -28,7 +28,7 @@
       <ng-container *ngIf="isLoggedIn">
         <!-- La Taberna (Ink Widget) -->
         <li class="ink-widget" (click)="openTavern()" [@shake]="shakeState" title="La Taberna - Recarga Tinta">
-          <span class="ink-icon">✒️</span>
+          <span class="ink-icon material-symbols-rounded">ink_pen</span>
           <span class="ink-balance">{{ inkBalance$ | async }}</span>
         </li>
 
