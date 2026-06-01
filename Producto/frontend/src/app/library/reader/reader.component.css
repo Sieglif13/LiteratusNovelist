@@ -1818,6 +1818,57 @@
   border-top: 1px solid rgba(239, 68, 68, 0.2);
 }
 
+/* ── OVERLAY DE CARGA DEL LIBRO ── */
+.reader-loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(15px);
+}
+
+.reader-loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.loading-lottie-container {
+  width: 250px;
+  height: 250px;
+  filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.4));
+}
+
+.loading-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  letter-spacing: 2px;
+  animation: pulse 1.5s infinite;
+}
+
+.theme-light .reader-loading-overlay {
+  background: rgba(248, 250, 252, 0.95);
+}
+.theme-light .loading-text {
+  color: #1e293b;
+}
+
+.theme-sepia .reader-loading-overlay {
+  background: rgba(244, 236, 216, 0.95);
+}
+.theme-sepia .loading-text {
+  color: #5b4636;
+}
+
 /* MOBILE */
 @media (max-width: 768px) {
   .reading-canvas { padding: 2rem 1.5rem; }

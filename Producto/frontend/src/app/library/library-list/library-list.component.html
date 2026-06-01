@@ -5,13 +5,9 @@
   </div>
 
   <!-- Loading State -->
-  <div class="grid-container" *ngIf="isLoading && !errorMsg">
-    <div class="glass-panel book-card skeleton-card" *ngFor="let i of [1,2,3,4]">
-      <div class="skeleton-img"></div>
-      <div class="skeleton-text title"></div>
-      <div class="skeleton-text progress"></div>
-      <div class="skeleton-button"></div>
-    </div>
+  <div class="library-loading-container" *ngIf="isLoading && !errorMsg">
+    <div class="librito-lottie" #libritoContainer></div>
+    <p class="loading-text">Cargando biblioteca...</p>
   </div>
 
   <!-- Error State -->

@@ -643,4 +643,12 @@
     </div>
   </div>
 
+  <!-- OVERLAY DE CARGA (Lottie) -->
+  <div class="reader-loading-overlay glass-panel" *ngIf="isLoadingInitialData || (!isInitialDataLoaded && chapterTitle === 'Cargando libro...')">
+    <div class="reader-loading-content">
+      <div class="loading-lottie-container" #loadingLottie></div>
+      <p class="loading-text">Cargando magia...</p>
+    </div>
+  </div>
+
 </div>
