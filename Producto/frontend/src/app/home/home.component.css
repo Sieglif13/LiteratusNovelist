@@ -313,18 +313,13 @@
   justify-content: center;
 }
 
-.librito-container {
+.saludo-container {
   width: 180px;
   height: 180px;
   filter: drop-shadow(0 8px 24px rgba(168,85,247,.4));
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, rgba(59, 130, 246, 0.08) 50%, transparent 75%);
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.25) 0%, rgba(59, 130, 246, 0.1) 40%, transparent 70%);
   border-radius: 50%;
-}
-
-.banner-lottie {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  animation: floatLottie 6s ease-in-out infinite;
 }
 
 
@@ -698,7 +693,7 @@
     max-width: 400px;
   }
   .inspirational-banner { grid-template-columns: 120px 1fr; padding: 2rem 5vw; }
-  .librito-container { width: 100px; height: 100px; }
+  .saludo-container { width: 100px; height: 100px; }
 }
 
 @media (max-width: 600px) {
@@ -734,6 +729,6 @@
   .cta-primary svg { width: 16px; height: 16px; }
 
   .inspirational-banner { grid-template-columns: 1fr; }
-  .librito-container { display: none; }
+  .saludo-container { display: none; }
   .trending-section, .discovery-section, .mood-section { padding-left: 4vw; padding-right: 4vw; }
 }

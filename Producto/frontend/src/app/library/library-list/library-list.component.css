@@ -150,35 +150,43 @@
   transform: translateY(-2px);
 }
 
-/* Skeletons */
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+/* Lottie Loading State */
+.library-loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 0;
+  gap: 1.5rem;
 }
 
-.skeleton-card {
-  background: rgba(255, 255, 255, 0.02);
+.librito-lottie {
+  width: 180px;
+  height: 180px;
+  filter: drop-shadow(0 8px 24px rgba(168,85,247,.4));
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, rgba(59, 130, 246, 0.08) 50%, transparent 75%);
+  border-radius: 50%;
+  animation: floatLottie 6s ease-in-out infinite;
 }
 
-.skeleton-card div {
-  background: rgba(255, 255, 255, 0.05);
-  position: relative;
-  overflow: hidden;
+.loading-text {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.1rem;
+  color: #e2e8f0;
+  opacity: 0.8;
+  letter-spacing: 1px;
+  animation: pulse 1.5s infinite;
 }
 
-.skeleton-card div::after {
-  content: "";
-  position: absolute;
-  top: 0; right: 0; bottom: 0; left: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
-  animation: shimmer 1.5s infinite;
+@keyframes floatLottie {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
 
-.skeleton-img { height: 220px; }
-.skeleton-text { border-radius: 4px; margin: 20px; }
-.skeleton-text.title { height: 24px; width: 70%; }
-.skeleton-text.progress { height: 12px; width: 90%; }
-.skeleton-button { height: 40px; margin: auto 20px 20px 20px; border-radius: 8px; }
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
 
 /* Banners */
 .message-banner {

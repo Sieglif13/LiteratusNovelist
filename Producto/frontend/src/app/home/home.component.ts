@@ -48,16 +48,16 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  private _libritoContainer?: ElementRef;
-  @ViewChild('libritoContainer') set libritoContainer(el: ElementRef) {
-    if (el && !this._libritoContainer) {
-      this._libritoContainer = el;
+  private _saludoContainer?: ElementRef;
+  @ViewChild('saludoContainer') set saludoContainer(el: ElementRef) {
+    if (el && !this._saludoContainer) {
+      this._saludoContainer = el;
       lottie.loadAnimation({
         container: el.nativeElement,
         renderer: 'svg',
         loop: true,
         autoplay: true,
-        path: 'assets/lottie/librito.json'
+        path: 'assets/lottie/saludo.json'
       });
     }
   }
