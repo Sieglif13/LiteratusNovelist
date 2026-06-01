@@ -161,6 +161,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
 
   isInitialDataLoaded = false;
   isLoadingInitialData = false;
+  isOverlayActive = true;
 
   private _loadingLottieContainer?: ElementRef;
   @ViewChild('loadingLottie') set loadingLottie(el: ElementRef) {
@@ -519,6 +520,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
           setTimeout(() => this.router.navigate(['/catalog']), 2000);
         }
         this.safeChapterHtml = this.sanitizer.bypassSecurityTrustHtml('<p>Hubo un error cargando el contenido.</p>');
+        this.isOverlayActive = false;
       }
     });
   }
@@ -738,6 +740,9 @@ export class ReaderComponent implements OnInit, OnDestroy {
       } else if (this.currentWordIndex > 0) {
         this.scrollWordIntoView(this.currentWordIndex, true);
       }
+
+      this.isOverlayActive = false;
+      this.cdr.detectChanges();
     }, 500); // Dar tiempo a Angular a renderizar el *ngFor
   }
 

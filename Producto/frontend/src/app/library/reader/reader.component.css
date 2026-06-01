@@ -1831,6 +1831,15 @@
   justify-content: center;
   background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(15px);
+  transition: opacity 0.8s ease, visibility 0.8s ease;
+  opacity: 1;
+  visibility: visible;
+}
+
+.reader-loading-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .reader-loading-content {
