@@ -66,7 +66,7 @@ class Author(TimeStampedModel):
     
     
     # Nuevos campos para la Ficha de Autor
-    photo = models.ImageField(upload_to='authors/photos/', blank=True, null=True) # Imagen del autor
+    photo = models.ImageField(upload_to='authors/photos/', max_length=512, blank=True, null=True) # Imagen del autor
     themes = models.TextField(blank=True, default='') # Temas recurrentes en su obra
     # Referencia al libro recomendado para iniciar. Usamos un string para el modelo para evitar dependencias circulares antes de definir Book.
     recommended_book = models.ForeignKey('Book', on_delete=models.SET_NULL, null=True, blank=True, related_name='recommended_for_author')
