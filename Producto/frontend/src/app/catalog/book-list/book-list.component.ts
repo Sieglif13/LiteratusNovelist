@@ -47,29 +47,29 @@ export class BookListComponent implements OnInit {
   activeCategory: string | null = null;
   private searchTimeout: any;
 
-  // Mapeo: Nombre en la píldora → Nombre exacto guardado en la DB por el sync script
-  // El sync script usa Python's .title() que capitaliza TODAS las palabras incluyendo tildes
+  // Mapeo: Nombre en la píldora → Nombre exacto guardado en la DB
+  // Algunas categorías quedaron con .title() en el backend, otras no.
   genreDbMap: Record<string, string> = {
-    'Acción y aventura':        'Acción Y Aventura',
-    'Ciencia ficción':          'Ciencia Ficción',
+    'Acción y aventura':        'Acción y aventura',
+    'Ciencia ficción':          'Ciencia ficción',
     'Cuentos':                  'Cuentos',
     'Fantasía':                 'Fantasía',
-    'Ficción clásica':          'Ficción Clásica',
-    'Ficción contemporánea':    'Ficción Contemporánea',
+    'Ficción clásica':          'Ficción clásica',
+    'Ficción contemporánea':    'Ficción contemporánea',
     'Poesía':                   'Poesía',
     'Romántica':                'Romántica',
     'Terror':                   'Terror',
     'Antologías':               'Antologías',
-    'Novela corta':             'Novela Corta',
+    'Novela corta':             'Novela corta',
     'Teatro':                   'Teatro',
-    'Ficción histórica':        'Ficción Histórica',
-    'Ficción erótica':          'Ficción Erótica',
-    'Ficción religiosa y espiritual': 'Ficción Religiosa Y Espiritual',
-    'Mitos, leyendas y sagas':  'Mitos, Leyendas Y Sagas',
-    'Policíaca, negra y suspense': 'Policíaca, Negra Y Suspense',
+    'Ficción histórica':        'Ficción histórica',
+    'Ficción erótica':          'Ficción erótica',
+    'Ficción religiosa y espiritual': 'Ficción religiosa y espiritual',
+    'Mitos, leyendas y sagas':  'Mitos, leyendas y sagas',
+    'Policíaca, negra y suspense': 'Policíaca, negra y suspense',
     'Sátira':                   'Sátira',
-    'Literatura de viaje':      'Literatura De Viaje',
-    // No ficción — se sincronizarán tras re-scrapear
+    'Literatura de viaje':      'Literatura de viaje',
+    // No ficción — algunas de estas están con mayúsculas en la DB
     'Filosofía':                'Filosofía',
     'Historia':                 'Historia',
     'Psicología':               'Psicología',
