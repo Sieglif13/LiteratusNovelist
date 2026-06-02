@@ -53,6 +53,7 @@ export class BookDetailPageComponent implements OnInit, AfterViewInit, OnDestroy
   reviewErrorMsg = '';
 
   ngOnInit(): void {
+    window.scrollTo({ top: 0, behavior: 'instant' });
     this.route.paramMap.subscribe(params => {
       this.slug = params.get('slug');
       if (this.slug) {
