@@ -18,7 +18,15 @@ from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
+from django.http import JsonResponse
+
+def health_check(request):
+    return JsonResponse({"status": "ok", "message": "Server is awake!"})
+
 urlpatterns = [
+    # Health check para pings automáticos (ej. cron-job.org)
+    path('api/health/', health_check, name='health_check'),
+
     # Panel de administración base
     path('admin/', admin.site.urls),
 
