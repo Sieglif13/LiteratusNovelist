@@ -38,15 +38,15 @@
 
           <div class="badges-row">
             <span class="badge difficulty-badge" [ngClass]="book.difficulty_level">
-              <lucide-icon name="sparkles" class="icon-sm"></lucide-icon>
+              <svg lucideSparkles class="icon-sm"></svg>
               {{ book.difficulty_level | titlecase }}
             </span>
             <span class="badge" *ngIf="book.estimated_reading_time">
-              <lucide-icon name="clock" class="icon-sm"></lucide-icon> {{ book.estimated_reading_time }} 
+              <svg lucideClock class="icon-sm"></svg> {{ book.estimated_reading_time }} 
               <span class="word-count">({{ book.total_words | number }} pal.)</span>
             </span>
             <span class="badge">
-              <lucide-icon name="eye" class="icon-sm"></lucide-icon> {{ book.view_count | number }} vistas
+              <svg lucideEye class="icon-sm"></svg> {{ book.view_count | number }} vistas
             </span>
           </div>
 
@@ -60,7 +60,7 @@
               <span class="price-val">{{ book.editions[0].price }} <span class="ink-text">Tinta</span></span>
             </div>
             <div class="action-price" *ngIf="isOwned">
-              <span class="price-val" style="color: #34d399;"><lucide-icon name="check-circle"></lucide-icon> Adquirido</span>
+              <span class="price-val" style="color: #34d399;"><svg lucideCheckCircle></svg> Adquirido</span>
             </div>
             
             <div class="action-buttons">
@@ -73,18 +73,18 @@
                       [class.read-btn]="(auth.isLoggedIn$ | async) && isOwned"
                       (click)="handleAction()">
                 <ng-container *ngIf="!(auth.isLoggedIn$ | async)">
-                  <lucide-icon name="log-in"></lucide-icon> Ingresar para Explorar
+                  <svg lucideLogIn></svg> Ingresar para Explorar
                 </ng-container>
                 <ng-container *ngIf="(auth.isLoggedIn$ | async)">
-                  <span *ngIf="!isOwned" class="flex-center"><lucide-icon name="shopping-cart"></lucide-icon> Adquirir Obra</span>
-                  <span *ngIf="isOwned" class="flex-center"><lucide-icon name="book-open"></lucide-icon> Empezar Lectura</span>
+                  <span *ngIf="!isOwned" class="flex-center"><svg lucideShoppingCart></svg> Adquirir Obra</span>
+                  <span *ngIf="isOwned" class="flex-center"><svg lucideBookOpen></svg> Empezar Lectura</span>
                 </ng-container>
               </button>
 
               <button class="download-btn glass-btn" 
                       *ngIf="(auth.isLoggedIn$ | async) && isOwned" 
                       (click)="downloadPDF()" title="Descargar PDF">
-                <lucide-icon name="download"></lucide-icon>
+                <svg lucideDownload></svg>
               </button>
             </div>
           </div>
@@ -103,7 +103,8 @@
           <div class="section-header-flex">
             <h3>Sinopsis</h3>
             <button class="tts-btn minimal" (click)="speakSynopsis()" *ngIf="book?.synopsis">
-              <lucide-icon [name]="isTalking ? 'volume-x' : 'volume-2'"></lucide-icon>
+              <svg lucideVolumeX *ngIf="isTalking" class="icon-sm"></svg>
+              <svg lucideVolume2 *ngIf="!isTalking" class="icon-sm"></svg>
               {{ isTalking ? 'Detener' : 'Escuchar Sinopsis' }}
             </button>
           </div>
@@ -141,7 +142,7 @@
               <div class="avatar-img-container">
                 <img [src]="avatar.avatar_image || 'assets/default_avatar.png'" alt="{{avatar.name}}" class="avatar-img">
                 <div class="avatar-overlay">
-                  <lucide-icon name="message-circle" color="white"></lucide-icon>
+                  <svg lucideMessageCircle style="color: white;"></svg>
                 </div>
               </div>
               <span class="avatar-name">{{ avatar.name }}</span>
@@ -152,7 +153,7 @@
         <!-- LEGAL NOTICE -->
         <div class="legal-notice-container glass-panel" *ngIf="book.copyright_notice">
           <div class="legal-header">
-            <lucide-icon name="shield-check" color="#3b82f6"></lucide-icon>
+            <svg lucideShieldCheck style="color: #3b82f6;"></svg>
             <h3>Derechos y Legal</h3>
           </div>
           <p class="legal-text">{{ book.copyright_notice }}</p>
@@ -177,7 +178,7 @@
       </div>
 
       <div *ngIf="!book.reviews || book.reviews.length === 0" style="text-align: center; color: #64748b; padding: 2rem;">
-        <lucide-icon name="message-square" style="width:40px; height:40px; opacity:0.5; margin-bottom:1rem;"></lucide-icon>
+        <svg lucideMessageSquare style="width:40px; height:40px; opacity:0.5; margin-bottom:1rem;"></svg>
         <p>Sé el primero en compartir tu opinión.</p>
       </div>
       
@@ -229,7 +230,7 @@
 <!-- AVATAR DETAIL MODAL -->
 <div class="avatar-modal-overlay" *ngIf="selectedAvatar" (click)="closeAvatarModal()" [style.top.px]="modalTop">
   <div class="avatar-modal" (click)="$event.stopPropagation()" style="text-align:center; padding:3rem; background:#0f172a; border-radius:24px; border:1px solid rgba(255,255,255,0.1); max-width:400px; margin:auto;">
-    <button (click)="closeAvatarModal()" style="position:absolute; top:1rem; right:1rem; background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;"><lucide-icon name="x"></lucide-icon></button>
+    <button (click)="closeAvatarModal()" style="position:absolute; top:1rem; right:1rem; background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;"><svg lucideX></svg></button>
     
     <img [src]="selectedAvatar.avatar_image || 'assets/default_avatar.png'" 
          alt="{{selectedAvatar.name}}" 
@@ -238,8 +239,8 @@
     <h2 style="color:white; font-family:var(--font-display); font-size:2rem; margin-bottom:0.5rem;">{{ selectedAvatar.name }}</h2>
     <p style="color:#94a3b8; line-height:1.6; margin-bottom:1.5rem;">{{ selectedAvatar.description }}</p>
     
-    <div style="background:rgba(59,130,246,0.1); color:#60a5fa; padding:1rem; border-radius:12px; font-size:0.9rem;">
-      <lucide-icon name="info" class="icon-sm" style="margin-right:0.5rem;"></lucide-icon>
+    <div style="background:rgba(59,130,246,0.1); color:#60a5fa; padding:1rem; border-radius:12px; font-size:0.9rem; display: flex; align-items: center; justify-content: center;">
+      <svg lucideInfo class="icon-sm" style="margin-right:0.5rem;"></svg>
       Este personaje interactuará contigo durante la lectura.
     </div>
   </div>
@@ -248,7 +249,7 @@
 <!-- PURCHASE CONFIRMATION MODAL -->
 <div class="mini-modal-overlay" *ngIf="showPurchaseModal" (click)="cancelPurchase()" [style.top.px]="modalTop">
   <div class="mini-modal-content glass-panel" (click)="$event.stopPropagation()" style="text-align:center; padding:3rem; max-width:450px; margin:auto; border-radius:24px; background:#0f172a; border:1px solid var(--glow-purple);">
-    <lucide-icon name="shopping-cart" style="width:48px; height:48px; color:var(--glow-purple); margin-bottom:1rem;"></lucide-icon>
+    <svg lucideShoppingCart style="width:48px; height:48px; color:var(--glow-purple); margin-bottom:1rem;"></svg>
     <h2 style="color:white; font-family:var(--font-display); font-size:2.2rem; margin-bottom:1rem;">Adquirir Obra</h2>
     <p style="color:#94a3b8; font-size:1.1rem; margin-bottom:1.5rem;">¿Confirmas el intercambio de <strong style="color:var(--glow-gold);">{{ book.price }} de Tinta</strong> por esta obra?</p>
     
