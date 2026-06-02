@@ -169,7 +169,7 @@ export class BookDetailPageComponent implements OnInit, AfterViewInit, OnDestroy
 
   handleAction(): void {
     if (!this.auth.isLoggedIn()) {
-      this.router.navigate(['/login']);
+      this.router.navigate(['/login'], { queryParams: { returnUrl: this.router.url } });
       return;
     }
 
@@ -178,6 +178,16 @@ export class BookDetailPageComponent implements OnInit, AfterViewInit, OnDestroy
     } else {
       this.router.navigate(['/checkout', 'book', this.slug]);
     }
+  }
+
+  getDifficultyLabel(level: string): string {
+    const map: any = {
+      'beginner': 'Principiante',
+      'intermediate': 'Intermedio',
+      'advanced': 'Avanzado',
+      'master': 'Maestro'
+    };
+    return map[level?.toLowerCase()] || level;
   }
 
   cancelPurchase(): void {

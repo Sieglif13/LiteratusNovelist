@@ -39,7 +39,7 @@
           <div class="badges-row">
             <span class="badge difficulty-badge" [ngClass]="book.difficulty_level">
               <svg lucideSparkles class="icon-sm"></svg>
-              {{ book.difficulty_level | titlecase }}
+              {{ getDifficultyLabel(book.difficulty_level) }}
             </span>
             <span class="badge" *ngIf="book.estimated_reading_time">
               <svg lucideClock class="icon-sm"></svg> {{ book.estimated_reading_time }} 
