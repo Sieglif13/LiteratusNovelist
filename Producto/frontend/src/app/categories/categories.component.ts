@@ -58,7 +58,17 @@ export class CategoriesComponent implements OnInit {
     'historia-teoria-literaria-y-critica': '/assets/categories/historia-teoria-literaria-y-critica.png',
     'literatura-de-viaje': '/assets/categories/literatura-de-viaje.png',
     'novela-corta': '/assets/categories/novela-corta.png',
-    'satira': '/assets/categories/satira.png'
+    'satira': '/assets/categories/satira.png',
+    // Fallbacks temporales para las 9 categorías restantes (Límite de cuota IA)
+    'arte-cine-y-fotografia': '/assets/default_cover.jpg',
+    'biografias-diarios-y-hechos-reales': '/assets/default_cover.jpg',
+    'ciencias-tecnologia-y-medicina': '/assets/default_cover.jpg',
+    'humor': '/assets/default_cover.jpg',
+    'politica': '/assets/default_cover.jpg',
+    'psicologia': '/assets/default_cover.jpg',
+    'religion': '/assets/default_cover.jpg',
+    'sociedad-y-ciencias-sociales': '/assets/default_cover.jpg',
+    'teatro': '/assets/default_cover.jpg'
   };
 
   get filteredCategories(): Category[] {
