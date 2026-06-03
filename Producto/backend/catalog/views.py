@@ -6,6 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.db import transaction
+from django.db.models import Count
 from django_filters.rest_framework import DjangoFilterBackend
 from library.models import UserInventory
 from .models import Book, Author, Genre, Tag, Review
