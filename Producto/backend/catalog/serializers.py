@@ -43,9 +43,11 @@ class GenreSerializer(serializers.ModelSerializer):
     """
     Metadatos de clasificación que acompañarán anidados a los libros.
     """
+    book_count = serializers.IntegerField(read_only=True, required=False)
+
     class Meta:
         model = Genre
-        fields = ['id', 'name', 'slug']
+        fields = ['id', 'name', 'slug', 'book_count']
 
 class EditionSerializer(serializers.ModelSerializer):
     """

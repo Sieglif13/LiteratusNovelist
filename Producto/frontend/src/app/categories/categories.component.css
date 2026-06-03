@@ -167,7 +167,21 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-icon-fallback {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.5;
+  transition: opacity 0.5s ease, transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.category-card:hover .card-icon-fallback {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.1);
 }
 
 .category-card:hover .card-bg-img { transform: scale(1.08); }

@@ -20,7 +20,7 @@ class GenreViewSet(viewsets.ModelViewSet):
     ViewSet para gestionar géneros (Genre).
     Permite listar, crear y editar géneros desde el Dashboard.
     """
-    queryset = Genre.objects.all().order_by('name')
+    queryset = Genre.objects.annotate(book_count=Count('books')).order_by('-book_count', 'name')
     serializer_class = GenreSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     lookup_field = 'slug'

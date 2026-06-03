@@ -27,58 +27,119 @@ export class CategoryDetailComponent implements OnInit {
   categorySlug = '';
   category: Category | null = null;
   books: Book[] = [];
-  filteredBooks: Book[] = [];
   isLoading = true;
+  isLoadingMore = false;
   searchTerm = '';
   totalCount = 0;
+  
+  // Pagination
+  currentPage = 1;
+  pageSize = 10;
+  hasMore = true;
+  
   private searchTimeout: any;
 
-  // Map slug → genre name (same as in book-list)
-  private slugToGenre: Record<string, string> = {
-    'terror': 'Terror',
-    'ciencia-ficcion': 'Ciencia ficción',
-    'fantasia': 'Fantasía',
-    'filosofia': 'Filosofía',
-    'historia': 'Historia',
-    'poesia': 'Poesía',
-    'romantica': 'Romántica',
-    'literatura-y-ficcion': '',  // No filter: show all
-  };
+  // Paleta de colores Premium (fallback)
+  private colors = [
+    '#a855f7', '#ef4444', '#06b6d4', '#22c55e', 
+    '#f59e0b', '#fb923c', '#ec4899', '#f43f5e'
+  ];
 
-  private categoryMeta: Record<string, Omit<Category, 'bookCount'>> = {
-    'literatura-y-ficcion': { name: 'Literatura y Ficción', slug: 'literatura-y-ficcion', image: 'assets/categories/literatura.png', description: 'Clásicos inmortales, cuentos y novelas que definieron la historia', color: '#a855f7' },
-    'terror': { name: 'Terror', slug: 'terror', image: 'assets/categories/terror.png', description: 'Historias que te quitarán el sueño', color: '#ef4444' },
-    'ciencia-ficcion': { name: 'Ciencia Ficción', slug: 'ciencia-ficcion', image: 'assets/categories/ciencia-ficcion.png', description: 'Viajes al futuro, mundos alienígenas', color: '#06b6d4' },
-    'fantasia': { name: 'Fantasía', slug: 'fantasia', image: 'assets/categories/fantasia.png', description: 'Dragones, magia y reinos épicos', color: '#22c55e' },
-    'filosofia': { name: 'Filosofía', slug: 'filosofia', image: 'assets/categories/filosofia.png', description: 'Pensamientos que cambiaron el mundo', color: '#f59e0b' },
-    'historia': { name: 'Historia', slug: 'historia', image: 'assets/categories/historia.png', description: 'Civilizaciones, guerras y grandes momentos', color: '#fb923c' },
-    'poesia': { name: 'Poesía', slug: 'poesia', image: 'assets/categories/poesia.png', description: 'Palabras que llegan al alma', color: '#ec4899' },
-    'romantica': { name: 'Romántica', slug: 'romantica', image: 'assets/categories/romance.png', description: 'Historias de amor que trascienden el tiempo', color: '#f43f5e' },
+  private customImages: Record<string, string> = {
+    'literatura-y-ficcion': '/assets/categories/literatura.png',
+    'terror': '/assets/categories/terror.png',
+    'ciencia-ficcion': '/assets/categories/ciencia-ficcion.png',
+    'fantasia': '/assets/categories/fantasia.png',
+    'filosofia': '/assets/categories/filosofia.png',
+    'historia': '/assets/categories/historia.png',
+    'poesia': '/assets/categories/poesia.png',
+    'romantica': '/assets/categories/romance.png',
+    'accion-y-aventura': '/assets/categories/accion-y-aventura.png',
+    'policiaca-negra-y-suspense': '/assets/categories/policiaca-negra-y-suspense.png',
+    'mitos-leyendas-y-sagas': '/assets/categories/mitos-leyendas-y-sagas.png',
+    'autoayuda-y-superacion-personal': '/assets/categories/autoayuda-y-superacion-personal.png',
+    'ensayos': '/assets/categories/ensayos.png',
+    'infantil-y-juvenil': '/assets/categories/infantil-y-juvenil.png',
+    'antologias': '/assets/categories/antologias.png',
+    'cuentos': '/assets/categories/cuentos.png',
+    'ficcion-clasica': '/assets/categories/ficcion-clasica.png',
+    'ficcion-contemporanea': '/assets/categories/ficcion-contemporanea.png',
+    'ficcion-erotica': '/assets/categories/ficcion-erotica.png'
   };
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.categorySlug = params['slug'];
-      this.category = this.categoryMeta[this.categorySlug] || null;
+      this.loadCategoryMeta();
+      this.resetPagination();
       this.fetchBooks();
     });
   }
 
-  fetchBooks(): void {
-    this.isLoading = true;
-    let params = new HttpParams().set('page_size', '50');
-    const genre = this.slugToGenre[this.categorySlug];
-    if (genre) params = params.set('genres__name', genre);
+  loadCategoryMeta(): void {
+    // Si la categoría tiene imagen custom, se la asignamos, si no la dejamos lista para el fallback
+    const hash = Array.from(this.categorySlug).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const color = this.colors[hash % this.colors.length];
+    
+    // Obtenemos el nombre convirtiendo el slug a algo más legible temporalmente (hasta que la API nos de detalles si quisiéramos)
+    const nameStr = this.categorySlug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+    this.category = {
+      name: nameStr,
+      slug: this.categorySlug,
+      image: this.customImages[this.categorySlug] || '',
+      description: `Explora nuestra colección de ${nameStr.toLowerCase()}`,
+      color: color,
+    };
+  }
+
+  resetPagination(): void {
+    this.currentPage = 1;
+    this.books = [];
+    this.hasMore = true;
+    this.totalCount = 0;
+  }
+
+  fetchBooks(isLoadMore = false): void {
+    if (isLoadMore) {
+      this.isLoadingMore = true;
+      this.currentPage++;
+    } else {
+      this.isLoading = true;
+    }
+
+    let params = new HttpParams()
+      .set('page', this.currentPage.toString())
+      .set('page_size', this.pageSize.toString());
+      
+    // En el backend, el filtro usa el ID o el slug, vamos a pasar genres__slug
+    if (this.categorySlug !== 'literatura-y-ficcion') {
+      params = params.set('genres__slug', this.categorySlug);
+    }
+
+    if (this.searchTerm) {
+      params = params.set('search', this.searchTerm);
+    }
 
     this.api.get<any>('catalog/books/', params).subscribe({
       next: (res) => {
-        this.books = res.results || res;
+        const newBooks = res.results || res;
+        if (isLoadMore) {
+          this.books = [...this.books, ...newBooks];
+        } else {
+          this.books = newBooks;
+        }
+        
         this.totalCount = res.count || this.books.length;
-        this.applySearch();
+        // Check si hay página siguiente
+        this.hasMore = !!res.next;
+        
         this.isLoading = false;
+        this.isLoadingMore = false;
       },
       error: () => {
         this.isLoading = false;
+        this.isLoadingMore = false;
       }
     });
   }
@@ -86,24 +147,22 @@ export class CategoryDetailComponent implements OnInit {
   onSearch(event: any): void {
     this.searchTerm = event.target.value;
     clearTimeout(this.searchTimeout);
-    this.searchTimeout = setTimeout(() => this.applySearch(), 300);
-  }
-
-  applySearch(): void {
-    if (!this.searchTerm) {
-      this.filteredBooks = this.books;
-    } else {
-      const term = this.searchTerm.toLowerCase();
-      this.filteredBooks = this.books.filter(b =>
-        b.title.toLowerCase().includes(term) ||
-        b.synopsis?.toLowerCase().includes(term)
-      );
-    }
+    this.searchTimeout = setTimeout(() => {
+      this.resetPagination();
+      this.fetchBooks();
+    }, 500);
   }
 
   clearSearch(): void {
     this.searchTerm = '';
-    this.filteredBooks = this.books;
+    this.resetPagination();
+    this.fetchBooks();
+  }
+
+  loadMore(): void {
+    if (this.hasMore && !this.isLoadingMore) {
+      this.fetchBooks(true);
+    }
   }
 
   goToBook(slug: string): void {

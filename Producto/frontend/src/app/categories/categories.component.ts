@@ -23,72 +23,37 @@ export class CategoriesComponent implements OnInit {
   searchTerm = '';
   isLoading = false;
 
-  categories: Category[] = [
-    {
-      name: 'Literatura y Ficción',
-      slug: 'literatura-y-ficcion',
-      image: 'assets/categories/literatura.png',
-      description: 'Clásicos inmortales, cuentos y novelas que definieron la historia',
-      color: '#a855f7',
-      bookCount: 0
-    },
-    {
-      name: 'Terror',
-      slug: 'terror',
-      image: 'assets/categories/terror.png',
-      description: 'Historias que te quitarán el sueño y erizado la piel',
-      color: '#ef4444',
-      bookCount: 0
-    },
-    {
-      name: 'Ciencia Ficción',
-      slug: 'ciencia-ficcion',
-      image: 'assets/categories/ciencia-ficcion.png',
-      description: 'Viajes al futuro, mundos alienígenas y tecnología del mañana',
-      color: '#06b6d4',
-      bookCount: 0
-    },
-    {
-      name: 'Fantasía',
-      slug: 'fantasia',
-      image: 'assets/categories/fantasia.png',
-      description: 'Dragones, magia y reinos que desafían la imaginación',
-      color: '#22c55e',
-      bookCount: 0
-    },
-    {
-      name: 'Filosofía',
-      slug: 'filosofia',
-      image: 'assets/categories/filosofia.png',
-      description: 'Pensamientos que cambiaron el mundo y la forma de verlo',
-      color: '#f59e0b',
-      bookCount: 0
-    },
-    {
-      name: 'Historia',
-      slug: 'historia',
-      image: 'assets/categories/historia.png',
-      description: 'Civilizaciones, guerras y los grandes momentos de la humanidad',
-      color: '#fb923c',
-      bookCount: 0
-    },
-    {
-      name: 'Poesía',
-      slug: 'poesia',
-      image: 'assets/categories/poesia.png',
-      description: 'Palabras que llegan al alma y permanecen por siempre',
-      color: '#ec4899',
-      bookCount: 0
-    },
-    {
-      name: 'Romántica',
-      slug: 'romantica',
-      image: 'assets/categories/romance.png',
-      description: 'Historias de amor que trascienden el tiempo y el espacio',
-      color: '#f43f5e',
-      bookCount: 0
-    }
+  categories: Category[] = [];
+
+  // Paleta de colores Premium
+  private colors = [
+    '#a855f7', '#ef4444', '#06b6d4', '#22c55e', 
+    '#f59e0b', '#fb923c', '#ec4899', '#f43f5e',
+    '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b'
   ];
+
+  // Mapeo estricto para las que sí tienen imagen propia (agregando el '/')
+  private customImages: Record<string, string> = {
+    'literatura-y-ficcion': '/assets/categories/literatura.png',
+    'terror': '/assets/categories/terror.png',
+    'ciencia-ficcion': '/assets/categories/ciencia-ficcion.png',
+    'fantasia': '/assets/categories/fantasia.png',
+    'filosofia': '/assets/categories/filosofia.png',
+    'historia': '/assets/categories/historia.png',
+    'poesia': '/assets/categories/poesia.png',
+    'romantica': '/assets/categories/romance.png',
+    'accion-y-aventura': '/assets/categories/accion-y-aventura.png',
+    'policiaca-negra-y-suspense': '/assets/categories/policiaca-negra-y-suspense.png',
+    'mitos-leyendas-y-sagas': '/assets/categories/mitos-leyendas-y-sagas.png',
+    'autoayuda-y-superacion-personal': '/assets/categories/autoayuda-y-superacion-personal.png',
+    'ensayos': '/assets/categories/ensayos.png',
+    'infantil-y-juvenil': '/assets/categories/infantil-y-juvenil.png',
+    'antologias': '/assets/categories/antologias.png',
+    'cuentos': '/assets/categories/cuentos.png',
+    'ficcion-clasica': '/assets/categories/ficcion-clasica.png',
+    'ficcion-contemporanea': '/assets/categories/ficcion-contemporanea.png',
+    'ficcion-erotica': '/assets/categories/ficcion-erotica.png'
+  };
 
   get filteredCategories(): Category[] {
     if (!this.searchTerm) return this.categories;
@@ -102,30 +67,40 @@ export class CategoriesComponent implements OnInit {
   }
 
   loadCounts(): void {
-    // Cargar conteo total de libros por género
-    this.api.get<any>('catalog/books/?page_size=1').subscribe({
+    this.isLoading = true;
+    this.api.get<any>('catalog/genres/?page_size=100').subscribe({
       next: (res) => {
-        // Enrich with counts via individual genre queries
-        const genreMap: Record<string, string> = {
-          'terror': 'Terror',
-          'ciencia-ficcion': 'Ciencia ficción',
-          'fantasia': 'Fantasía',
-          'filosofia': 'Filosofía',
-          'historia': 'Historia',
-          'poesia': 'Poesía',
-          'romantica': 'Romántica',
-        };
-        this.categories.forEach(cat => {
-          const genre = genreMap[cat.slug];
-          if (genre) {
-            this.api.get<any>(`catalog/books/?genres__name=${encodeURIComponent(genre)}&page_size=1`).subscribe({
-              next: (r) => cat.bookCount = r.count || 0
-            });
-          } else if (cat.slug === 'literatura-y-ficcion') {
-            // Use total as approximation
-            cat.bookCount = res.count || 0;
-          }
+        const genres = res.results || res;
+        this.categories = genres.map((g: any, index: number) => {
+          // Asignar color secuencial
+          const color = this.colors[index % this.colors.length];
+          
+          return {
+            name: g.name,
+            slug: g.slug,
+            image: this.customImages[g.slug] || '', // Si no hay imagen, queda vacío
+            description: `Explora nuestra increíble colección de ${g.name.toLowerCase()}`,
+            color: color,
+            bookCount: g.book_count || 0
+          };
         });
+        
+        // Agregar manualmente "Literatura y Ficción" general (si se desea) u otras personalizadas
+        if (!this.categories.find(c => c.slug === 'literatura-y-ficcion')) {
+          this.categories.unshift({
+            name: 'Literatura y Ficción',
+            slug: 'literatura-y-ficcion',
+            image: '/assets/categories/literatura.png',
+            description: 'Clásicos inmortales, cuentos y novelas que definieron la historia',
+            color: '#a855f7',
+            bookCount: this.categories.reduce((acc, curr) => acc + (curr.bookCount || 0), 0)
+          });
+        }
+
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
       }
     });
   }
