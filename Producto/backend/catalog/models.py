@@ -115,7 +115,7 @@ class Genre(TimeStampedModel):
     """
     name = models.CharField(max_length=100) # Nombre del género (Ej. Fantasía, Ciencia Ficción).
     slug = models.SlugField(max_length=100, unique=True, blank=True) # Identificador URL amigable del género.
-    cover_image = models.ImageField(upload_to='category_covers/', null=True, blank=True) # Imagen de fondo de la categoría
+    cover_image = models.ImageField(upload_to='category_covers/', max_length=255, null=True, blank=True) # Imagen de fondo de la categoría
 
     class Meta:
         verbose_name = 'Genre'

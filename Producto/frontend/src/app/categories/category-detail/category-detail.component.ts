@@ -45,34 +45,6 @@ export class CategoryDetailComponent implements OnInit {
     '#f59e0b', '#fb923c', '#ec4899', '#f43f5e'
   ];
 
-  private customImages: Record<string, string> = {
-    'literatura-y-ficcion': '/assets/categories/literatura.png',
-    'terror': '/assets/categories/terror.png',
-    'ciencia-ficcion': '/assets/categories/ciencia-ficcion.png',
-    'fantasia': '/assets/categories/fantasia.png',
-    'filosofia': '/assets/categories/filosofia.png',
-    'historia': '/assets/categories/historia.png',
-    'poesia': '/assets/categories/poesia.png',
-    'romantica': '/assets/categories/romance.png',
-    'accion-y-aventura': '/assets/categories/accion-y-aventura.png',
-    'policiaca-negra-y-suspense': '/assets/categories/policiaca-negra-y-suspense.png',
-    'mitos-leyendas-y-sagas': '/assets/categories/mitos-leyendas-y-sagas.png',
-    'autoayuda-y-superacion-personal': '/assets/categories/autoayuda-y-superacion-personal.png',
-    'ensayos': '/assets/categories/ensayos.png',
-    'infantil-y-juvenil': '/assets/categories/infantil-y-juvenil.png',
-    'antologias': '/assets/categories/antologias.png',
-    'cuentos': '/assets/categories/cuentos.png',
-    'ficcion-clasica': '/assets/categories/ficcion-clasica.png',
-    'ficcion-contemporanea': '/assets/categories/ficcion-contemporanea.png',
-    'ficcion-erotica': '/assets/categories/ficcion-erotica.png',
-    'ficcion-historica': '/assets/categories/ficcion-historica.png',
-    'ficcion-religiosa-y-espiritual': '/assets/categories/ficcion-religiosa-y-espiritual.png',
-    'historia-teoria-literaria-y-critica': '/assets/categories/historia-teoria-literaria-y-critica.png',
-    'literatura-de-viaje': '/assets/categories/literatura-de-viaje.png',
-    'novela-corta': '/assets/categories/novela-corta.png',
-    'satira': '/assets/categories/satira.png'
-  };
-
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.categorySlug = params['slug'];
@@ -83,20 +55,32 @@ export class CategoryDetailComponent implements OnInit {
   }
 
   loadCategoryMeta(): void {
-    // Si la categoría tiene imagen custom, se la asignamos, si no la dejamos lista para el fallback
     const hash = Array.from(this.categorySlug).reduce((acc, char) => acc + char.charCodeAt(0), 0);
     const color = this.colors[hash % this.colors.length];
-    
-    // Obtenemos el nombre convirtiendo el slug a algo más legible temporalmente (hasta que la API nos de detalles si quisiéramos)
     const nameStr = this.categorySlug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
+    // Fallback inicial mientras carga
     this.category = {
       name: nameStr,
       slug: this.categorySlug,
-      image: this.customImages[this.categorySlug] || '',
+      image: '/assets/default_cover.jpg',
       description: `Explora nuestra colección de ${nameStr.toLowerCase()}`,
       color: color,
     };
+
+    // Obtenemos los detalles reales del backend
+    this.api.get<any>(`catalog/genres/${this.categorySlug}/`).subscribe({
+      next: (res) => {
+        this.category = {
+          name: res.name || nameStr,
+          slug: res.slug || this.categorySlug,
+          image: res.cover_image || '/assets/default_cover.jpg',
+          description: `Explora nuestra colección de ${(res.name || nameStr).toLowerCase()}`,
+          color: color,
+        };
+      },
+      error: (err) => console.error('Error fetching category', err)
+    });
   }
 
   resetPagination(): void {
