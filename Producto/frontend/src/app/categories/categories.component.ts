@@ -52,7 +52,13 @@ export class CategoriesComponent implements OnInit {
     'cuentos': '/assets/categories/cuentos.png',
     'ficcion-clasica': '/assets/categories/ficcion-clasica.png',
     'ficcion-contemporanea': '/assets/categories/ficcion-contemporanea.png',
-    'ficcion-erotica': '/assets/categories/ficcion-erotica.png'
+    'ficcion-erotica': '/assets/categories/ficcion-erotica.png',
+    'ficcion-historica': '/assets/categories/ficcion-historica.png',
+    'ficcion-religiosa-y-espiritual': '/assets/categories/ficcion-religiosa-y-espiritual.png',
+    'historia-teoria-literaria-y-critica': '/assets/categories/historia-teoria-literaria-y-critica.png',
+    'literatura-de-viaje': '/assets/categories/literatura-de-viaje.png',
+    'novela-corta': '/assets/categories/novela-corta.png',
+    'satira': '/assets/categories/satira.png'
   };
 
   get filteredCategories(): Category[] {
