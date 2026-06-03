@@ -34,6 +34,45 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   discoveryBooks: Book[] = [];
   randomDiscoveryBooks: Book[] = []; // Para el carrusel aleatorio
 
+  // Libros con personajes IA activos (hardcoded — ya tienen AIAvatars configurados)
+  featuredWithCharacters = [
+    {
+      slug: 'el-gato-negro-allan-poe-edgar',
+      title: 'El Gato Negro',
+      author: 'Edgar Allan Poe',
+      cover: 'https://srbmswjsbkpftjabcurg.supabase.co/storage/v1/object/public/literatus-media/book_covers/el-gato-negro-allan-poe-edgar.jpg',
+      genre: 'Terror · Gótico',
+      characterCount: 3
+    },
+    {
+      slug: 'el-principe-feliz-y-otros-cuentos-wilde-oscar',
+      title: 'El Príncipe Feliz',
+      author: 'Oscar Wilde',
+      cover: 'https://srbmswjsbkpftjabcurg.supabase.co/storage/v1/object/public/literatus-media/book_covers/el-principe-feliz-y-otros-cuentos-wilde-oscar.jpg',
+      genre: 'Cuento · Clásico',
+      characterCount: 4
+    },
+    {
+      slug: 'la-metamorfosis-kafka-franz',
+      title: 'La Metamorfosis',
+      author: 'Franz Kafka',
+      cover: 'https://srbmswjsbkpftjabcurg.supabase.co/storage/v1/object/public/literatus-media/book_covers/la-metamorfosis-kafka-franz.jpg',
+      genre: 'Ficción · Absurdismo',
+      characterCount: 5
+    },
+    {
+      slug: 'las-metamorfosis-ovidio',
+      title: 'Metamorfosis',
+      author: 'Ovidio',
+      cover: 'https://srbmswjsbkpftjabcurg.supabase.co/storage/v1/object/public/literatus-media/book_covers/las-metamorfosis-ovidio.jpg',
+      genre: 'Mitos · Clásico',
+      characterCount: 6
+    }
+  ];
+
+  activeCharacterIndex = 0;
+  private charCarouselInterval: any;
+
   private _readingContainer?: ElementRef;
   @ViewChild('readingContainer') set readingContainer(el: ElementRef) {
     if (el && !this._readingContainer) {
@@ -79,6 +118,15 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     this.destroy$.next();
     this.destroy$.complete();
     this.scrollIntervals.forEach(interval => clearInterval(interval));
+    if (this.charCarouselInterval) clearInterval(this.charCarouselInterval);
+  }
+
+  goToCharBook(slug: string): void {
+    this.router.navigate(['/book', slug]);
+  }
+
+  setCharacterSlide(index: number): void {
+    this.activeCharacterIndex = index;
   }
 
   private loadBooks(): void {

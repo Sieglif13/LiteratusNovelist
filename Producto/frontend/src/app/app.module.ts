@@ -26,7 +26,6 @@ import { CharacterHubComponent } from './characters/character-hub/character-hub.
 import { TavernDialogComponent } from './library/tavern-dialog/tavern-dialog.component';
 import { AudioVisualizerComponent } from './core/components/audio-visualizer/audio-visualizer.component';
 
-
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -37,6 +36,8 @@ import { ProfileComponent } from './users/profile/profile.component';
 import { AuthorListComponent } from './catalog/author-list/author-list.component';
 import { LucideSparkles, LucideFlame, LucideStar, LucideShoppingCart, LucideBookOpen, LucidePenTool, LucideLock, LucideLandmark, LucideShieldCheck, LucideCreditCard, LucideUser, LucideUsers, LucideLogOut, LucideBarChart2, LucideHome, LucideCheck, LucideX, LucideFileText, LucidePlus, LucidePlay, LucidePause, LucideSquare, LucideInfo, LucideSearch, LucideBookmark, LucideHelpCircle, LucideMessageSquare, LucidePackage, LucideCrown, LucideCheckCircle, LucideLibrary, LucideXCircle, LucideRefreshCcw, LucideMessageCircle, LucideClock, LucideVolume2, LucideEye, LucideDownload, LucideLogIn, LucideVolumeX } from '@lucide/angular';
 import { FooterComponent } from './core/components/footer/footer.component';
+import { CategoriesComponent } from './categories/categories.component';
+import { CategoryDetailComponent } from './categories/category-detail/category-detail.component';
 
 @NgModule({
   declarations: [
@@ -58,7 +59,9 @@ import { FooterComponent } from './core/components/footer/footer.component';
     ProfileComponent,
     AuthorListComponent,
     AudioVisualizerComponent,
-    FooterComponent
+    FooterComponent,
+    CategoriesComponent,
+    CategoryDetailComponent
   ],
   imports: [
     BrowserModule,

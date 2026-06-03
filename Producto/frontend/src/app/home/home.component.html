@@ -112,6 +112,50 @@
     </section>
 
     <!-- ═══════════════════════════════════════════════════════════
+         SECCIÓN: CON PERSONAJES IA (Libros con Avatares Activos)
+    ═══════════════════════════════════════════════════════════ -->
+    <section class="characters-feature-section">
+      <div class="section-header characters-header">
+        <div class="char-header-left">
+          <div class="char-label-pill">
+            <span class="pulse-dot"></span>
+            IA Activa
+          </div>
+          <h2 class="section-title">Conversa con los Personajes</h2>
+          <p class="char-subtitle">Estos libros tienen inteligencia artificial integrada. Lee y chatea con sus personajes en tiempo real.</p>
+        </div>
+        <a routerLink="/characters" class="char-see-all">Ver todos los personajes →</a>
+      </div>
+
+      <div class="char-carousel-track">
+        <div class="char-book-card" *ngFor="let book of featuredWithCharacters; let i = index"
+             (click)="goToCharBook(book.slug)">
+          <div class="char-cover-wrap">
+            <img [src]="book.cover" [alt]="book.title" class="char-cover-img" loading="lazy"
+                 onerror="this.src='assets/default_cover.jpg'">
+            <div class="char-cover-overlay">
+              <button class="char-cta-btn">Abrir libro →</button>
+            </div>
+            <!-- Badge IA -->
+            <div class="ia-badge">
+              <span class="ia-dot"></span>
+              <span>IA Activa</span>
+            </div>
+          </div>
+          <div class="char-book-meta">
+            <h3 class="char-book-title">{{ book.title }}</h3>
+            <p class="char-book-author">{{ book.author }}</p>
+            <span class="char-genre-tag">{{ book.genre }}</span>
+            <div class="char-count-chip">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/></svg>
+              {{ book.characterCount }} personajes IA
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
          SECCIÓN: DESCUBRIMIENTO (Botón + Carrusel Aleatorio)
     ═══════════════════════════════════════════════════════════ -->
     <section class="discovery-section">

@@ -11,6 +11,7 @@ import { AuthService } from '../../core/services/auth.service';
 export class DashboardLayoutComponent implements OnInit {
   sidebarCollapsed = false;
   pageTitle = 'Visión General';
+  currentDate = new Date().toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
 
   private pageTitles: Record<string, string> = {
     '/dashboard/overview': 'Visión General',

@@ -20,6 +20,8 @@ import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './users/profile/profile.component';
 import { AuthorListComponent } from './catalog/author-list/author-list.component';
 import { CharacterHubComponent } from './characters/character-hub/character-hub.component';
+import { CategoriesComponent } from './categories/categories.component';
+import { CategoryDetailComponent } from './categories/category-detail/category-detail.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -41,6 +43,8 @@ const routes: Routes = [
     loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule),
     canActivate: [adminGuard]
   },
+  { path: 'categories', component: CategoriesComponent },
+  { path: 'categories/:slug', component: CategoryDetailComponent },
   { path: '', component: HomeComponent, pathMatch: 'full' },
   { path: '**', redirectTo: '' }
 ];

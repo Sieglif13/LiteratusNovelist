@@ -15,6 +15,7 @@
     <!-- Links de Navegación -->
     <ul class="nav-links" [class.active]="menuOpen">
       <li><a routerLink="/catalog" routerLinkActive="active-link" (click)="menuOpen = false">Explorar</a></li>
+      <li><a routerLink="/categories" routerLinkActive="active-link" (click)="menuOpen = false">Categorías</a></li>
       <li><a routerLink="/authors" routerLinkActive="active-link" (click)="menuOpen = false">Autores</a></li>
       <li><a routerLink="/characters" routerLinkActive="active-link" (click)="menuOpen = false">Personajes</a></li>
       <li *ngIf="isLoggedIn"><a routerLink="/library" routerLinkActive="active-link" (click)="menuOpen = false">Mi
