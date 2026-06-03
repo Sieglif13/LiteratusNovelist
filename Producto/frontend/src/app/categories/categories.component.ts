@@ -32,45 +32,6 @@ export class CategoriesComponent implements OnInit {
     '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b'
   ];
 
-  // Mapeo estricto para las que sí tienen imagen propia (agregando el '/')
-  private customImages: Record<string, string> = {
-    'literatura-y-ficcion': '/assets/categories/literatura.png',
-    'terror': '/assets/categories/terror.png',
-    'ciencia-ficcion': '/assets/categories/ciencia-ficcion.png',
-    'fantasia': '/assets/categories/fantasia.png',
-    'filosofia': '/assets/categories/filosofia.png',
-    'historia': '/assets/categories/historia.png',
-    'poesia': '/assets/categories/poesia.png',
-    'romantica': '/assets/categories/romance.png',
-    'accion-y-aventura': '/assets/categories/accion-y-aventura.png',
-    'policiaca-negra-y-suspense': '/assets/categories/policiaca-negra-y-suspense.png',
-    'mitos-leyendas-y-sagas': '/assets/categories/mitos-leyendas-y-sagas.png',
-    'autoayuda-y-superacion-personal': '/assets/categories/autoayuda-y-superacion-personal.png',
-    'ensayos': '/assets/categories/ensayos.png',
-    'infantil-y-juvenil': '/assets/categories/infantil-y-juvenil.png',
-    'antologias': '/assets/categories/antologias.png',
-    'cuentos': '/assets/categories/cuentos.png',
-    'ficcion-clasica': '/assets/categories/ficcion-clasica.png',
-    'ficcion-contemporanea': '/assets/categories/ficcion-contemporanea.png',
-    'ficcion-erotica': '/assets/categories/ficcion-erotica.png',
-    'ficcion-historica': '/assets/categories/ficcion-historica.png',
-    'ficcion-religiosa-y-espiritual': '/assets/categories/ficcion-religiosa-y-espiritual.png',
-    'historia-teoria-literaria-y-critica': '/assets/categories/historia-teoria-literaria-y-critica.png',
-    'literatura-de-viaje': '/assets/categories/literatura-de-viaje.png',
-    'novela-corta': '/assets/categories/novela-corta.png',
-    'satira': '/assets/categories/satira.png',
-    // Fallbacks temporales para las 9 categorías restantes (Límite de cuota IA)
-    'arte-cine-y-fotografia': '/assets/default_cover.jpg',
-    'biografias-diarios-y-hechos-reales': '/assets/default_cover.jpg',
-    'ciencias-tecnologia-y-medicina': '/assets/default_cover.jpg',
-    'humor': '/assets/default_cover.jpg',
-    'politica': '/assets/default_cover.jpg',
-    'psicologia': '/assets/default_cover.jpg',
-    'religion': '/assets/default_cover.jpg',
-    'sociedad-y-ciencias-sociales': '/assets/default_cover.jpg',
-    'teatro': '/assets/default_cover.jpg'
-  };
-
   get filteredCategories(): Category[] {
     if (!this.searchTerm) return this.categories;
     return this.categories.filter(c =>
@@ -94,7 +55,7 @@ export class CategoriesComponent implements OnInit {
           return {
             name: g.name,
             slug: g.slug,
-            image: this.customImages[g.slug] || '', // Si no hay imagen, queda vacío
+            image: g.cover_image || '/assets/default_cover.jpg',
             description: `Explora nuestra increíble colección de ${g.name.toLowerCase()}`,
             color: color,
             bookCount: g.book_count || 0
@@ -106,7 +67,7 @@ export class CategoriesComponent implements OnInit {
           this.categories.unshift({
             name: 'Literatura y Ficción',
             slug: 'literatura-y-ficcion',
-            image: '/assets/categories/literatura.png',
+            image: 'https://srbmswjsbkpftjabcurg.supabase.co/storage/v1/object/public/literatus-media/category_covers/literatura-de-viaje.webp',
             description: 'Clásicos inmortales, cuentos y novelas que definieron la historia',
             color: '#a855f7',
             bookCount: this.categories.reduce((acc, curr) => acc + (curr.bookCount || 0), 0)
