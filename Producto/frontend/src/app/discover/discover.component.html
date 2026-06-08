@@ -1,0 +1,105 @@
+<div class="discover-wrapper">
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="discover-loading">
+    <span class="material-symbols-rounded loading-icon">auto_stories</span>
+    <p>Cargando historias...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && books.length === 0" class="discover-empty">
+    <span class="material-symbols-rounded">search_off</span>
+    <p>No hay historias disponibles por el momento.</p>
+  </div>
+
+  <!-- Main Discover Card -->
+  <div *ngIf="!isLoading && current" class="discover-stage">
+
+    <!-- Background Blur -->
+    <div class="discover-backdrop"
+         [style.background-image]="'url(' + (current.cover_image || 'assets/default_cover.jpg') + ')'">
+    </div>
+    <div class="discover-overlay"></div>
+
+    <!-- Navigation Arrows -->
+    <button class="nav-arrow nav-prev" (click)="prev()" aria-label="Anterior">
+      <span class="material-symbols-rounded">chevron_left</span>
+    </button>
+    <button class="nav-arrow nav-next" (click)="next()" aria-label="Siguiente">
+      <span class="material-symbols-rounded">chevron_right</span>
+    </button>
+
+    <!-- Content Card -->
+    <div class="discover-card">
+
+      <!-- Cover -->
+      <div class="discover-cover-col">
+        <div class="cover-glow-wrap">
+          <img [src]="current.cover_image || 'assets/default_cover.jpg'"
+               [alt]="current.title"
+               class="discover-cover"
+               (click)="goToBook()">
+        </div>
+        <!-- Dots indicator -->
+        <div class="dots-row" *ngIf="books.length > 1">
+          <span class="dot" *ngFor="let b of books; let i = index"
+                [class.active]="i === currentIndex"
+                (click)="currentIndex = i; stopAudio()"></span>
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div class="discover-info">
+
+        <!-- Tags row -->
+        <div class="discover-tags" *ngIf="current.tags && current.tags.length > 0">
+          <span class="discover-tag" *ngFor="let tag of current.tags | slice:0:3">{{ tag.name }}</span>
+        </div>
+
+        <h1 class="discover-title">{{ current.title }}</h1>
+
+        <p class="discover-author" *ngIf="current.book_authors && current.book_authors.length > 0">
+          <span class="material-symbols-rounded author-icon">edit</span>
+          {{ current.book_authors[0].author?.full_name || current.book_authors[0] }}
+        </p>
+
+        <!-- Hook / excerpt -->
+        <blockquote class="discover-hook">
+          "{{ getHook(current) }}"
+        </blockquote>
+
+        <!-- Stats row -->
+        <div class="discover-stats">
+          <span class="stat-pill" *ngIf="current.estimated_reading_time">
+            <span class="material-symbols-rounded">schedule</span>
+            {{ current.estimated_reading_time }}
+          </span>
+          <span class="stat-pill" *ngIf="current.view_count">
+            <span class="material-symbols-rounded">visibility</span>
+            {{ current.view_count | number }} vistas
+          </span>
+          <span class="stat-pill difficulty" *ngIf="current.difficulty_level">
+            <span class="material-symbols-rounded">auto_awesome</span>
+            {{ current.difficulty_level | titlecase }}
+          </span>
+        </div>
+
+        <!-- Actions -->
+        <div class="discover-actions">
+          <button class="cta-primary" (click)="goToBook()">
+            <span class="material-symbols-rounded">menu_book</span>
+            Explorar historia
+          </button>
+          <button class="cta-audio" (click)="toggleAudio()" [class.active]="isPlaying">
+            <span class="material-symbols-rounded">{{ isPlaying ? 'stop_circle' : 'record_voice_over' }}</span>
+            {{ isPlaying ? 'Detener' : 'Escuchar sinopsis' }}
+          </button>
+        </div>
+
+        <!-- Counter -->
+        <p class="discover-counter">{{ currentIndex + 1 }} / {{ books.length }}</p>
+      </div>
+    </div>
+  </div>
+
+</div>

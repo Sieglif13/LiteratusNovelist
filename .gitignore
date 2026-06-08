@@ -99,3 +99,4 @@ backend/epubs_elejandria/
 src/assets/voices/**/*.onnx
 *.onnx
 *.bin
+.vercel

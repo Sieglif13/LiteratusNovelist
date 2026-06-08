@@ -17,7 +17,7 @@
       <!-- Trigger Panel de Personajes (izquierda) -->
       <button class="char-trigger-btn" (click)="toggleCharPanel()" title="Personajes IA"
               [class.active]="isCharPanelOpen">
-        <span class="icon">🎭</span>
+        <span class="material-symbols-rounded" style="font-size:1.3rem;">group</span>
         <span class="ink-badge" *ngIf="inkBalance <= 10" title="Tinta baja">{{ inkBalance }}</span>
       </button>
     </div>
@@ -82,7 +82,7 @@
         <svg lucideVolume2 [size]="20" class="lucide-icon"></svg>
       </button>
       <button class="toc-trigger-btn" (click)="toggleToc()" title="Índice de capítulos" [class.active]="isTocOpen">
-        <span class="icon">☰</span>
+        <span class="material-symbols-rounded" style="font-size:1.3rem;">menu</span>
       </button>
     </div>
   </header>
@@ -364,7 +364,10 @@
 
     <!-- Selector de voz del navegador (solo modo nativo) -->
     <div class="audio-config" *ngIf="currentAudioMode === 'native'">
-      <label class="config-label">🎹 Voz</label>
+      <label class="config-label">
+        <span class="material-symbols-rounded" style="font-size:1rem;vertical-align:middle;">piano</span>
+        Voz
+      </label>
       <select class="voice-dropdown"
               [value]="audioService.selectedVoiceIndex"
               (change)="audioService.setVoiceByIndex(+$any($event.target).value)">

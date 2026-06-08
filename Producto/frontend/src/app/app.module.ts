@@ -38,6 +38,7 @@ import { LucideSparkles, LucideFlame, LucideStar, LucideShoppingCart, LucideBook
 import { FooterComponent } from './core/components/footer/footer.component';
 import { CategoriesComponent } from './categories/categories.component';
 import { CategoryDetailComponent } from './categories/category-detail/category-detail.component';
+import { DiscoverComponent } from './discover/discover.component';
 
 @NgModule({
   declarations: [
@@ -61,7 +62,8 @@ import { CategoryDetailComponent } from './categories/category-detail/category-d
     AudioVisualizerComponent,
     FooterComponent,
     CategoriesComponent,
-    CategoryDetailComponent
+    CategoryDetailComponent,
+    DiscoverComponent
   ],
   imports: [
     BrowserModule,
