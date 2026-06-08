@@ -196,8 +196,6 @@ export class ReaderComponent implements OnInit, OnDestroy {
     this.saveProgressSubject.pipe(debounceTime(3000)).subscribe(p => this.syncProgressToBackend(p));
 
     this.loadInitialData();
-    this.applyTheme();
-    this.applyFontSize();
     this.loadInkBalance();
 
     const savedFont = localStorage.getItem('reader-font-family');
@@ -219,6 +217,10 @@ export class ReaderComponent implements OnInit, OnDestroy {
         this.fontSize = parsedSize;
       }
     }
+
+    // Aplicar las variables CSS ahora que cargamos de localStorage
+    this.applyTheme();
+    this.applyFontSize();
 
     const savedHide = localStorage.getItem('reader-hide-progress');
     if (savedHide !== null) {

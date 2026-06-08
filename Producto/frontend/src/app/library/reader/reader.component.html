@@ -359,32 +359,7 @@
         <span class="ink-cost unlocked-badge">Nuevo</span>
       </div>
 
-      <!-- OTRAS OPCIONES (Voz Grabada) -->
-      <div class="voice-option"
-           [class.active]="currentAudioMode === 'pro'"
-           [class.premium-locked]="!hasPremiumNarration"
-           (click)="currentAudioMode = 'pro'">
-        <div class="voice-info">
-          <span>Otras opciones</span>
-          <small>Audio Original (Cap. 1)</small>
-        </div>
-        
-        <span class="ink-cost" *ngIf="!hasPremiumNarration">
-          {{ PREMIUM_VOICE_INK_COST }} Ink
-        </span>
-        <span class="ink-cost unlocked-badge" *ngIf="hasPremiumNarration">
-          ✓ Disponible
-        </span>
-      </div>
-    </div>
-
-    <!-- Botón de Desbloqueo si está en modo pro pero bloqueado -->
-    <div class="unlock-premium-action" *ngIf="currentAudioMode === 'pro' && !hasPremiumNarration">
-      <p class="unlock-notice">Desbloquea la narración grabada para todo el libro.</p>
-      <button class="unlock-btn" (click)="purchaseNarration()" [disabled]="isUnlocking">
-        <span *ngIf="!isUnlocking">Desbloquear por {{ PREMIUM_VOICE_INK_COST }} Ink</span>
-        <span *ngIf="isUnlocking" class="loader-spin">◷</span>
-      </button>
+      <!-- OTRAS OPCIONES OCULTAS TEMPORALMENTE -->
     </div>
 
     <!-- Selector de voz del navegador (solo modo nativo) -->
@@ -452,16 +427,7 @@
       </button>
     </div>
 
-    <!-- Mensaje de error Pro (ej. requiere plan de pago) -->
-    <div class="pro-error-msg" *ngIf="proErrorMessage">
-      {{ proErrorMessage }}
-    </div>
-
-    <!-- Aviso de tinta insuficiente -->
-    <div class="ink-warning" *ngIf="currentAudioMode === 'pro' && inkBalance < 10">
-      ⚠️ Tinta insuficiente.
-      <a routerLink="/tavern" class="tavern-link">Recargar →</a>
-    </div>
+    <!-- Mensajes de error ocultos -->
   </div>
 
   <!-- ═══════════════════════════════════════════════════════════════ -->

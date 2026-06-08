@@ -1962,7 +1962,7 @@
   position: fixed;
   bottom: 80px;
   right: 20px;
-  background: rgba(15, 23, 42, 0.7);
+  background: rgba(15, 23, 42, 0.85);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
@@ -1973,6 +1973,7 @@
   z-index: 1000;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   width: 240px;
+  color: #f8fafc; /* Forzar color claro siempre para que no herede del tema Sepia/Claro */
 }
 
 .audio-main-controls {
@@ -2032,6 +2033,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: #f8fafc; /* Forzar legibilidad */
 }
 
 
@@ -2435,8 +2437,9 @@
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  opacity: 0.65;
+  opacity: 0.8;
   font-family: 'Outfit', sans-serif;
+  color: #e2e8f0;
 }
 
 .voice-dropdown {
