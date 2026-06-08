@@ -164,6 +164,14 @@ export class ReaderComponent implements OnInit, OnDestroy {
   isLoadingInitialData = false;
   isOverlayActive = true;
 
+  // Screen Wake Lock
+  private wakeLock: any = null;
+  private handleVisibilityChange = async () => {
+    if (document.visibilityState === 'visible') {
+      await this.requestWakeLock();
+    }
+  };
+
   private _loadingLottieContainer?: ElementRef;
   @ViewChild('loadingLottie') set loadingLottie(el: ElementRef) {
     if (el && !this._loadingLottieContainer) {
@@ -180,6 +188,10 @@ export class ReaderComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.inventoryId = this.route.snapshot.paramMap.get('id') || '';
+
+    // Pedir Wake Lock para mantener la pantalla encendida
+    this.requestWakeLock();
+    document.addEventListener('visibilitychange', this.handleVisibilityChange);
 
     this.saveProgressSubject.pipe(debounceTime(3000)).subscribe(p => this.syncProgressToBackend(p));
 
@@ -374,10 +386,33 @@ export class ReaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.releaseWakeLock();
+    document.removeEventListener('visibilitychange', this.handleVisibilityChange);
     this.audioService.stop();
     this.saveAudioPosition();
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  private async requestWakeLock() {
+    try {
+      if ('wakeLock' in navigator) {
+        this.wakeLock = await (navigator as any).wakeLock.request('screen');
+        this.wakeLock.addEventListener('release', () => {
+          // El lock se libera automáticamente si el navegador se oculta
+        });
+      }
+    } catch (err: any) {
+      console.warn(`Wake Lock error: ${err.name}, ${err.message}`);
+    }
+  }
+
+  private releaseWakeLock() {
+    if (this.wakeLock !== null) {
+      this.wakeLock.release().catch(() => {}).finally(() => {
+        this.wakeLock = null;
+      });
+    }
   }
 
   onCanvasScroll(event: any) {
