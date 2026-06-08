@@ -15,6 +15,12 @@ export interface SpanishVoice {
   voice: SpeechSynthesisVoice;
 }
 
+export interface TextChunk {
+  text: string;
+  startCharIndex: number;
+  wordOffset: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AudioService {
   private api = inject(ApiService);
@@ -46,6 +52,8 @@ export class AudioService {
   private lastCharIndex: number = 0;  // Para reanudar desde posición
   private currentText:   string = '';
   private nativeFallbackInterval: any = null;
+  private textChunks: TextChunk[] = [];
+  private currentChunkIndex: number = 0;
 
   constructor() {
     this.loadVoices();
@@ -60,10 +68,9 @@ export class AudioService {
 
     this.voices = spanish.map(v => ({ name: v.name, lang: v.lang, voice: v }));
 
-    // Auto-seleccionar Google o primera disponible
+    // Auto-seleccionar Microsoft Laura o primera disponible
     const best = this.voices.findIndex(v =>
-      v.name.toLowerCase().includes('google') ||
-      v.name.toLowerCase().includes('natural')
+      v.name.toLowerCase().includes('laura')
     );
     this.selectedVoiceIndex = best >= 0 ? best : 0;
   }
@@ -76,7 +83,7 @@ export class AudioService {
     this.selectedVoiceIndex = index;
     // Si está reproduciendo, reiniciar desde la posición actual
     if (this.isPlayingSubject.getValue() && this.currentMode === 'native') {
-      this.playNativeFrom(this.currentText, this.lastCharIndex);
+      this.playNativeFrom(this.lastCharIndex);
     }
   }
 
@@ -88,48 +95,121 @@ export class AudioService {
     }
     if (this.currentMode === 'native' && this.isPlayingSubject.getValue()) {
       // SpeechSynthesis no permite cambiar rate en vuelo → reiniciar desde posición guardada
-      this.playNativeFrom(this.currentText, this.lastCharIndex);
+      this.playNativeFrom(this.lastCharIndex);
     }
   }
 
   // ── MODO NATIVO ──────────────────────────────────────────────────
   playNative(text: string, startWordIndex: number = 0) {
     this.currentText = text;
+    this.textChunks = this.buildChunks(text);
+
     if (startWordIndex > 0) {
-      const words = text.split(/(\s+)/);
-      let charIdx = 0;
-      let wordCount = 0;
-      for (let i = 0; i < words.length; i++) {
-        if (words[i].trim().length > 0) {
-          if (wordCount === startWordIndex) {
-            break;
-          }
-          wordCount++;
+      let startCharIdx = 0;
+      for (const chunk of this.textChunks) {
+        const wordsInChunk = chunk.text.split(/\s+/).filter(w => w.length > 0).length;
+        if (startWordIndex >= chunk.wordOffset && startWordIndex < chunk.wordOffset + wordsInChunk) {
+           const words = chunk.text.split(/(\s+)/);
+           let localCharIdx = 0;
+           let localWordCount = 0;
+           const targetLocalWord = startWordIndex - chunk.wordOffset;
+           for (let i = 0; i < words.length; i++) {
+             if (words[i].trim().length > 0) {
+               if (localWordCount === targetLocalWord) break;
+               localWordCount++;
+             }
+             localCharIdx += words[i].length;
+           }
+           startCharIdx = chunk.startCharIndex + localCharIdx;
+           break;
         }
-        charIdx += words[i].length;
       }
-      this.lastCharIndex = charIdx;
-      this.playNativeFrom(text, charIdx);
+      this.lastCharIndex = startCharIdx;
+      this.playNativeFrom(startCharIdx);
     } else {
       this.lastCharIndex = 0;
-      this.playNativeFrom(text, 0);
+      this.playNativeFrom(0);
     }
   }
 
-  private playNativeFrom(text: string, fromChar: number) {
-    window.speechSynthesis.cancel();
-    if (this.nativeFallbackInterval) {
-      clearInterval(this.nativeFallbackInterval);
-      this.nativeFallbackInterval = null;
+  private buildChunks(text: string): TextChunk[] {
+    const chunks: TextChunk[] = [];
+    const regex = /([.?!,;:]\s+)/;
+    const parts = text.split(regex);
+    
+    let currentChunkText = '';
+    let startChar = 0;
+    let wordOffset = 0;
+    
+    for (let i = 0; i < parts.length; i++) {
+       currentChunkText += parts[i];
+       const isDelimiter = regex.test(parts[i]);
+       const isLast = i === parts.length - 1;
+       
+       if ((isDelimiter && currentChunkText.trim().length > 0) || isLast || currentChunkText.length > 150) {
+          if (currentChunkText.trim().length === 0) continue;
+          
+          chunks.push({
+            text: currentChunkText,
+            startCharIndex: startChar,
+            wordOffset: wordOffset
+          });
+          startChar += currentChunkText.length;
+          wordOffset += currentChunkText.split(/\s+/).filter(w => w.length > 0).length;
+          currentChunkText = '';
+       }
     }
+    
+    if (currentChunkText.trim().length > 0) {
+        chunks.push({
+          text: currentChunkText,
+          startCharIndex: startChar,
+          wordOffset: wordOffset
+        });
+    }
+    return chunks;
+  }
+
+  private playNativeFrom(fromChar: number) {
+    window.speechSynthesis.cancel();
+    this.clearNativeInterval();
     this.currentMode = 'native';
 
-    const slicedText = fromChar > 0 ? text.substring(fromChar) : text;
-    const baseWordOffset = fromChar > 0
-      ? text.substring(0, fromChar).split(/\s+/).filter(w => w.length > 0).length
-      : 0;
+    this.currentChunkIndex = 0;
+    for (let i = 0; i < this.textChunks.length; i++) {
+       const chunk = this.textChunks[i];
+       if (fromChar >= chunk.startCharIndex && fromChar < chunk.startCharIndex + chunk.text.length) {
+          this.currentChunkIndex = i;
+          break;
+       }
+    }
 
-    this.utterance = new SpeechSynthesisUtterance(slicedText);
+    if (this.currentChunkIndex >= this.textChunks.length) {
+       this.handleChapterEnd();
+       return;
+    }
+
+    this.playCurrentChunk(fromChar);
+  }
+
+  private playCurrentChunk(startCharOffsetForChunk: number = -1) {
+    if (this.currentChunkIndex >= this.textChunks.length) {
+      this.handleChapterEnd();
+      return;
+    }
+
+    const chunk = this.textChunks[this.currentChunkIndex];
+    let textToSpeak = chunk.text;
+    let localFromChar = 0;
+
+    if (startCharOffsetForChunk !== -1) {
+       localFromChar = Math.max(0, startCharOffsetForChunk - chunk.startCharIndex);
+       textToSpeak = chunk.text.substring(localFromChar);
+    }
+
+    const baseWordOffset = chunk.wordOffset + (localFromChar > 0 ? chunk.text.substring(0, localFromChar).split(/\s+/).filter(w => w.length > 0).length : 0);
+
+    this.utterance = new SpeechSynthesisUtterance(textToSpeak);
     this.utterance.lang  = this.selectedVoice?.lang ?? 'es-ES';
     this.utterance.rate  = this.playbackRate;
     if (this.selectedVoice) this.utterance.voice = this.selectedVoice;
@@ -139,61 +219,79 @@ export class AudioService {
 
     this.utterance.onboundary = (event: SpeechSynthesisEvent) => {
       boundaryFired = true;
-      if (this.nativeFallbackInterval) {
-        clearInterval(this.nativeFallbackInterval);
-        this.nativeFallbackInterval = null;
-      }
-      // Guardar posición global de caracter para posible reanudación
-      this.lastCharIndex = fromChar + event.charIndex;
+      this.clearNativeInterval();
+      
+      this.lastCharIndex = chunk.startCharIndex + localFromChar + event.charIndex;
 
-      // Calcular índice de palabra
-      const before = slicedText.substring(0, event.charIndex);
+      const before = textToSpeak.substring(0, event.charIndex);
       const localIdx = before.split(/\s+/).filter(w => w.length > 0).length;
       this.wordIndexSubject.next(baseWordOffset + localIdx);
     };
 
     this.utterance.onstart = () => {
-      // Fallback para Android Chrome que a menudo no dispara 'onboundary'
+      this.isPlayingSubject.next(true);
       setTimeout(() => {
         if (!boundaryFired && !this.nativeFallbackInterval) {
-          const currentWords = slicedText.split(/\s+/).filter(w => w.length > 0);
+          const currentWords = textToSpeak.split(/\s+/).filter(w => w.length > 0);
           const msPerWord = 1000 / (2.5 * this.playbackRate);
           this.nativeFallbackInterval = setInterval(() => {
             if (!this.isPausedSubject.getValue()) {
               if (simulatedIdx < currentWords.length) {
                 this.wordIndexSubject.next(baseWordOffset + simulatedIdx);
-                this.lastCharIndex = fromChar + (simulatedIdx * 5); // 5 chars promedio
+                this.lastCharIndex = chunk.startCharIndex + localFromChar + (simulatedIdx * 5);
                 simulatedIdx++;
               }
             }
           }, msPerWord);
         }
-      }, 500); // 500ms de gracia
+      }, 500);
     };
 
     this.utterance.onend = () => {
-      if (this.nativeFallbackInterval) {
-        clearInterval(this.nativeFallbackInterval);
-        this.nativeFallbackInterval = null;
+      this.clearNativeInterval();
+      if (this.isPausedSubject.getValue() || !this.isPlayingSubject.getValue()) {
+         return; 
       }
-      this.isPlayingSubject.next(false);
-      this.wordIndexSubject.next(-1);
-      this.lastCharIndex = 0;
-      this.chapterEnd$.next(); // ← auto-avance
+
+      this.currentChunkIndex++;
+      if (this.currentChunkIndex < this.textChunks.length) {
+         this.playCurrentChunk(-1);
+      } else {
+         this.handleChapterEnd();
+      }
     };
 
     this.utterance.onerror = (e) => {
-      if (this.nativeFallbackInterval) {
-        clearInterval(this.nativeFallbackInterval);
-        this.nativeFallbackInterval = null;
-      }
-      if (e.error !== 'interrupted') {
-        this.isPlayingSubject.next(false);
+      this.clearNativeInterval();
+      if (e.error !== 'interrupted' && e.error !== 'canceled') {
+        console.warn('Speech synthesis error on chunk:', e);
+        if (this.isPlayingSubject.getValue()) {
+           this.currentChunkIndex++;
+           this.playCurrentChunk(-1);
+        }
       }
     };
 
-    this.isPlayingSubject.next(true);
     window.speechSynthesis.speak(this.utterance);
+    
+    // Fallback Chrome Android bug
+    if (window.speechSynthesis.paused) {
+       window.speechSynthesis.resume();
+    }
+  }
+
+  private handleChapterEnd() {
+     this.isPlayingSubject.next(false);
+     this.wordIndexSubject.next(-1);
+     this.lastCharIndex = 0;
+     this.chapterEnd$.next();
+  }
+
+  private clearNativeInterval() {
+     if (this.nativeFallbackInterval) {
+        clearInterval(this.nativeFallbackInterval);
+        this.nativeFallbackInterval = null;
+     }
   }
 
   // ── MODO GRABADO (Reemplaza a PRO) ────────────────────────────────
@@ -311,10 +409,7 @@ export class AudioService {
 
   private cancelAll() {
     window.speechSynthesis.cancel();
-    if (this.nativeFallbackInterval) {
-      clearInterval(this.nativeFallbackInterval);
-      this.nativeFallbackInterval = null;
-    }
+    this.clearNativeInterval();
     if (this.proAudio) {
       this.proAudio.pause();
       this.proAudio = null;
