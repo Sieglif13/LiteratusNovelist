@@ -162,93 +162,113 @@
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ═══ BOOKS GRID ═══ */
-.books-grid {
+/* CSS Grid Responsivo */
+.grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
 }
 
+/* Card Design & Glassmorphism */
 .book-card {
-  cursor: pointer;
-  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
-}
-.book-card:hover { transform: translateY(-10px); }
-
-.book-cover-wrap {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 2/3;
-  border-radius: 16px;
-  overflow: hidden;
-  margin-bottom: 0.8rem;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-
-.book-cover-img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  transition: transform 0.4s;
-}
-.book-card:hover .book-cover-img { transform: scale(1.06); }
-
-.book-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(10,8,25,0.9) 30%, transparent 70%);
   display: flex;
-  align-items: flex-end;
-  padding: 1rem;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-.book-card:hover .book-overlay { opacity: 1; }
-
-.overlay-btn {
-  padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, #a855f7, #3b82f6);
-  border: none;
-  border-radius: 8px;
-  color: #fff;
-  font-size: 0.82rem;
-  font-weight: 700;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
   cursor: pointer;
+  text-decoration: none;
+}
+
+.book-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(139, 92, 246, 0.6);
+  box-shadow: 0 12px 40px rgba(139, 92, 246, 0.2);
+}
+
+.card-image {
+  height: 250px;
+  background-size: cover;
+  background-position: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-bottom: 1px solid var(--glass-border);
+  position: relative;
 }
 
 .featured-badge {
   position: absolute;
-  top: 10px; left: 10px;
-  background: rgba(0,0,0,0.6);
-  border: 1px solid rgba(251,191,36,0.4);
-  color: #fbbf24;
-  padding: 3px 9px;
-  border-radius: 12px;
-  font-size: 0.65rem;
+  top: 15px;
+  right: 15px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
   font-weight: 700;
-  backdrop-filter: blur(6px);
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.4);
+  z-index: 2;
 }
 
-.book-info { padding: 0 0.2rem; }
+.card-image::after {
+  content: "";
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 100px;
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.9), transparent);
+}
+
+.card-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
 
 .book-title {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #f1f5f9;
-  margin: 0 0 0.35rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 1.25rem;
+  margin-bottom: 8px;
+  line-height: 1.3;
+  color: var(--text-main);
+  font-family: var(--font-display, serif);
+}
+
+.book-author {
+  font-family: var(--font-literary, 'EB Garamond', serif);
+  font-style: italic;
+  color: #fbbf24;
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
 }
 
 .book-synopsis {
-  font-size: 0.78rem;
-  color: #64748b;
-  margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  line-height: 1.4;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  flex-grow: 1;
+  margin-bottom: 20px;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.read-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(139, 92, 246, 0.7);
+  letter-spacing: 0.5px;
+  transition: color 0.2s ease, gap 0.2s ease;
+}
+
+.book-card:hover .read-hint {
+  color: rgba(139, 92, 246, 1);
+  gap: 10px;
 }
 
 /* Empty State */
@@ -281,11 +301,12 @@
 /* ═══ RESPONSIVE ═══ */
 @media (max-width: 768px) {
   .cat-hero { height: 280px; }
-  .books-grid { grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 1rem; }
+  .grid-container { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+  .card-image { height: 200px; }
 }
 
 @media (max-width: 480px) {
-  .books-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+  .grid-container { grid-template-columns: 1fr; }
 }
 
 .load-more-container {

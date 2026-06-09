@@ -48,24 +48,35 @@
     </div>
 
     <!-- Grid de Libros -->
-    <div class="books-grid" *ngIf="books.length > 0">
-      <div class="book-card" *ngFor="let book of books" (click)="goToBook(book.slug)">
-        <div class="book-cover-wrap">
-          <img
-            [src]="book.cover_image || 'assets/default_cover.jpg'"
-            [alt]="book.title"
-            class="book-cover-img"
-            loading="lazy"
-            onerror="this.src='assets/default_cover.jpg'">
-          <div class="book-overlay">
-            <button class="overlay-btn">Ver Libro →</button>
-          </div>
-          <div class="featured-badge" *ngIf="book.is_featured">⭐ Destacado</div>
+    <div class="grid-container" *ngIf="books.length > 0">
+      <div class="glass-panel book-card" *ngFor="let book of books" (click)="goToBook(book.slug)">
+        
+        <div class="card-image" 
+             [style.backgroundImage]="'url(' + (book.cover_image || 'assets/default_cover.jpg') + ')'">
+          <div class="featured-badge" *ngIf="book.is_featured">★ Destacado</div>
         </div>
-        <div class="book-info">
+        
+        <div class="card-content">
           <h3 class="book-title">{{ book.title }}</h3>
-          <p class="book-synopsis">{{ book.synopsis }}</p>
+          
+          <p class="book-author" *ngIf="book.book_authors && book.book_authors.length > 0">
+            De {{ book.book_authors[0].author?.full_name || book.book_authors[0] }}
+          </p>
+          
+          <p class="book-synopsis">
+            {{ (book.synopsis && book.synopsis.length > 100) ? (book.synopsis | slice:0:100) + '...' : book.synopsis }}
+          </p>
+          
+          <div class="card-actions">
+            <span class="read-hint">
+              Ver Detalles
+              <svg xmlns="http://www.w3.org/svg/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+              </svg>
+            </span>
+          </div>
         </div>
+      
       </div>
     </div>
 
