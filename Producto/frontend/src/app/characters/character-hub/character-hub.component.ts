@@ -3,6 +3,7 @@ import { ChatService } from '../../core/services/chat.service';
 import { Router } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
 import { Subscription, interval } from 'rxjs';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-character-hub',
@@ -13,6 +14,7 @@ export class CharacterHubComponent implements OnInit, OnDestroy {
   chatService = inject(ChatService);
   api = inject(ApiService);
   router = inject(Router);
+  auth = inject(AuthService);
 
   // Datos para las secciones
   allCharacters: any[] = [];
@@ -100,6 +102,11 @@ export class CharacterHubComponent implements OnInit, OnDestroy {
 
   openChat(character: any) {
     if (!character || !character.book_slug) return;
+
+    if (!this.auth.isLoggedIn()) {
+      this.router.navigate(['/login'], { queryParams: { returnUrl: `/book/${character.book_slug}` } });
+      return;
+    }
 
     // Verificar si el usuario ya posee el libro
     this.api.get<any>(`library/inventory/check/?slug=${character.book_slug}`).subscribe({

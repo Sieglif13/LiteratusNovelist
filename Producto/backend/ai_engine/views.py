@@ -83,7 +83,7 @@ class GlobalAvatarListView(APIView):
     GET /api/v1/ai/hub/avatars/
     Hub Global: Devuelve TODOS los avatares para la página estilo Character.ai
     """
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request):
         query = request.query_params.get('q', '')
@@ -117,9 +117,12 @@ class RecentChatsView(APIView):
     GET /api/v1/ai/hub/recent/
     Devuelve los personajes con los que el usuario ha chateado recientemente.
     """
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request):
+        if not request.user.is_authenticated:
+            return Response([])
+
         # Obtener las sesiones más recientes (updated_at se actualiza con nuevos mensajes)
         # Usamos updated_at de la sesión o created_at. TimeStampedModel tiene ambos.
         sessions = ChatSession.objects.filter(
