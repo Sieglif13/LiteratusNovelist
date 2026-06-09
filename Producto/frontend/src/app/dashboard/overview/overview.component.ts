@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component, OnInit, inject } from '@angular/core';
+import { ApiService } from '../../core/services/api.service';
 
 @Component({
   selector: 'app-overview',
@@ -11,10 +11,12 @@ export class OverviewComponent implements OnInit {
   loading = true;
   maxSale = 1;
 
-  constructor(private http: HttpClient) {}
+  private api = inject(ApiService);
+
+  constructor() {}
 
   ngOnInit(): void {
-    this.http.get<any>('http://localhost:8000/api/v1/dashboard/stats/').subscribe({
+    this.api.get<any>('dashboard/stats/').subscribe({
       next: (data) => {
         this.stats = data;
         // Calcular el máximo para normalizar el gráfico de barras
