@@ -73,7 +73,7 @@ class BookViewSet(viewsets.ReadOnlyModelViewSet):
     search_fields = ['title', 'synopsis', 'book_authors__author__full_name', 'genres__name']
     
     # Ordenamiento DRF: ?ordering=-created_at
-    ordering_fields = ['title', 'created_at', 'is_featured']
+    ordering_fields = ['title', 'created_at', 'is_featured', '?']
     ordering = ['-is_featured', '-created_at'] # Por defecto los destacados y luego más nuevos
 
     def get_queryset(self):

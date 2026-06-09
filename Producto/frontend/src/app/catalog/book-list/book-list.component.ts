@@ -39,7 +39,7 @@ export class BookListComponent implements OnInit {
   currentPage = 1;
 
   get totalPages(): number {
-    const size = this.activeCategory || this.searchTerm ? 100 : 12;
+    const size = this.activeCategory || this.searchTerm ? 50 : 24;
     return Math.ceil(this.totalCount / size);
   }
 
@@ -113,10 +113,15 @@ export class BookListComponent implements OnInit {
       params = params.set('genres__name', dbName);
     }
     // Traer más resultados por página cuando hay filtro activo
-    params = params.set('page_size', this.activeCategory || this.searchTerm ? '50' : '12');
+    params = params.set('page_size', this.activeCategory || this.searchTerm ? '50' : '24');
     params = params.set('page', this.currentPage);
 
-    this.api.get<PaginatedResponse>(params ? 'catalog/books/' : 'catalog/books/', params).subscribe({
+    // Si no hay filtro activo, mostrar libros de forma aleatoria
+    if (!this.activeCategory && !this.searchTerm) {
+      params = params.set('ordering', '?');
+    }
+
+    this.api.get<PaginatedResponse>('catalog/books/', params).subscribe({
       next: (response) => {
         this.books = response.results;
         this.totalCount = response.count;
