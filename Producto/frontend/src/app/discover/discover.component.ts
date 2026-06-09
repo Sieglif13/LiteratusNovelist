@@ -18,7 +18,7 @@ export class DiscoverComponent implements OnInit, OnDestroy {
   isPlaying = false;
 
   ngOnInit(): void {
-    this.api.get<any>('catalog/books/?format=json').subscribe({
+    this.api.get<any>('catalog/books/?format=json&ordering=?&page_size=24').subscribe({
       next: (res: any) => {
         const data = Array.isArray(res) ? res : (res.results ?? []);
         this.books = data.filter((b: any) => b.cover_image || b.synopsis);
