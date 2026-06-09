@@ -63,6 +63,7 @@ class BookViewSet(viewsets.ReadOnlyModelViewSet):
     # Filtros exactos: ?genres__name=Cuentos
     filterset_fields = {
         'genres__name': ['exact', 'icontains'],
+        'genres__slug': ['exact'],
         'is_featured': ['exact'],
     }
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
@@ -77,9 +78,15 @@ class BookViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         qs = Book.objects.prefetch_related('genres', 'book_authors__author', 'editions', 'tags')
+        
         genre_name = self.request.query_params.get('genres__name', None)
         if genre_name:
             qs = qs.filter(genres__name__iexact=genre_name).distinct()
+            
+        genre_slug = self.request.query_params.get('genres__slug', None)
+        if genre_slug:
+            qs = qs.filter(genres__slug__iexact=genre_slug).distinct()
+            
         return qs
 
     def get_serializer_class(self):
