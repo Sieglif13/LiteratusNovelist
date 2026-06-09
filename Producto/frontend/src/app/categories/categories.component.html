@@ -15,37 +15,18 @@
       <h1 class="hero-title">Explora por <span class="title-accent">Categoría</span></h1>
       <p class="hero-subtitle">Encuentra tu próximo libro favorito en nuestra colección curada de literatura universal</p>
 
-      <!-- Buscador principal -->
-      <div class="categories-search-wrap">
-        <div class="search-box">
-          <svg class="search-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-          </svg>
-          <input
-            type="text"
-            class="search-input"
-            placeholder="Buscar categoría..."
-            [value]="searchTerm"
-            (input)="onSearch($event)"
-            id="category-search-input">
-          <button class="search-clear" *ngIf="searchTerm" (click)="clearSearch()">✕</button>
-        </div>
-      </div>
     </div>
   </header>
 
   <!-- Grid de Categorías -->
   <main class="categories-main">
-    <div class="categories-meta" *ngIf="!searchTerm">
+    <div class="categories-meta">
       <span class="categories-count">{{ categories.length }} categorías disponibles</span>
-    </div>
-    <div class="categories-meta" *ngIf="searchTerm">
-      <span class="categories-count">{{ filteredCategories.length }} resultados para "{{ searchTerm }}"</span>
     </div>
 
     <div class="categories-grid">
       <div class="category-card"
-           *ngFor="let cat of filteredCategories"
+           *ngFor="let cat of categories"
            (click)="goToCategory(cat.slug)"
            [style.--accent]="cat.color">
 
@@ -81,12 +62,5 @@
       </div>
     </div>
 
-    <!-- Empty State -->
-    <div class="empty-state" *ngIf="filteredCategories.length === 0">
-      <div class="empty-icon">🔍</div>
-      <h3>No encontramos "{{ searchTerm }}"</h3>
-      <p>Prueba con otro término de búsqueda</p>
-      <button (click)="clearSearch()" class="clear-btn">Ver todas las categorías</button>
-    </div>
   </main>
 </div>
