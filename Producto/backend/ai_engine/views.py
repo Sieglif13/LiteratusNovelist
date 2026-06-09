@@ -17,6 +17,7 @@ from .serializers import (
 )
 from .services import AIService
 from .tts_service import TTSService
+from .kokoro_service import KokoroTTSService
 from core.decorators import consume_ink
 from django.utils.decorators import method_decorator
 
@@ -300,49 +301,56 @@ class ChatInteractionView(APIView):
 class TTSGenerateView(APIView):
     """
     POST /api/v1/ai/audio/generate/
-    Genera audio Pro con ElevenLabs descontando créditos de Tinta.
+    Genera audio con Kokoro-82M (via Hugging Face Space).
+    Acepta texto + avatar_id para usar la voz asignada al personaje.
+    Costo: 2 créditos de tinta por frase.
     """
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        text = request.data.get("text")
-        voice_id = request.data.get("voice_id")
+        text = request.data.get("text", "").strip()
+        avatar_id = request.data.get("avatar_id")  # Opcional: para recuperar la voz del personaje
 
         if not text:
-            return Response({"error": "Se requiere el texto para generar audio."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Se requiere el campo 'text'."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Validación de Tinta (Costo: 10 créditos)
-        COST = 10
+        # Validación de Tinta (Costo: 2 créditos por frase — más justo que ElevenLabs)
+        COST = 2
         profile = getattr(request.user, "profile", None)
         if not profile or profile.ink_balance < COST:
             return Response({
                 "error": "INSUFFICIENT_INK",
-                "message": f"Necesitas {COST} créditos de tinta para la narración Pro."
+                "message": f"Necesitas {COST} créditos de tinta para la narración."
             }, status=status.HTTP_402_PAYMENT_REQUIRED)
 
+        # Recuperar voz del personaje si se proporciona avatar_id
+        voice_id = 'af_bella'  # voz por defecto
+        if avatar_id:
+            try:
+                avatar = AIAvatar.objects.get(pk=avatar_id)
+                voice_id = avatar.kokoro_voice_id or 'af_bella'
+            except AIAvatar.DoesNotExist:
+                pass  # Usar voz por defecto
+
         try:
-            tts = TTSService()
-            audio_base64, alignment = tts.generate_audio(text, voice_id)
+            tts = KokoroTTSService()
+            audio_b64 = tts.generate_audio_base64(text, voice_id)
 
             # Descontar tinta
-            profile.ink_balance -= COST
+            profile.ink_balance = max(0, profile.ink_balance - COST)
             profile.save()
 
             return Response({
-                "audio_base64": audio_base64,
-                "alignment": alignment,
-                "ink_balance": profile.ink_balance
+                "audio_base64": audio_b64,
+                "ink_balance": profile.ink_balance,
+                "voice_used": voice_id,
             })
+
         except Exception as e:
             err_str = str(e)
-            # Error específico: ElevenLabs requiere plan de pago
-            if "ELEVENLABS_PLAN_REQUIRED" in err_str:
+            if "cold start" in err_str.lower() or "timeout" in err_str.lower():
                 return Response({
-                    "error": "ELEVENLABS_PLAN_REQUIRED",
-                    "message": (
-                        "La Voz Premium requiere un plan de pago en ElevenLabs. "
-                        "Por ahora usa la Voz Estándar (gratis). "
-                        "Upgradea en elevenlabs.io para desbloquear la narración AI."
-                    )
-                }, status=status.HTTP_402_PAYMENT_REQUIRED)
+                    "error": "KOKORO_COLD_START",
+                    "message": "El servicio de voz está iniciando. Intenta de nuevo en 30 segundos."
+                }, status=status.HTTP_503_SERVICE_UNAVAILABLE)
             return Response({"error": err_str}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

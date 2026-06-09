@@ -110,6 +110,13 @@ class AIAvatar(TimeStampedModel):
         help_text="Número total de conversaciones iniciadas con este personaje."
     ) # Se usa para el ranking de 'Más Destacados'.
 
+    # VOZ TTS (Kokoro-82M)
+    kokoro_voice_id = models.CharField(
+        max_length=50,
+        default='af_bella',
+        help_text="ID de voz de Kokoro-82M para TTS (e.g. 'af_bella', 'af_nicole', 'em_alex', 'em_santa')."
+    ) # Voz asignada al personaje para la narración en tiempo real.
+
     class Meta:
         verbose_name = 'AI Avatar'
         verbose_name_plural = 'AI Avatars'
