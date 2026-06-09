@@ -53,7 +53,7 @@
 
         <!-- Tags row -->
         <div class="discover-tags" *ngIf="current.tags && current.tags.length > 0">
-          <span class="discover-tag" *ngFor="let tag of current.tags | slice:0:3">{{ tag.name }}</span>
+          <span class="discover-tag" *ngFor="let tag of current.tags | slice:0:3">{{ $any(tag).name }}</span>
         </div>
 
         <h1 class="discover-title">{{ current.title }}</h1>
