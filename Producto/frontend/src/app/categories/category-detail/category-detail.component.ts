@@ -12,6 +12,7 @@ interface Book {
   cover_image: string | null;
   is_featured: boolean;
   created_at: string;
+  book_authors?: any[];
 }
 
 @Component({
