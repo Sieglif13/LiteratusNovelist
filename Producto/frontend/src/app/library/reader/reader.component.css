@@ -3575,4 +3575,98 @@
 
 .audio-controls-panel .toc-header {
   margin-bottom: 0.5rem;
+}
+
+/* THEME LIGHT FOR CHARACTER CHAT */
+.theme-light .char-sidebar,
+.theme-light .sidebar-chat-view {
+  background: rgba(255, 255, 255, 0.95);
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+.theme-light .chat-topbar,
+.theme-light .sidebar-chat-header,
+.theme-light .sidebar-header {
+  background: rgba(240, 240, 240, 0.9);
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  color: #333;
+}
+.theme-light .ai-bubble {
+  background: rgba(0,0,0,0.05);
+  color: #333 !important;
+}
+.theme-light .user-bubble {
+  background: #3b82f6;
+  color: white !important;
+}
+.theme-light .chat-footer {
+  border-top: 1px solid rgba(0,0,0,0.1);
+}
+.theme-light .chat-input-box {
+  background: rgba(0,0,0,0.05);
+  border-color: rgba(0,0,0,0.1);
+}
+.theme-light .chat-text-input {
+  color: #333;
+}
+.theme-light .chat-text-input::placeholder {
+  color: #888;
+}
+.theme-light .chat-disclaimer {
+  color: #888;
+}
+.theme-light .topbar-name,
+.theme-light .sidebar-chat-title,
+.theme-light .sidebar-title,
+.theme-light .char-name,
+.theme-light .profile-name,
+.theme-light .profile-desc {
+  color: #333;
+}
+
+/* THEME SEPIA FOR CHARACTER CHAT */
+.theme-sepia .char-sidebar,
+.theme-sepia .sidebar-chat-view {
+  background: rgba(244, 236, 216, 0.95);
+  border-left: 1px solid rgba(91, 70, 54, 0.15);
+  color: #4a3b32;
+}
+.theme-sepia .chat-topbar,
+.theme-sepia .sidebar-chat-header,
+.theme-sepia .sidebar-header {
+  background: rgba(234, 226, 206, 0.9);
+  border-bottom: 1px solid rgba(91, 70, 54, 0.1);
+  color: #4a3b32;
+}
+.theme-sepia .ai-bubble {
+  background: rgba(91, 70, 54, 0.08);
+  color: #4a3b32 !important;
+}
+.theme-sepia .user-bubble {
+  background: #4a3b32;
+  color: #f4ecd8 !important;
+}
+.theme-sepia .chat-footer {
+  border-top: 1px solid rgba(91, 70, 54, 0.1);
+}
+.theme-sepia .chat-input-box {
+  background: rgba(91, 70, 54, 0.05);
+  border-color: rgba(91, 70, 54, 0.1);
+}
+.theme-sepia .chat-text-input {
+  color: #4a3b32;
+}
+.theme-sepia .chat-text-input::placeholder {
+  color: rgba(74, 59, 50, 0.6);
+}
+.theme-sepia .chat-disclaimer {
+  color: rgba(74, 59, 50, 0.6);
+}
+.theme-sepia .topbar-name,
+.theme-sepia .sidebar-chat-title,
+.theme-sepia .sidebar-title,
+.theme-sepia .char-name,
+.theme-sepia .profile-name,
+.theme-sepia .profile-desc {
+  color: #4a3b32;
 }
