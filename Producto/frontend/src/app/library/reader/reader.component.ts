@@ -71,6 +71,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
   isToolbarHidden: boolean = false;
   hideProgressOnScroll: boolean = true;
   bionicReadingActive: boolean = false;
+  tapToScrollActive: boolean = false;
 
   // ── PERSONAJES / CHAT ─────────────────────────────────────────────
   isCharPanelOpen: boolean = false;
@@ -435,13 +436,41 @@ export class ReaderComponent implements OnInit, OnDestroy {
     
     // Actualizar barra de progreso visual y botón "Siguiente"
     this.chapterScrollPercent = Math.min(100, Math.max(0, scrollPercent * 100));
-    this.isNearEnd = scrollPercent >= 0.98 || (scrollHeight - scrollTop) < 50;
+    this.isNearEnd = scrollPercent >= 0.98 || (scrollHeight - scrollTop) < 50 || scrollHeight <= 50;
 
     // Calcular página decimal exacta (ej. 1.5 significa mitad de capítulo 1)
     const exactPage = (this.currentPage - 1) + scrollPercent;
     
     // No guardamos palabra aquí, solo porcentaje exacto
     this.saveProgressSubject.next(exactPage);
+  }
+
+  checkIfNearEnd() {
+    const el = document.querySelector('.reading-canvas');
+    if (el) {
+      const scrollHeight = el.scrollHeight - el.clientHeight;
+      this.isNearEnd = (scrollHeight <= 50) || ((scrollHeight - el.scrollTop) < 50);
+    }
+  }
+
+  onCanvasClick(event: MouseEvent) {
+    if (!this.tapToScrollActive) return;
+
+    const target = event.target as HTMLElement;
+    // Ignorar si el usuario clickeó en un elemento interactivo (palabra, imagen, botón)
+    if (target.closest('.word') || target.closest('img') || target.closest('button')) {
+      return; 
+    }
+    
+    // Scrollear hacia abajo 90% de la altura visible, para simular un "pasa página" natural
+    const el = document.querySelector('.reading-canvas');
+    if (el) {
+      const scrollHeight = el.scrollHeight - el.clientHeight;
+      // Si no estamos al final, hacer page down
+      if (el.scrollTop < scrollHeight - 10) {
+         el.scrollBy({ top: el.clientHeight * 0.9, behavior: 'smooth' });
+      }
+    }
   }
 
   // ── TEMA Y FUENTE ─────────────────────────────────────────────────
@@ -782,6 +811,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
 
       setTimeout(() => {
         this.isOverlayActive = false;
+        this.checkIfNearEnd(); // Validar si el capítulo es muy corto para mostrar el botón
         this.cdr.detectChanges();
       }, 800); // Dar tiempo a que termine el smooth scroll
     }, 500); // Dar tiempo a Angular a renderizar el *ngFor
@@ -827,6 +857,10 @@ export class ReaderComponent implements OnInit, OnDestroy {
 
   toggleAudioPanel() {
     this.isAudioPanelOpen = !this.isAudioPanelOpen;
+  }
+
+  toggleTapToScroll() {
+    this.tapToScrollActive = !this.tapToScrollActive;
   }
 
   // ── ECONOMÍA DE TINTA: desbloqueo permanente de Voz Premium (REMOVED) ──────

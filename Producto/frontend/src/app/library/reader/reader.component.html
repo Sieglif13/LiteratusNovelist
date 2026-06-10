@@ -78,6 +78,11 @@
         <svg lucideEye [size]="20" class="lucide-icon"></svg>
       </button>
 
+      <!-- Toggle de Avance Táctil (Toque Fluido) -->
+      <button class="toc-trigger-btn" (click)="toggleTapToScroll()" title="Toque Fluido (Toque para avanzar)" [class.active]="tapToScrollActive">
+        <span class="material-symbols-rounded" style="font-size:1.3rem;">touch_app</span>
+      </button>
+
       <button class="toc-trigger-btn" (click)="toggleAudioPanel()" title="Narración AI" [class.active]="isAudioPanelOpen">
         <svg lucideVolume2 [size]="20" class="lucide-icon"></svg>
       </button>
@@ -439,7 +444,7 @@
   <!-- ═══════════════════════════════════════════════════════════════ -->
   <!-- LIENZO DE LECTURA (renderizado nativo Angular para highlighting) -->
   <!-- ═══════════════════════════════════════════════════════════════ -->
-  <main class="reading-canvas html-reader" [ngClass]="'font-' + currentFontFamily" (scroll)="onCanvasScroll($event)">
+  <main class="reading-canvas html-reader" [ngClass]="'font-' + currentFontFamily" (scroll)="onCanvasScroll($event)" (click)="onCanvasClick($event)">
     <!-- Título principal del capítulo -->
     <!-- Título principal del capítulo con soporte para highlighting -->
     <h1 class="chapter-title-main">
