@@ -1965,11 +1965,11 @@
   background: rgba(15, 23, 42, 0.85);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 1rem;
+  border-radius: 12px;
+  padding: 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.5rem;
   z-index: 1000;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   width: 240px;
@@ -2026,9 +2026,9 @@
   background: rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 8px;
-  padding: 0.5rem;
+  padding: 0.4rem 0.5rem;
   cursor: pointer;
-  font-size: 0.8rem;
+  font-size: 0.95rem; /* Letras más grandes para la opción principal */
   transition: all 0.2s;
   display: flex;
   justify-content: space-between;
@@ -2036,6 +2036,16 @@
   color: #f8fafc; /* Forzar legibilidad */
 }
 
+.voice-info span {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.voice-info small {
+  font-size: 0.75rem;
+  display: block;
+  opacity: 0.8;
+}
 
 .chat-header {
   padding: 1rem;
@@ -2433,9 +2443,9 @@
 }
 
 .config-label {
-  font-size: 0.72rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   opacity: 0.8;
   font-family: 'Outfit', sans-serif;
@@ -2448,8 +2458,8 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   color: white;
-  padding: 0.4rem 0.6rem;
-  font-size: 0.78rem;
+  padding: 0.5rem 0.6rem;
+  font-size: 0.95rem;
   font-family: 'Outfit', sans-serif;
   cursor: pointer;
   outline: none;

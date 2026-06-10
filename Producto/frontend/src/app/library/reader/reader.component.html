@@ -397,8 +397,8 @@
       </select>
     </div>
 
-    <!-- Control de velocidad (ambos modos) -->
-    <div class="audio-config">
+    <!-- Control de velocidad (solo modo nativo) -->
+    <div class="audio-config" *ngIf="currentAudioMode === 'native'">
       <label class="config-label">Velocidad: {{ audioService.playbackRate | number:'1.1-1' }}x</label>
       <input
         type="range"
