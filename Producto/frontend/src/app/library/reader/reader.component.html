@@ -644,16 +644,13 @@
 
   <!-- CONTROL FLOTANTE DE AUDIO -->
   <div class="floating-audio-control" *ngIf="showFloatingAudioControl">
-    <button class="fab-btn stop" (click)="stopAudioFromFab()" title="Detener Audio">
-      <span class="material-symbols-rounded">stop</span>
-    </button>
     <button class="fab-btn play"
             (click)="toggleAudioFromFab()"
             [disabled]="isAudioLoading || isKokoroProcessing">
       <!-- Icono Play: Si no está cargando y NO está reproduciendo -->
-      <span *ngIf="!isAudioLoading && !isKokoroProcessing && (currentAudioMode === 'kokoro' ? !(kokoroVoice.isSpeaking$ | async) : !(audioService.isPlaying$ | async))">▶</span>
+      <span class="material-symbols-rounded" *ngIf="!isAudioLoading && !isKokoroProcessing && (currentAudioMode === 'kokoro' ? !(kokoroVoice.isSpeaking$ | async) : !(audioService.isPlaying$ | async))">play_arrow</span>
       <!-- Icono Pause: Si no está cargando y SÍ está reproduciendo -->
-      <span *ngIf="!isAudioLoading && !isKokoroProcessing && (currentAudioMode === 'kokoro' ? (kokoroVoice.isSpeaking$ | async) : (audioService.isPlaying$ | async))">⏸</span>
+      <span class="material-symbols-rounded" *ngIf="!isAudioLoading && !isKokoroProcessing && (currentAudioMode === 'kokoro' ? (kokoroVoice.isSpeaking$ | async) : (audioService.isPlaying$ | async))">pause</span>
       <!-- Spinner Nativo -->
       <span *ngIf="isAudioLoading" class="loader-spin">◷</span>
       <!-- Lottie Kokoro -->

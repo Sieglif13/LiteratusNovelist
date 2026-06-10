@@ -3518,68 +3518,55 @@
 /* FLOATING AUDIO CONTROL */
 .floating-audio-control {
   position: fixed;
-  bottom: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 50px;
-  padding: 0.5rem 1rem;
-  display: flex;
-  gap: 1rem;
-  align-items: center;
+  bottom: 20px;
+  right: 20px;
   z-index: 900;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-}
-
-.theme-light .floating-audio-control {
-  background: rgba(255, 255, 255, 0.85);
-  border-color: rgba(0, 0, 0, 0.1);
-}
-.theme-sepia .floating-audio-control {
-  background: rgba(244, 236, 216, 0.9);
-  border-color: rgba(91, 70, 54, 0.15);
-}
-
-.fab-btn {
-  background: #3b82f6;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
+}
+
+.theme-light .floating-audio-control {
+  /* No background on container anymore, button holds it */
+}
+.theme-sepia .floating-audio-control {
+  /* No background on container anymore, button holds it */
+}
+
+.fab-btn {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+  color: white;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
   cursor: pointer;
   transition: all 0.2s;
 }
 
+.theme-light .fab-btn {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+.theme-sepia .fab-btn {
+  background: rgba(244, 236, 216, 0.95);
+  border-color: rgba(91, 70, 54, 0.15);
+  color: #4a3b32;
+}
+
 .fab-btn:hover {
-  transform: scale(1.1);
-  background: #2563eb;
-}
-
-.fab-btn.stop {
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.theme-light .fab-btn.stop {
-  background: rgba(0, 0, 0, 0.05);
-  color: rgba(0, 0, 0, 0.6);
-}
-
-.theme-sepia .fab-btn.stop {
-  background: rgba(91, 70, 54, 0.1);
-  color: rgba(91, 70, 54, 0.6);
-}
-
-.fab-btn.stop:hover {
-  background: rgba(239, 68, 68, 0.8);
+  transform: scale(1.05);
+  background: #3b82f6;
   color: white;
+  border-color: #3b82f6;
 }
 
 .lottie-white-filter { filter: brightness(0) invert(1); }
