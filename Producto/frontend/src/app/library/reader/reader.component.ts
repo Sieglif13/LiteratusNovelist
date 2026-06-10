@@ -1161,6 +1161,24 @@ export class ReaderComponent implements OnInit, OnDestroy {
     this.showRestartModal = false;
   }
 
+  toggleAudioFromFab() {
+    if (this.currentAudioMode === 'kokoro') {
+      if (this.kokoroVoice.isSpeaking$.value) {
+        this.kokoroVoice.stop();
+      } else {
+        this.playAudio();
+      }
+    } else {
+      if (this.audioService.isPlaying) {
+        this.audioService.pause();
+      } else if (this.audioService.isPaused) {
+        this.resumeAudio();
+      } else {
+        this.playAudio();
+      }
+    }
+  }
+
   restartAudio() {
     this.showRestartModal = false;
     this.stopAudio();

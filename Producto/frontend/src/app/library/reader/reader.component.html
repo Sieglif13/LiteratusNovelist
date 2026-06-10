@@ -648,7 +648,7 @@
       <span class="material-symbols-rounded">stop</span>
     </button>
     <button class="fab-btn play"
-            (click)="currentAudioMode === 'kokoro' ? ((kokoroVoice.isSpeaking$ | async) ? kokoroVoice.stop() : playAudio()) : ((audioService.isPlaying$ | async) ? audioService.pause() : (audioService.isPaused$ | async) ? resumeAudio() : playAudio())"
+            (click)="toggleAudioFromFab()"
             [disabled]="isAudioLoading || isKokoroProcessing">
       <!-- Icono Play: Si no está cargando y NO está reproduciendo -->
       <span *ngIf="!isAudioLoading && !isKokoroProcessing && (currentAudioMode === 'kokoro' ? !(kokoroVoice.isSpeaking$ | async) : !(audioService.isPlaying$ | async))">▶</span>

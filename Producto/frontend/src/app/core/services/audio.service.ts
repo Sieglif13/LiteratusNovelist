@@ -28,6 +28,7 @@ export class AudioService {
   // ── Streams públicos ────────────────────────────────────────────
   private isPlayingSubject   = new BehaviorSubject<boolean>(false);
   isPlaying$ = this.isPlayingSubject.asObservable();
+  get isPlaying(): boolean { return this.isPlayingSubject.getValue(); }
 
   private isPausedSubject    = new BehaviorSubject<boolean>(false);
   isPaused$ = this.isPausedSubject.asObservable();
