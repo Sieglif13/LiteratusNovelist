@@ -170,56 +170,47 @@ export class KokoroTtsService {
     source.start(0);
   }
 
-  /**
-   * Descarga el audio de una frase desde el backend Django y lo decodifica
-   * en un `AudioBuffer` listo para reproducir al instante.
-   */
   private async fetchAudioBuffer(
     sentence: string,
     sentenceIdx: number
   ): Promise<{ buffer: AudioBuffer; sentenceIdx: number } | null> {
     if (!sentence.trim() || this.isStopped) return null;
 
-    const fetchPromise = this.api.post<any>('ai/audio/generate/', {
-      text: sentence,
-      avatar_id: this.avatarId,
-    }).toPromise().then(async (response) => {
-      if (!response?.audio_base64 || this.isStopped) return null;
+    const hfApiUrl = 'https://josuejheymi-kokoro-api.hf.space/v1/audio/speech';
 
-      // Actualizar balance de tinta en el estado global
-      if (response.ink_balance !== undefined) {
-        this.inkBalance$.next(response.ink_balance);
+    const fetchPromise = fetch(hfApiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: "kokoro",
+        input: sentence,
+        voice: "af_bella", // Voz por defecto, puedes cambiarla
+        response_format: "mp3",
+        speed: 1.0
+      })
+    }).then(async (response) => {
+      if (!response.ok) {
+        throw new Error(`HF API error: ${response.status}`);
       }
+      if (this.isStopped) return null;
 
-      // Decodificar: base64 → ArrayBuffer → AudioBuffer
+      const arrayBuffer = await response.arrayBuffer();
+
       try {
-        const binaryStr = atob(response.audio_base64);
-        const bytes = new Uint8Array(binaryStr.length);
-        for (let i = 0; i < binaryStr.length; i++) {
-          bytes[i] = binaryStr.charCodeAt(i);
-        }
-
         if (!this.audioCtx || this.audioCtx.state === 'closed') {
           this.audioCtx = new AudioContext();
         }
 
-        const audioBuffer = await this.audioCtx.decodeAudioData(bytes.buffer);
+        const audioBuffer = await this.audioCtx.decodeAudioData(arrayBuffer);
         return { buffer: audioBuffer, sentenceIdx };
       } catch (decodeErr) {
         console.warn('[KokoroTTS] Error decodificando audio para frase:', sentence, decodeErr);
         return null;
       }
     }).catch((err) => {
-      // Manejar errores de red/servidor sin romper toda la cola
-      const msg: string = err?.error?.message || err?.message || 'Error de TTS';
-      if (msg.includes('INSUFFICIENT_INK')) {
-        this.error$.next('Sin tinta suficiente para continuar la narración.');
-        this.stop();
-      } else if (msg.includes('KOKORO_COLD_START')) {
-        this.error$.next('El servicio de voz está iniciando. Intenta de nuevo en 30s.');
-      } else {
-        console.warn('[KokoroTTS] Error en frase:', sentence, err);
-      }
+      console.warn('[KokoroTTS] Error en frase:', sentence, err);
       return null;
     });
 
