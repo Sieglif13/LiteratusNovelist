@@ -429,16 +429,17 @@
               (click)="playAudio()"
               [disabled]="isAudioLoading || isKokoroProcessing">
         <span *ngIf="!isAudioLoading && !isKokoroProcessing">▶</span>
-        <span *ngIf="isAudioLoading" class="loader-spin">◷</span>
-        <div *ngIf="isKokoroProcessing" #waveLottie class="lottie-theme-filter" style="width: 40px; height: 40px; display: inline-block;"></div>
+        <span *ngIf="isAudioLoading || isKokoroProcessing" class="loader-spin">◷</span>
       </button>
 
       <!-- Estado 3: Reproduciendo → botón PAUSAR -->
       <button class="audio-btn pause"
               *ngIf="currentAudioMode === 'kokoro' ? (kokoroVoice.isSpeaking$ | async) : (audioService.isPlaying$ | async)"
               (click)="currentAudioMode === 'kokoro' ? kokoroVoice.stop() : audioService.pause()"
-              title="Pausar">
-        ⏸
+              title="Pausar"
+              style="position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+        <span *ngIf="currentAudioMode !== 'kokoro'">⏸</span>
+        <div *ngIf="currentAudioMode === 'kokoro'" #waveLottie class="lottie-theme-filter" style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; display: flex; align-items: center; justify-content: center; transform: scale(1.8);"></div>
       </button>
     </div>
 
@@ -646,15 +647,19 @@
   <div class="floating-audio-control" *ngIf="showFloatingAudioControl">
     <button class="fab-btn play"
             (click)="toggleAudioFromFab()"
-            [disabled]="isAudioLoading || isKokoroProcessing">
+            [disabled]="isAudioLoading || isKokoroProcessing"
+            style="position: relative; overflow: hidden;">
       <!-- Icono Play: Si no está cargando y NO está reproduciendo -->
       <span class="material-symbols-rounded" *ngIf="!isAudioLoading && !isKokoroProcessing && (currentAudioMode === 'kokoro' ? !(kokoroVoice.isSpeaking$ | async) : !(audioService.isPlaying$ | async))">play_arrow</span>
-      <!-- Icono Pause: Si no está cargando y SÍ está reproduciendo -->
-      <span class="material-symbols-rounded" *ngIf="!isAudioLoading && !isKokoroProcessing && (currentAudioMode === 'kokoro' ? (kokoroVoice.isSpeaking$ | async) : (audioService.isPlaying$ | async))">pause</span>
-      <!-- Spinner Nativo -->
-      <span *ngIf="isAudioLoading" class="loader-spin">◷</span>
-      <!-- Lottie Kokoro -->
-      <div *ngIf="isKokoroProcessing" #waveLottieFab class="lottie-theme-filter" style="width: 40px; height: 40px; display: inline-block;"></div>
+      
+      <!-- Icono Pause (Nativo): Si SÍ está reproduciendo -->
+      <span class="material-symbols-rounded" *ngIf="!isAudioLoading && !isKokoroProcessing && currentAudioMode !== 'kokoro' && (audioService.isPlaying$ | async)">pause</span>
+      
+      <!-- Spinner -->
+      <span *ngIf="isAudioLoading || isKokoroProcessing" class="loader-spin">◷</span>
+      
+      <!-- Lottie Kokoro: Aparece como botón de pausa cuando Kokoro está hablando -->
+      <div *ngIf="!isAudioLoading && !isKokoroProcessing && currentAudioMode === 'kokoro' && (kokoroVoice.isSpeaking$ | async)" #waveLottieFab class="lottie-theme-filter" style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; display: flex; align-items: center; justify-content: center; transform: scale(1.8);"></div>
     </button>
   </div>
 
