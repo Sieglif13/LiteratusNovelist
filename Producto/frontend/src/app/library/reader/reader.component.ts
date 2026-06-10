@@ -430,6 +430,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
     this.releaseWakeLock();
     document.removeEventListener('visibilitychange', this.handleVisibilityChange);
     this.audioService.stop();
+    this.kokoroVoice.stop();
     this.saveAudioPosition();
     this.destroy$.next();
     this.destroy$.complete();

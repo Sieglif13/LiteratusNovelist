@@ -3569,7 +3569,9 @@
   border-color: #3b82f6;
 }
 
-.lottie-white-filter { filter: brightness(0) invert(1); }
+.lottie-theme-filter { filter: brightness(0) invert(1); } /* Dark theme (default) */
+.theme-light .lottie-theme-filter { filter: brightness(0); } /* Black in light theme */
+.theme-sepia .lottie-theme-filter { filter: brightness(0); } /* Black in sepia theme */
 
 .audio-controls-panel .toc-header {
   margin-bottom: 0.5rem;
