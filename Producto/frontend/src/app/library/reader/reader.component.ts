@@ -319,7 +319,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
 
     // Resaltado: escuchar el word index del PiperVoice
 
-    this.kokoroVoice.currentSentenceIdx$.pipe(takeUntil(this.destroy$)).subscribe(idx => {
+    this.kokoroVoice.currentWordIndex$.pipe(takeUntil(this.destroy$)).subscribe(idx => {
       if (this.currentAudioMode === 'kokoro') {
         this.currentWordIndex = idx;
         if (idx !== -1) {
@@ -970,7 +970,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
 
     // Si sigue visible, simplemente reanuda donde se quedó
     if (this.currentAudioMode === 'kokoro') {
-      this.kokoroVoice.speak(this.currentChapterPlainText, this.authorAvatar?.id || 1);
+      this.kokoroVoice.resume();
     } else {
       this.audioService.resume();
     }
@@ -1004,12 +1004,13 @@ export class ReaderComponent implements OnInit, OnDestroy {
        }
     }
 
+    const startWord = this.lastAudioWordIndex >= 0 ? this.lastAudioWordIndex : 0;
+
     if (this.currentAudioMode === 'native') {
-      const startWord = this.lastAudioWordIndex >= 0 ? this.lastAudioWordIndex : 0;
       this.audioService.playNative(this.currentChapterPlainText, startWord);
     } else if (this.currentAudioMode === 'kokoro') {
       // MODO KOKORO TTS
-      this.kokoroVoice.speak(this.currentChapterPlainText, this.authorAvatar?.id || 1);
+      this.kokoroVoice.speak(this.currentChapterPlainText, this.authorAvatar?.id || 1, startWord);
     } else {
       // MODO GRABADO
       if (!this.hasPremiumNarration) {

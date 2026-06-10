@@ -470,6 +470,7 @@
               <span *ngIf="tok.isWord"
                     [id]="'word-' + tok.idx"
                     class="word"
+                    [class.active-word]="tok.idx === currentWordIndex"
                     (click)="onWordClick(tok.idx)">
                 <ng-container *ngIf="!bionicReadingActive">{{ tok.text }}</ng-container>
                 <ng-container *ngIf="bionicReadingActive"><strong class="bionic-bold">{{ tok.bionicBold }}</strong><span class="bionic-muted">{{ tok.bionicNormal }}</span></ng-container>
@@ -489,6 +490,7 @@
               <span *ngIf="tok.isWord"
                     [id]="'word-' + tok.idx"
                     class="word"
+                    [class.active-word]="tok.idx === currentWordIndex"
                     (click)="onWordClick(tok.idx)">
                 <ng-container *ngIf="!bionicReadingActive">{{ tok.text }}</ng-container>
                 <ng-container *ngIf="bionicReadingActive"><strong class="bionic-bold">{{ tok.bionicBold }}</strong><span class="bionic-muted">{{ tok.bionicNormal }}</span></ng-container>
@@ -508,6 +510,7 @@
               <span *ngIf="tok.isWord"
                     [id]="'word-' + tok.idx"
                     class="word"
+                    [class.active-word]="tok.idx === currentWordIndex"
                     (click)="onWordClick(tok.idx)">
                 <ng-container *ngIf="!bionicReadingActive">{{ tok.text }}</ng-container>
                 <ng-container *ngIf="bionicReadingActive"><strong class="bionic-bold">{{ tok.bionicBold }}</strong><span class="bionic-muted">{{ tok.bionicNormal }}</span></ng-container>
