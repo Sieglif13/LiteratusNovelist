@@ -7,7 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import lottie from 'lottie-web';
 import { environment } from '../../../environments/environment';
-import { PiperVoiceService } from '../../core/services/piper-voice.service';
+import { KokoroTtsService } from '../../core/services/kokoro-tts.service';
 import { ChatService } from '../../core/services/chat.service';
 import { SpeechRecognitionService } from '../../core/services/speech-recognition.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
@@ -45,7 +45,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private sanitizer = inject(DomSanitizer);
   private cdr = inject(ChangeDetectorRef);
-  public piperVoice = inject(PiperVoiceService);
+  public kokoroVoice = inject(KokoroTtsService);
   public chatService = inject(ChatService);
   public speechService = inject(SpeechRecognitionService);
 
@@ -96,7 +96,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
   inkBalance: number = 0;
 
   // Audio Control
-  currentAudioMode: 'native' | 'pro' | 'piper' = 'native';
+  currentAudioMode: 'native' | 'pro' | 'kokoro' = 'native';
   currentWordIndex: number = -1;
   isAudioLoading: boolean = false;
   isAudioPanelOpen: boolean = false;
@@ -254,7 +254,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
 
     // Resaltado: escuchar el word index del AudioService
     this.audioService.currentWordIndex$.pipe(takeUntil(this.destroy$)).subscribe(idx => {
-      if (this.currentAudioMode !== 'piper') {
+      if (this.currentAudioMode !== 'kokoro') {
         this.currentWordIndex = idx;
         if (idx !== -1) {
           this.lastAudioWordIndex = idx;
@@ -284,7 +284,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
     });
 
     // Sincronizar Avatar animado con PiperVoice
-    this.piperVoice.isSpeaking$.pipe(takeUntil(this.destroy$)).subscribe(isSpeaking => {
+    this.kokoroVoice.isSpeaking$.pipe(takeUntil(this.destroy$)).subscribe(isSpeaking => {
       this.isVideoSpeaking = isSpeaking;
       if (isSpeaking) {
         if (!this.talkingInterval) {
@@ -319,8 +319,8 @@ export class ReaderComponent implements OnInit, OnDestroy {
 
     // Resaltado: escuchar el word index del PiperVoice
 
-    this.piperVoice.currentWordIndex$.pipe(takeUntil(this.destroy$)).subscribe(idx => {
-      if (this.currentAudioMode === 'piper') {
+    this.kokoroVoice.currentSentenceIdx$.pipe(takeUntil(this.destroy$)).subscribe(idx => {
+      if (this.currentAudioMode === 'kokoro') {
         this.currentWordIndex = idx;
         if (idx !== -1) {
           this.lastAudioWordIndex = idx;
@@ -969,8 +969,8 @@ export class ReaderComponent implements OnInit, OnDestroy {
     }
 
     // Si sigue visible, simplemente reanuda donde se quedó
-    if (this.currentAudioMode === 'piper') {
-      this.piperVoice.resume();
+    if (this.currentAudioMode === 'kokoro') {
+      this.kokoroVoice.speak(this.currentChapterPlainText, this.authorAvatar?.id || 1);
     } else {
       this.audioService.resume();
     }
@@ -1007,15 +1007,9 @@ export class ReaderComponent implements OnInit, OnDestroy {
     if (this.currentAudioMode === 'native') {
       const startWord = this.lastAudioWordIndex >= 0 ? this.lastAudioWordIndex : 0;
       this.audioService.playNative(this.currentChapterPlainText, startWord);
-    } else if (this.currentAudioMode === 'piper') {
-      // MODO PIPER TTS (Local)
-      if (!(this.piperVoice as any).isReadySubject?.value) {
-        this.piperVoice.initModel().then(() => {
-          this.piperVoice.speak(this.currentChapterPlainText);
-        });
-      } else {
-        this.piperVoice.speak(this.currentChapterPlainText);
-      }
+    } else if (this.currentAudioMode === 'kokoro') {
+      // MODO KOKORO TTS
+      this.kokoroVoice.speak(this.currentChapterPlainText, this.authorAvatar?.id || 1);
     } else {
       // MODO GRABADO
       if (!this.hasPremiumNarration) {
@@ -1083,7 +1077,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
 
   stopAudio(preventScroll: boolean = false) {
     this.audioService.stop();
-    this.piperVoice.stop();
+    this.kokoroVoice.stop();
     this.currentWordIndex = -1;
 
     if (!preventScroll) {
@@ -1322,13 +1316,9 @@ export class ReaderComponent implements OnInit, OnDestroy {
     this.isCallMode = !this.isCallMode;
     if (this.isCallMode) {
       this.speechService.startListening();
-      // Asegurar que el modelo esté listo
-      if (!this.piperVoice.isReadySubject.value) {
-        this.piperVoice.initModel();
-      }
     } else {
       this.speechService.stopListening();
-      this.piperVoice.stop();
+      this.kokoroVoice.stop();
       // Pequeño delay para que el *ngIf restaure el DOM y podamos scrollear
       setTimeout(() => this.scrollChatToBottom(), 100);
     }
@@ -1351,10 +1341,10 @@ export class ReaderComponent implements OnInit, OnDestroy {
   private async speakChatReply(text: string) {
     if (this.isCallMode) {
       // Usar PiperVoice en Modo Llamada para inmersión
-      if (!this.piperVoice.isReadySubject.value) {
-        await this.piperVoice.initModel();
+      if (false) {
+        ;
       }
-      this.piperVoice.speak(text);
+      this.kokoroVoice.speak(text, this.chatSession?.avatar_id || this.authorAvatar?.id || 1);
     } else {
       // Usar SpeechSynthesis nativo para el chat por ahora
       window.speechSynthesis.cancel();

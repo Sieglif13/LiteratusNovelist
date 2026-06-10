@@ -355,11 +355,11 @@
         <span class="ink-cost">Gratis</span>
       </div>
 
-      <!-- VOZ LOCAL PIPER TTS -->
-      <div class="voice-option" [class.active]="currentAudioMode === 'piper'" (click)="currentAudioMode = 'piper'">
+      <!-- VOZ PREMIUM AI (KOKORO) -->
+      <div class="voice-option" [class.active]="currentAudioMode === 'kokoro'" (click)="currentAudioMode = 'kokoro'">
         <div class="voice-info">
           <span>Voz Local</span>
-          <small>Piper TTS - España</small>
+          <small>Kokoro TTS - Voces Ultra Realistas</small>
         </div>
         <span class="ink-cost unlocked-badge">Nuevo</span>
       </div>
@@ -383,10 +383,10 @@
     </div>
 
     <!-- Selector de voz local (solo modo piper) -->
-    <div class="audio-config" *ngIf="currentAudioMode === 'piper'">
+    <div class="audio-config" *ngIf="currentAudioMode === 'kokoro'">
       <select class="voice-dropdown"
               [value]="'es'"
-              (change)="piperVoice.setVoice('assets/voices/sp-voice-man/es_ES-davefx-medium.onnx', 'assets/voices/sp-voice-man/es_ES-davefx-medium.onnx.json')">
+              (change)="//('assets/voices/sp-voice-man/es_ES-davefx-medium.onnx', 'assets/voices/sp-voice-man/es_ES-davefx-medium.onnx.json')">
         <option value="es">Davefx (Español España)</option>
       </select>
     </div>
@@ -399,7 +399,7 @@
         class="speed-slider"
         min="0.5" max="2.0" step="0.1"
         [value]="audioService.playbackRate"
-        (input)="audioService.setSpeed(+$any($event.target).value); piperVoice.voiceSpeed = +$any($event.target).value">
+        (input)="audioService.setSpeed(+$any($event.target).value); // = +$any($event.target).value">
       <div class="speed-labels">
         <span>0.5x</span><span>1.0x</span><span>2.0x</span>
       </div>
@@ -411,7 +411,7 @@
 
       <!-- Estado 1: Pausado → botón REANUDAR (verde) -->
       <button class="audio-btn resume"
-              *ngIf="currentAudioMode === 'piper' ? (piperVoice.isPaused$ | async) : !(audioService.isPlaying$ | async) && (audioService.isPaused$ | async)"
+              *ngIf="currentAudioMode === 'kokoro' ? (false | async) : !(audioService.isPlaying$ | async) && (audioService.isPaused$ | async)"
               (click)="resumeAudio()"
               title="Reanudar donde lo dejaste">
         ▶
@@ -419,7 +419,7 @@
 
       <!-- Estado 2: Detenido / sin iniciar → botón REPRODUCIR (azul) -->
       <button class="audio-btn play"
-              *ngIf="currentAudioMode === 'piper' ? !(piperVoice.isSpeaking$ | async) && !(piperVoice.isPaused$ | async) : !(audioService.isPlaying$ | async) && !(audioService.isPaused$ | async)"
+              *ngIf="currentAudioMode === 'kokoro' ? !(kokoroVoice.isSpeaking$ | async) && !(false | async) : !(audioService.isPlaying$ | async) && !(audioService.isPaused$ | async)"
               (click)="playAudio()"
               [disabled]="isAudioLoading">
         <span *ngIf="!isAudioLoading">▶</span>
@@ -428,8 +428,8 @@
 
       <!-- Estado 3: Reproduciendo → botón PAUSAR -->
       <button class="audio-btn pause"
-              *ngIf="currentAudioMode === 'piper' ? (piperVoice.isSpeaking$ | async) && !(piperVoice.isPaused$ | async) : (audioService.isPlaying$ | async)"
-              (click)="currentAudioMode === 'piper' ? piperVoice.pause() : audioService.pause()"
+              *ngIf="currentAudioMode === 'kokoro' ? (kokoroVoice.isSpeaking$ | async) && !(false | async) : (audioService.isPlaying$ | async)"
+              (click)="currentAudioMode === 'kokoro' ? kokoroVoice.stop() : audioService.pause()"
               title="Pausar">
         ⏸
       </button>
