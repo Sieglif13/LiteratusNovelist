@@ -1406,64 +1406,35 @@ export class ReaderComponent implements OnInit, OnDestroy {
 
 
   private async speakChatReply(text: string) {
-    if (this.isCallMode) {
-      // Usar PiperVoice en Modo Llamada para inmersión
-      if (false) {
-        ;
-      }
-      this.kokoroVoice.speak(text, this.chatSession?.avatar_id || this.authorAvatar?.id || 1);
-    } else {
-      // Usar SpeechSynthesis nativo para el chat por ahora
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      
-      // Intentar usar la voz seleccionada en el AudioService
-      const selectedVoice = this.audioService.selectedVoice;
-      if (selectedVoice) {
-        utterance.voice = selectedVoice;
-        utterance.lang = selectedVoice.lang;
-      } else {
-        utterance.lang = 'es-ES';
-      }
+    const charName = this.selectedAvatar?.name || 'Unknown';
+    let voiceId = 'ef_dora'; // Default female
+    if (charName.toLowerCase().includes('príncipe') || charName.toLowerCase().includes('principe') || charName.toLowerCase().includes('autor')) {
+      voiceId = 'em_santa'; // Male
+    }
 
-      utterance.onstart = () => {
-        this.isVideoSpeaking = true;
+    this.kokoroVoice.speak(text, this.chatSession?.avatar_id || this.authorAvatar?.id || 1, 0, voiceId);
+    
+    // Simular animación visual usando RxJs de kokoroVoice
+    this.kokoroVoice.isSpeaking$.pipe(takeUntil(this.destroy$)).subscribe(speaking => {
+      this.isVideoSpeaking = speaking;
+      if (speaking) {
         this.activeTalkingFrame = Math.floor(Math.random() * 3) + 1;
         if (this.avatarVideoElement?.nativeElement) {
           const video = this.avatarVideoElement.nativeElement;
-          video.currentTime = 1; // Empezar directamente donde abre la boca
+          video.currentTime = 1;
           video.play();
-          
-          // Loop perfecto de 1 a 6 segundos
           video.ontimeupdate = () => {
-            if (video.currentTime >= 6) {
-              video.currentTime = 1;
-            }
+            if (video.currentTime >= 6) video.currentTime = 1;
           };
         }
-        this.cdr.detectChanges();
-      };
-
-      utterance.onend = () => {
-        this.isVideoSpeaking = false;
+      } else {
         if (this.avatarVideoElement?.nativeElement) {
           this.avatarVideoElement.nativeElement.pause();
           this.avatarVideoElement.nativeElement.currentTime = 0;
         }
-        this.cdr.detectChanges();
-      };
-
-      utterance.onerror = () => {
-        this.isVideoSpeaking = false;
-        if (this.avatarVideoElement?.nativeElement) {
-          this.avatarVideoElement.nativeElement.pause();
-          this.avatarVideoElement.nativeElement.currentTime = 0;
-        }
-        this.cdr.detectChanges();
-      };
-
-      window.speechSynthesis.speak(utterance);
-    }
+      }
+      this.cdr.detectChanges();
+    });
   }
 
 

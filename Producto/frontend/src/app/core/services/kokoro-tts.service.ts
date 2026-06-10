@@ -45,14 +45,16 @@ export class KokoroTtsService {
   private karaokeInterval: any = null;
   
   private currentSpeakId = 0; // Nuevo: ID único por cada vez que se llama a speak()
+  private overrideVoiceId: string | null = null;
 
   // ── API Pública ───────────────────────────────────────────────────────
 
-  async speak(fullText: string, avatarId: number, startWordIdx: number = 0): Promise<void> {
+  async speak(fullText: string, avatarId: number, startWordIdx: number = 0, voiceId?: string): Promise<void> {
     this.currentSpeakId++;
     const mySpeakId = this.currentSpeakId;
     
     this.stop();
+    this.overrideVoiceId = voiceId || null;
     this.isStopped = false;
     this.avatarId = avatarId;
     this.error$.next(null);
@@ -292,7 +294,7 @@ export class KokoroTtsService {
           body: JSON.stringify({
             model: "kokoro",
             input: sentence.text.replace(/[*_\[\]]/g, ''), 
-            voice: this.selectedVoiceId, 
+            voice: this.overrideVoiceId || this.selectedVoiceId, 
             response_format: "mp3",
             speed: 1.0
           })
