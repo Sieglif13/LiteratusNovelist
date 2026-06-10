@@ -78,6 +78,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
   avatars: any[] = [];
   selectedAvatar: any = null;
   showCharProfile: boolean = false;
+  isKokoroProcessing = false;
 
   // Getters para separar autor de personajes en el panel
   get authorAvatar(): any {
@@ -187,6 +188,22 @@ export class ReaderComponent implements OnInit, OnDestroy {
     }
   }
 
+  private _waveAnimation: any = null;
+  @ViewChild('waveLottie') set waveLottie(el: ElementRef) {
+    if (el && !this._waveAnimation) {
+      this._waveAnimation = lottie.loadAnimation({
+        container: el.nativeElement,
+        renderer: 'svg',
+        loop: true,
+        autoplay: true,
+        path: 'assets/lottie/WaveAnimation.json'
+      });
+    } else if (!el && this._waveAnimation) {
+      this._waveAnimation.destroy();
+      this._waveAnimation = null;
+    }
+  }
+
   ngOnInit() {
     this.inventoryId = this.route.snapshot.paramMap.get('id') || '';
 
@@ -280,6 +297,11 @@ export class ReaderComponent implements OnInit, OnDestroy {
 
     this.speechService.audioLevel$.pipe(takeUntil(this.destroy$)).subscribe(level => {
       this.audioLevel = level;
+      this.cdr.detectChanges();
+    });
+
+    this.kokoroVoice.isProcessing$.pipe(takeUntil(this.destroy$)).subscribe(isProc => {
+      this.isKokoroProcessing = isProc;
       this.cdr.detectChanges();
     });
 

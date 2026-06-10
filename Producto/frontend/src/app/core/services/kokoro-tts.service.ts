@@ -13,6 +13,7 @@ export class KokoroTtsService {
 
   // ── Estado público ────────────────────────────────────────────────────
   isSpeaking$ = new BehaviorSubject<boolean>(false);
+  isProcessing$ = new BehaviorSubject<boolean>(false); // Nuevo: indica si está llamando a la API
   currentSentenceIdx$ = new BehaviorSubject<number>(-1);
   currentWordIndex$ = new BehaviorSubject<number>(-1);
   error$ = new BehaviorSubject<string | null>(null);
@@ -42,10 +43,15 @@ export class KokoroTtsService {
   private playbackStartTime: number = 0; 
   private playbackOffset: number = 0; // Tiempo pausado acumulado
   private karaokeInterval: any = null;
+  
+  private currentSpeakId = 0; // Nuevo: ID único por cada vez que se llama a speak()
 
   // ── API Pública ───────────────────────────────────────────────────────
 
   async speak(fullText: string, avatarId: number, startWordIdx: number = 0): Promise<void> {
+    this.currentSpeakId++;
+    const mySpeakId = this.currentSpeakId;
+    
     this.stop();
     this.isStopped = false;
     this.avatarId = avatarId;
@@ -60,17 +66,23 @@ export class KokoroTtsService {
 
     if (sentences.length === 0) return;
 
-    this.isSpeaking$.next(true);
+    this.isProcessing$.next(true);
 
     const firstBuffer = await this.fetchAudioBuffer(sentences[0]);
-    if (this.isStopped) return;
+    if (this.isStopped || this.currentSpeakId !== mySpeakId) {
+       this.isProcessing$.next(false);
+       return;
+    }
+
+    this.isProcessing$.next(false);
+    this.isSpeaking$.next(true);
 
     if (firstBuffer) {
       this.audioQueue.push(firstBuffer);
       this.playNextInQueue();
     }
 
-    this.prefetchPipeline(sentences.slice(1));
+    this.prefetchPipeline(sentences.slice(1), mySpeakId);
   }
 
   stop(): void {
@@ -84,6 +96,7 @@ export class KokoroTtsService {
     this.stopCurrentAudio();
 
     this.isSpeaking$.next(false);
+    this.isProcessing$.next(false);
     this.currentSentenceIdx$.next(-1);
     this.currentWordIndex$.next(-1);
   }
@@ -147,10 +160,10 @@ export class KokoroTtsService {
     this.stopKaraokeLoop();
   }
 
-  private async prefetchPipeline(sentences: KokoroSentence[]): Promise<void> {
+  private async prefetchPipeline(sentences: KokoroSentence[], speakId: number): Promise<void> {
     const BATCH_SIZE = 1; // Secuencial para evitar sobrecargar el Free Tier de HuggingFace y evitar drops
     for (let i = 0; i < sentences.length; i += BATCH_SIZE) {
-      if (this.isStopped) return;
+      if (this.isStopped || this.currentSpeakId !== speakId) return;
 
       const batch = sentences.slice(i, i + BATCH_SIZE);
 
@@ -159,7 +172,7 @@ export class KokoroTtsService {
       );
 
       for (const result of results) {
-        if (this.isStopped) return;
+        if (this.isStopped || this.currentSpeakId !== speakId) return;
         if (result) {
           this.audioQueue.push(result);
           if (!this.isPlayingQueue) {

@@ -427,9 +427,10 @@
       <button class="audio-btn play"
               *ngIf="currentAudioMode === 'kokoro' ? !(kokoroVoice.isSpeaking$ | async) : !(audioService.isPlaying$ | async) && !(audioService.isPaused$ | async)"
               (click)="playAudio()"
-              [disabled]="isAudioLoading">
-        <span *ngIf="!isAudioLoading">▶</span>
+              [disabled]="isAudioLoading || isKokoroProcessing">
+        <span *ngIf="!isAudioLoading && !isKokoroProcessing">▶</span>
         <span *ngIf="isAudioLoading" class="loader-spin">◷</span>
+        <div *ngIf="isKokoroProcessing" #waveLottie style="width: 24px; height: 24px; display: inline-block;"></div>
       </button>
 
       <!-- Estado 3: Reproduciendo → botón PAUSAR -->
