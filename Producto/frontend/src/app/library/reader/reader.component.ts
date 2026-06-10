@@ -463,12 +463,37 @@ export class ReaderComponent implements OnInit, OnDestroy {
     }
     
     // Scrollear hacia abajo 90% de la altura visible, para simular un "pasa página" natural
-    const el = document.querySelector('.reading-canvas');
+    const el = document.querySelector('.reading-canvas') as HTMLElement;
     if (el) {
       const scrollHeight = el.scrollHeight - el.clientHeight;
       // Si no estamos al final, hacer page down
       if (el.scrollTop < scrollHeight - 10) {
+         
+         // 1. Identificar el último bloque visible en la pantalla actual
+         const canvasRect = el.getBoundingClientRect();
+         const blocks = Array.from(el.querySelectorAll('p, h1, h2, h3, figure'));
+         let targetBlock: HTMLElement | null = null;
+         
+         for (let i = blocks.length - 1; i >= 0; i--) {
+           const rect = blocks[i].getBoundingClientRect();
+           // Si el bloque empieza por encima del límite inferior de la pantalla (menos un pequeño margen)
+           if (rect.top > canvasRect.top && rect.top < canvasRect.bottom - 40) {
+             targetBlock = blocks[i] as HTMLElement;
+             break;
+           }
+         }
+
+         // 2. Hacer el scroll suave
          el.scrollBy({ top: el.clientHeight * 0.9, behavior: 'smooth' });
+
+         // 3. Aplicar el efecto visual al bloque
+         if (targetBlock) {
+           blocks.forEach(b => b.classList.remove('tap-highlight-fade'));
+           targetBlock.classList.add('tap-highlight-fade');
+           setTimeout(() => {
+             targetBlock?.classList.remove('tap-highlight-fade');
+           }, 2500);
+         }
       }
     }
   }

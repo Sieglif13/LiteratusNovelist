@@ -3482,4 +3482,30 @@
     padding: 4px 6px;
   }
 }
+
+/* EFECTO DE RESALTADO AL HACER TAP-TO-SCROLL */
+.tap-highlight-fade {
+  animation: highlightFade 2.5s ease-out forwards;
+  border-radius: 4px;
+  display: inline-block;
+  padding: 2px 4px;
+  margin-left: -4px;
+}
+
+@keyframes highlightFade {
+  0% { background-color: rgba(147, 51, 234, 0.5); }
+  40% { background-color: rgba(147, 51, 234, 0.2); }
+  100% { background-color: transparent; }
+}
+
+.theme-light .tap-highlight-fade {
+  animation: highlightFadeLight 2.5s ease-out forwards;
+}
+
+@keyframes highlightFadeLight {
+  0% { background-color: rgba(147, 51, 234, 0.3); }
+  40% { background-color: rgba(147, 51, 234, 0.1); }
+  100% { background-color: transparent; }
+}
+
 
