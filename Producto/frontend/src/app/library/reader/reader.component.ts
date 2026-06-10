@@ -992,6 +992,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
   }
 
   resumeAudio() {
+    this.isAudioPanelOpen = false;
     const savedWordEl = document.getElementById(`word-${this.lastAudioWordIndex}`);
     if (savedWordEl) {
       const savedRect = savedWordEl.getBoundingClientRect();
@@ -1015,6 +1016,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
   }
 
   playAudio() {
+    this.isAudioPanelOpen = false;
     this.stopAudio(true); // Evitar que múltiples narradores hablen al mismo tiempo
     this.proErrorMessage = ''; 
     const chapter = this.chapters[this.currentPage - 1];
@@ -1165,18 +1167,25 @@ export class ReaderComponent implements OnInit, OnDestroy {
     if (this.currentAudioMode === 'kokoro') {
       if (this.kokoroVoice.isSpeaking$.value) {
         this.kokoroVoice.stop();
+        this.isAudioPanelOpen = true;
       } else {
         this.playAudio();
       }
     } else {
       if (this.audioService.isPlaying) {
         this.audioService.pause();
+        this.isAudioPanelOpen = true;
       } else if (this.audioService.isPaused) {
         this.resumeAudio();
       } else {
         this.playAudio();
       }
     }
+  }
+
+  stopAudioFromFab() {
+    this.stopAudio();
+    this.isAudioPanelOpen = true;
   }
 
   restartAudio() {
