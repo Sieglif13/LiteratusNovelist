@@ -18,6 +18,13 @@ export class KokoroTtsService {
   error$ = new BehaviorSubject<string | null>(null);
 
   // ── Estado interno ────────────────────────────────────────────────────
+  kokoroVoices = [
+    { id: 'ef_dora', name: 'Dora (Femenina España)' },
+    { id: 'em_alex', name: 'Alex (Masculino España)' },
+    { id: 'em_santa', name: 'Santa (Masculino España)' }
+  ];
+  selectedVoiceId = 'ef_dora';
+
   private audioCtx: AudioContext | null = null;
   private currentSource: AudioBufferSourceNode | null = null;
 
@@ -125,6 +132,10 @@ export class KokoroTtsService {
 
   // ── Lógica interna ────────────────────────────────────────────────────
 
+  setVoice(voiceId: string) {
+    this.selectedVoiceId = voiceId;
+  }
+
   private stopCurrentAudio() {
     if (this.currentSource) {
       try { this.currentSource.stop(); } catch (_) {}
@@ -137,7 +148,7 @@ export class KokoroTtsService {
   }
 
   private async prefetchPipeline(sentences: KokoroSentence[]): Promise<void> {
-    const BATCH_SIZE = 2;
+    const BATCH_SIZE = 1; // Secuencial para evitar sobrecargar el Free Tier de HuggingFace y evitar drops
     for (let i = 0; i < sentences.length; i += BATCH_SIZE) {
       if (this.isStopped) return;
 
@@ -249,48 +260,54 @@ export class KokoroTtsService {
   }
 
   private async fetchAudioBuffer(
-    sentence: KokoroSentence
+    sentence: KokoroSentence,
+    retries = 3
   ): Promise<{ buffer: AudioBuffer; sentence: KokoroSentence } | null> {
     if (!sentence.text.trim() || this.isStopped) return null;
 
     const hfApiUrl = 'https://josuejheymi-kokoro-api.hf.space/v1/audio/speech';
 
-    const fetchPromise = fetch(hfApiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: "kokoro",
-        input: sentence.text.replace(/[*_\[\]]/g, ''), // Limpiar markdown básico para TTS
-        voice: "ef_dora", // VOZ FEMENINA ESPAÑOLA (ef_dora o em_alex)
-        response_format: "mp3",
-        speed: 1.0
-      })
-    }).then(async (response) => {
-      if (!response.ok) {
-        throw new Error(`HF API error: ${response.status}`);
-      }
+    for (let attempt = 1; attempt <= retries; attempt++) {
       if (this.isStopped) return null;
-
-      const arrayBuffer = await response.arrayBuffer();
-
+      
       try {
+        const response = await fetch(hfApiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: "kokoro",
+            input: sentence.text.replace(/[*_\[\]]/g, ''), 
+            voice: this.selectedVoiceId, 
+            response_format: "mp3",
+            speed: 1.0
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`HF API error: ${response.status}`);
+        }
+        if (this.isStopped) return null;
+
+        const arrayBuffer = await response.arrayBuffer();
+
         if (!this.audioCtx || this.audioCtx.state === 'closed') {
           this.audioCtx = new AudioContext();
         }
         const audioBuffer = await this.audioCtx.decodeAudioData(arrayBuffer);
         return { buffer: audioBuffer, sentence };
-      } catch (decodeErr) {
-        console.warn('[KokoroTTS] Error decodificando audio para frase:', sentence.text, decodeErr);
-        return null;
+        
+      } catch (err) {
+        console.warn(`[KokoroTTS] Error en frase (Intento ${attempt}/${retries}):`, sentence.text, err);
+        if (attempt === retries) {
+          return null; // Solo fallar definitivamente tras X intentos
+        }
+        // Esperar un poco antes del siguiente intento
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
-    }).catch((err) => {
-      console.warn('[KokoroTTS] Error en frase:', sentence.text, err);
-      return null;
-    });
-
-    return fetchPromise as Promise<{ buffer: AudioBuffer; sentence: KokoroSentence } | null>;
+    }
+    return null;
   }
 
   private buildSentences(text: string): KokoroSentence[] {
@@ -303,15 +320,20 @@ export class KokoroTtsService {
     
     for (let i = 0; i < rawWords.length; i++) {
       currentWords.push(rawWords[i]);
-      // Si termina en puntuacion o es la ultima palabra
-      if (/[.!?¿¡"]$/.test(rawWords[i]) || i === rawWords.length - 1) {
-        // Agrupar oraciones muy cortas (menor a 4 palabras) si no es el final
-        if (currentWords.length < 4 && i !== rawWords.length - 1) {
+      
+      const currentText = currentWords.join(' ');
+      // Separar si es puntuación fuerte, si es muy largo y hay coma, o si es la última palabra
+      const isPunctuation = /[.!?¿¡"]$/.test(rawWords[i]);
+      const isTooLong = currentText.length > 150 && /[,;]$/.test(rawWords[i]);
+      const isExtremelyLong = currentText.length > 250; // Límite estricto para evitar truncamiento
+      
+      if (isPunctuation || isTooLong || isExtremelyLong || i === rawWords.length - 1) {
+        if (currentWords.length < 4 && i !== rawWords.length - 1 && !isExtremelyLong) {
           continue;
         }
         
         sentences.push({
-          text: currentWords.join(' '),
+          text: currentText,
           baseWordIdx: baseIdx,
           wordCount: currentWords.length,
           sentenceIdx: sentenceIdxCounter++

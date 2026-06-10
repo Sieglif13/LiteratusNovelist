@@ -382,7 +382,21 @@
       </select>
     </div>
 
-    <!-- Selector de voz local eliminado para Kokoro -->
+    <!-- Selector de voz local Kokoro -->
+    <div class="audio-config" *ngIf="currentAudioMode === 'kokoro'">
+      <label class="config-label">
+        <span class="material-symbols-rounded" style="font-size:1rem;vertical-align:middle;">piano</span>
+        Voz de IA
+      </label>
+      <select class="voice-dropdown"
+              [value]="kokoroVoice.selectedVoiceId"
+              (change)="kokoroVoice.setVoice($any($event.target).value); stopAudio(true); playAudio()">
+        <option *ngFor="let v of kokoroVoice.kokoroVoices" [value]="v.id">
+          {{ v.name }}
+        </option>
+      </select>
+    </div>
+
     <!-- Control de velocidad (ambos modos) -->
     <div class="audio-config">
       <label class="config-label">Velocidad: {{ audioService.playbackRate | number:'1.1-1' }}x</label>
