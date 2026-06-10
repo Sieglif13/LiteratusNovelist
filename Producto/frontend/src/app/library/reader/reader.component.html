@@ -430,7 +430,7 @@
               [disabled]="isAudioLoading || isKokoroProcessing">
         <span *ngIf="!isAudioLoading && !isKokoroProcessing">▶</span>
         <span *ngIf="isAudioLoading" class="loader-spin">◷</span>
-        <div *ngIf="isKokoroProcessing" #waveLottie style="width: 24px; height: 24px; display: inline-block;"></div>
+        <div *ngIf="isKokoroProcessing" #waveLottie class="lottie-white-filter" style="width: 24px; height: 24px; display: inline-block;"></div>
       </button>
 
       <!-- Estado 3: Reproduciendo → botón PAUSAR -->
@@ -640,6 +640,25 @@
       <div class="loading-lottie-container" #loadingLottie></div>
       <p class="loading-text">Cargando...</p>
     </div>
+  </div>
+
+  <!-- CONTROL FLOTANTE DE AUDIO -->
+  <div class="floating-audio-control" *ngIf="showFloatingAudioControl">
+    <button class="fab-btn stop" (click)="stopAudio()" title="Detener Audio">
+      <span class="material-symbols-rounded">stop</span>
+    </button>
+    <button class="fab-btn play"
+            (click)="currentAudioMode === 'kokoro' ? ((kokoroVoice.isSpeaking$ | async) ? kokoroVoice.stop() : playAudio()) : ((audioService.isPlaying$ | async) ? audioService.pause() : (audioService.isPaused$ | async) ? resumeAudio() : playAudio())"
+            [disabled]="isAudioLoading || isKokoroProcessing">
+      <!-- Icono Play: Si no está cargando y NO está reproduciendo -->
+      <span *ngIf="!isAudioLoading && !isKokoroProcessing && (currentAudioMode === 'kokoro' ? !(kokoroVoice.isSpeaking$ | async) : !(audioService.isPlaying$ | async))">▶</span>
+      <!-- Icono Pause: Si no está cargando y SÍ está reproduciendo -->
+      <span *ngIf="!isAudioLoading && !isKokoroProcessing && (currentAudioMode === 'kokoro' ? (kokoroVoice.isSpeaking$ | async) : (audioService.isPlaying$ | async))">⏸</span>
+      <!-- Spinner Nativo -->
+      <span *ngIf="isAudioLoading" class="loader-spin">◷</span>
+      <!-- Lottie Kokoro -->
+      <div *ngIf="isKokoroProcessing" #waveLottieFab class="lottie-white-filter" style="width: 24px; height: 24px; display: inline-block;"></div>
+    </button>
   </div>
 
 </div>

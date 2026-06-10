@@ -3505,4 +3505,71 @@
   100% { background-color: transparent; }
 }
 
-
+/* FLOATING AUDIO CONTROL */
+.floating-audio-control {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50px;
+  padding: 0.5rem 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  z-index: 900;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+.theme-light .floating-audio-control {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+.theme-sepia .floating-audio-control {
+  background: rgba(244, 236, 216, 0.9);
+  border-color: rgba(91, 70, 54, 0.15);
+}
+
+.fab-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.fab-btn:hover {
+  transform: scale(1.1);
+  background: #2563eb;
+}
+
+.fab-btn.stop {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.theme-light .fab-btn.stop {
+  background: rgba(0, 0, 0, 0.05);
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.theme-sepia .fab-btn.stop {
+  background: rgba(91, 70, 54, 0.1);
+  color: rgba(91, 70, 54, 0.6);
+}
+
+.fab-btn.stop:hover {
+  background: rgba(239, 68, 68, 0.8);
+  color: white;
+}
+
+.lottie-white-filter { filter: brightness(0) invert(1); }

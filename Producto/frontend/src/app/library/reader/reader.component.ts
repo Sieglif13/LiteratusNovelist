@@ -204,6 +204,22 @@ export class ReaderComponent implements OnInit, OnDestroy {
     }
   }
 
+  private _waveAnimationFab: any = null;
+  @ViewChild('waveLottieFab') set waveLottieFab(el: ElementRef) {
+    if (el && !this._waveAnimationFab) {
+      this._waveAnimationFab = lottie.loadAnimation({
+        container: el.nativeElement,
+        renderer: 'svg',
+        loop: true,
+        autoplay: true,
+        path: 'assets/lottie/WaveAnimation.json'
+      });
+    } else if (!el && this._waveAnimationFab) {
+      this._waveAnimationFab.destroy();
+      this._waveAnimationFab = null;
+    }
+  }
+
   ngOnInit() {
     this.inventoryId = this.route.snapshot.paramMap.get('id') || '';
 
@@ -1648,7 +1664,15 @@ export class ReaderComponent implements OnInit, OnDestroy {
     this.modalImageSrc = '';
   }
 
-  // ── MANGA FRAME LOGIC ──────────────────────────────────────────────
+  // ── MANGA FRAME LOGIC ──────────────────────────────
+  get isAudioSessionActive(): boolean {
+    return this.lastAudioWordIndex >= 0 || this.isKokoroProcessing;
+  }
+
+  get showFloatingAudioControl(): boolean {
+    return !this.isAudioPanelOpen && this.isAudioSessionActive;
+  }
+
   getMangaFrameUrl(): string {
     if (!this.selectedAvatar || !this.selectedAvatar.avatar_image_url) {
       return '';
