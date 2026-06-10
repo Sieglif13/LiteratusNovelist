@@ -1220,14 +1220,18 @@ export class ReaderComponent implements OnInit, OnDestroy {
     // Quitar clase anterior
     if (this.currentWordIndex !== -1) {
       const prevWord = document.getElementById(`word-${this.currentWordIndex}`);
-      if (prevWord) prevWord.classList.remove('active-word');
+      if (prevWord) prevWord.classList.remove('active-word', 'kokoro-active');
     }
 
     // Añadir clase nueva
     if (index !== -1) {
       const currentWord = document.getElementById(`word-${index}`);
       if (currentWord) {
-        currentWord.classList.add('active-word');
+        if (this.currentAudioMode === 'kokoro') {
+          currentWord.classList.add('kokoro-active');
+        } else {
+          currentWord.classList.add('active-word');
+        }
         // Scroll suave si la palabra se sale del viewport
         currentWord.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
       }

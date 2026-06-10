@@ -2313,6 +2313,13 @@
   /* Eliminados padding, font-weight y animaciones de escala para EVITAR saltos de línea */
 }
 
+/* ↓ Resaltado ultra sutil para Kokoro TTS (ya que no tiene tiempos de palabras exactos) */
+.kokoro-active {
+  border-bottom: 2px solid rgba(234, 179, 8, 0.3);
+  border-radius: 2px;
+  transition: border-color 0.2s ease;
+}
+
 /* INTEGRATED SIDEBAR CHAT STYLES */
 .sidebar-chat-view {
   display: flex;
