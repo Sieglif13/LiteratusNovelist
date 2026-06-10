@@ -476,22 +476,43 @@ export class ReaderComponent implements OnInit, OnDestroy {
          
          for (let i = blocks.length - 1; i >= 0; i--) {
            const rect = blocks[i].getBoundingClientRect();
-           // Si el bloque empieza por encima del límite inferior de la pantalla (menos un pequeño margen)
-           if (rect.top > canvasRect.top && rect.top < canvasRect.bottom - 40) {
+           // Si el bloque está parcialmente visible
+           if (rect.top < canvasRect.bottom - 20) {
              targetBlock = blocks[i] as HTMLElement;
              break;
            }
          }
 
+         let wordsToHighlight: HTMLElement[] = [];
+         if (targetBlock) {
+             const words = Array.from(targetBlock.querySelectorAll('.word')) as HTMLElement[];
+             let lastVisibleWord: HTMLElement | null = null;
+             
+             // Encontrar la última palabra que está visible
+             for (let i = words.length - 1; i >= 0; i--) {
+                 const rect = words[i].getBoundingClientRect();
+                 if (rect.bottom < canvasRect.bottom - 10) {
+                     lastVisibleWord = words[i];
+                     break;
+                 }
+             }
+             
+             if (lastVisibleWord) {
+                 // Todas las palabras en la misma "línea" comparten casi el mismo rect.top
+                 const lineTop = lastVisibleWord.getBoundingClientRect().top;
+                 wordsToHighlight = words.filter(w => Math.abs(w.getBoundingClientRect().top - lineTop) < 15);
+             }
+         }
+
          // 2. Hacer el scroll suave
          el.scrollBy({ top: el.clientHeight * 0.9, behavior: 'smooth' });
 
-         // 3. Aplicar el efecto visual al bloque
-         if (targetBlock) {
-           blocks.forEach(b => b.classList.remove('tap-highlight-fade'));
-           targetBlock.classList.add('tap-highlight-fade');
+         // 3. Aplicar el efecto visual solo a la última línea leída
+         if (wordsToHighlight.length > 0) {
+           el.querySelectorAll('.tap-highlight-fade').forEach(w => w.classList.remove('tap-highlight-fade'));
+           wordsToHighlight.forEach(w => w.classList.add('tap-highlight-fade'));
            setTimeout(() => {
-             targetBlock?.classList.remove('tap-highlight-fade');
+             wordsToHighlight.forEach(w => w.classList.remove('tap-highlight-fade'));
            }, 2500);
          }
       }

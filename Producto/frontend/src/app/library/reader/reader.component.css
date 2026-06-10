@@ -3487,9 +3487,6 @@
 .tap-highlight-fade {
   animation: highlightFade 2.5s ease-out forwards;
   border-radius: 4px;
-  display: inline-block;
-  padding: 2px 4px;
-  margin-left: -4px;
 }
 
 @keyframes highlightFade {
