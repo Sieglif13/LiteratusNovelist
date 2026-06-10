@@ -382,18 +382,23 @@ export class AudioService {
 
   // ── Controles ────────────────────────────────────────────────────
   pause() {
+    this.isPlayingSubject.next(false);
+    this.isPausedSubject.next(true);  // ← marcar como PAUSADO (no detenido)
+
     if (this.currentMode === 'native') {
-      window.speechSynthesis.pause();
+      // En navegadores como Chrome/Android, pause() y resume() nativos tienen bugs severos.
+      // Es más seguro cancelar la cola por completo y luego reiniciar desde el índice guardado.
+      window.speechSynthesis.cancel();
+      this.clearNativeInterval();
     } else if (this.proAudio) {
       this.proAudio.pause();
     }
-    this.isPlayingSubject.next(false);
-    this.isPausedSubject.next(true);  // ← marcar como PAUSADO (no detenido)
   }
 
   resume() {
     if (this.currentMode === 'native') {
-      window.speechSynthesis.resume();
+      // Reanudar iniciando una nueva síntesis desde la última palabra conocida.
+      this.playNativeFrom(this.lastCharIndex);
     } else if (this.proAudio) {
       this.proAudio.play();
     }
