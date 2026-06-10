@@ -3582,4 +3582,8 @@
   color: white;
 }
 
-.lottie-white-filter { filter: brightness(0) invert(1); }
+.lottie-white-filter { filter: brightness(0) invert(1); }
+
+.audio-controls-panel .toc-header {
+  margin-bottom: 0.5rem;
+}

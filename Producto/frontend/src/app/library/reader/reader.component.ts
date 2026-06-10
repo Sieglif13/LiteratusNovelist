@@ -1697,7 +1697,10 @@ export class ReaderComponent implements OnInit, OnDestroy {
   }
 
   get showFloatingAudioControl(): boolean {
-    return !this.isAudioPanelOpen && this.isAudioSessionActive;
+    const isPlaying = this.currentAudioMode === 'kokoro' 
+      ? (this.kokoroVoice.isSpeaking$.value || this.isKokoroProcessing)
+      : (this.audioService.isPlaying || this.isAudioLoading);
+    return !this.isAudioPanelOpen && isPlaying;
   }
 
   getMangaFrameUrl(): string {
