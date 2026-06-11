@@ -142,18 +142,21 @@ class TavernScene extends Phaser.Scene {
     ].filter(ts => ts !== null) as Phaser.Tilemaps.Tileset[];
 
     // Generate Layers
-    const layer1 = map.createLayer('Capa de patrones 1', tilesets, 0, 0);
-    const layer2 = map.createLayer('Capa de patrones 2', tilesets, 0, 0);
+    // NOTA: El usuario invirtió las capas en Tiled. 
+    // "Capa de patrones 2" es el piso. "Capa de patrones 1" son los objetos.
+    // En Phaser, se dibujan en el orden en que se crean, así que primero va el piso.
+    const layer2 = map.createLayer('Capa de patrones 2', tilesets, 0, 0); // Piso
+    const layer1 = map.createLayer('Capa de patrones 1', tilesets, 0, 0); // Objetos
 
     // Scale up the map by 2 to look better on modern screens
     const mapScale = 2;
     layer1?.setScale(mapScale);
     layer2?.setScale(mapScale);
 
-    // Enable collisions for everything placed on Layer 2
-    if (layer2) {
-      layer2.setCollisionByExclusion([-1]);
-      this.collisionLayer = layer2;
+    // Enable collisions for everything placed on Layer 1 (Obstacles)
+    if (layer1) {
+      layer1.setCollisionByExclusion([-1]);
+      this.collisionLayer = layer1;
     }
 
     // Set world physics and camera bounds based on scaled map size
