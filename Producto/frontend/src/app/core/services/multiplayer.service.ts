@@ -44,11 +44,12 @@ export class MultiplayerService {
     });
 
     this.channel
-      .on('broadcast', { event: 'pos' }, (payload) => {
+      .on('broadcast', { event: 'pos' }, (payload: any) => {
         // Run inside Angular zone so UI updates properly if needed
         this.ngZone.run(() => {
-          if (payload.payload.userId !== this.userId) {
-            this.playerMoved$.next(payload.payload as PlayerPosition);
+          const data = payload['payload'] as PlayerPosition;
+          if (data && data.userId !== this.userId) {
+            this.playerMoved$.next(data);
           }
         });
       })
