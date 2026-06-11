@@ -195,9 +195,10 @@ class TavernScene extends Phaser.Scene {
     // Scale up the pixel art slightly so it's not too small
     this.player.setScale(1.5);
     
-    // Set the collision box to be smaller than the 96x80 canvas (just the feet/body)
-    this.player.body.setSize(22, 34); 
-    this.player.body.setOffset(37, 46); // Adjust offset to center the hitbox on the sprite
+    // Hacemos que la caja de colisión sea SOLO los pies del personaje (un cuadrito pequeño).
+    // Así puede "asomar" la cabeza por encima de las mesas y acercarse más a los objetos.
+    this.player.body.setSize(16, 16); 
+    this.player.body.setOffset(40, 64); // Bajamos la caja de colisión a los pies
 
     this.player.setCollideWorldBounds(true);
     
@@ -233,8 +234,8 @@ class TavernScene extends Phaser.Scene {
     if (!otherPlayer) {
       otherPlayer = this.physics.add.sprite(pos.x, pos.y, 'idle_down');
       otherPlayer.setScale(1.5);
-      otherPlayer.body.setSize(22, 34); 
-      otherPlayer.body.setOffset(37, 46);
+      otherPlayer.body.setSize(16, 16); 
+      otherPlayer.body.setOffset(40, 64);
       
       // Also make other players collide with the world bounds and layer 2
       otherPlayer.setCollideWorldBounds(true);
