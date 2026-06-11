@@ -90,7 +90,7 @@ export class AppComponent implements OnInit {
   }
 
   openTavern() {
-    this.router.navigate(['/tavern']);
+    this.router.navigate(['/ink-shop']);
   }
 
   triggerShake() {
