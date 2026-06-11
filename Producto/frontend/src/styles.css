@@ -13,22 +13,22 @@
    ──────────────────────────────────────────────────────────────────────── */
 
 :root {
-  /* Paleta de color — Deep Literary Dark */
-  --bg-color:        #0b0f1a;  /* Tinta nocturna — más profundo que antes */
-  --bg-surface:      #0f172a;  /* Surface para paneles */
-  --text-main:       #f1f5f9;
-  --text-muted:      #94a3b8;
-  --text-subtle:     #475569;
-  --glass-bg:        rgba(255, 255, 255, 0.03);
-  --glass-border:    rgba(255, 255, 255, 0.08);
-  --glow-accent:     #3b82f6;  /* Azul eléctrico */
-  --glow-purple:     #8b5cf6;  /* Violeta */
-  --glow-gold:       #f59e0b;  /* Dorado literario */
+  /* Paleta de color — Classic Literature Artisanal */
+  --bg-color:        #0A1914;  /* Deep Emerald Dark */
+  --bg-surface:      #11261d;  /* Darker surface */
+  --text-main:       #fcfaf2;  /* Parchment white */
+  --text-muted:      #bbaea0;  /* Aged paper gray */
+  --text-subtle:     #8a7f72;
+  --glass-bg:        rgba(10, 25, 20, 0.4);
+  --glass-border:    rgba(212, 175, 55, 0.15); /* Old Gold */
+  --glow-accent:     #D4AF37;  /* Old Gold */
+  --glow-purple:     #8B0000;  /* Deep Burgundy */
+  --glow-gold:       #D4AF37;  /* Old Gold */
 
   /* Sistema tipográfico */
   --font-display:    'Cormorant Garamond', 'EB Garamond', Georgia, serif;
   --font-ui:         'Plus Jakarta Sans', 'Outfit', system-ui, sans-serif;
-  --font-body:       'Plus Jakarta Sans', 'Outfit', system-ui, sans-serif;
+  --font-body:       'EB Garamond', Georgia, serif; /* Ahora el cuerpo principal es Serif para sentirse como un libro */
   --font-brand:      'Cinzel', 'Trajan Pro', Georgia, serif;
   --font-literary:   'EB Garamond', Georgia, serif;
 }
@@ -56,19 +56,16 @@ body {
   margin: 0;
   overflow-x: hidden;
   /*
-   * FONDO PREMIUM — Tres capas:
-   * 1. Ruido SVG codificado (textura de grano cinematográfico, como papel antiguo)
-   * 2. Radial gradients azul/violeta para los orbes de luz ambiental
-   * 3. Color base #0b0f1a (tinta nocturna profunda)
-   *
-   * El ruido es la clave: saca a la app del look genérico de "startup plantilla".
-   * Los orbes de luz imitan la profundidad de un fondo de cine noir literario.
+   * FONDO ARTESANAL — Tres capas:
+   * 1. Ruido SVG codificado (textura de pergamino / papel envejecido)
+   * 2. Radial gradients sutiles en Oro Viejo y Borgoña para profundidad
+   * 3. Color base #0A1914 (Verde Esmeralda Profundo)
    */
   background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E"),
-    radial-gradient(ellipse 60% 50% at 15% 55%, rgba(59, 130, 246, 0.12), transparent),
-    radial-gradient(ellipse 55% 45% at 85% 25%, rgba(139, 92, 246, 0.14), transparent),
-    radial-gradient(ellipse 40% 35% at 50% 100%, rgba(245, 158, 11, 0.04), transparent);
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse 60% 50% at 15% 55%, rgba(212, 175, 55, 0.08), transparent),
+    radial-gradient(ellipse 55% 45% at 85% 25%, rgba(139, 0, 0, 0.06), transparent),
+    radial-gradient(ellipse 40% 35% at 50% 100%, rgba(212, 175, 55, 0.03), transparent);
   background-attachment: fixed;
   background-size: 300px 300px, 100% 100%, 100% 100%, 100% 100%;
 }
@@ -102,25 +99,29 @@ body {
   box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
 }
 
-/* Premium Buttons */
+/* Premium Buttons: Artesanal */
 .glass-btn {
-  background: linear-gradient(135deg, var(--glow-accent), var(--glow-purple));
-  color: white;
-  border: none;
+  background: var(--bg-surface);
+  color: var(--glow-gold);
+  border: 1px solid var(--glass-border);
   padding: 12px 24px;
-  border-radius: 8px;
+  border-radius: 4px; /* Menos redondeado, más clásico */
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.3s ease;
   width: 100%;
   font-family: var(--font-ui);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: inset 0 0 0 0 var(--glow-gold);
 }
 
 .glass-btn:hover {
+  background: var(--glow-gold);
+  color: #000;
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
 }
 
 .glass-btn:disabled {
