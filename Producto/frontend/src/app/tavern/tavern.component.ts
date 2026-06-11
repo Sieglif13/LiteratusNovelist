@@ -70,8 +70,7 @@ class TavernScene extends Phaser.Scene {
   private player!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private isLoggedIn: boolean = false;
-  private bgLayers: Phaser.GameObjects.TileSprite[] = [];
-  
+  private collisionLayer!: any;
   // Multiplayer properties
   private multiplayerService!: MultiplayerService;
   private userId!: string;
@@ -103,14 +102,16 @@ class TavernScene extends Phaser.Scene {
     this.load.spritesheet('run_right', 'assets/sprites/you/RUN/run_right.png', { frameWidth: 96, frameHeight: 80 });
     this.load.spritesheet('run_up', 'assets/sprites/you/RUN/run_up.png', { frameWidth: 96, frameHeight: 80 });
 
-    // Load Parallax Background layers
-    this.load.image('bg-back', 'assets/sprites/background/parallax-forest-back-trees.png');
-    this.load.image('bg-middle', 'assets/sprites/background/parallax-forest-middle-trees.png');
-    this.load.image('bg-lights', 'assets/sprites/background/parallax-forest-lights.png');
-    this.load.image('bg-front', 'assets/sprites/background/parallax-forest-front-trees.png');
-    
-    // Classical Ruin Tiles
-    this.load.image('bg-ruins', 'assets/sprites/background/classical_ruin_tiles.png');
+    // Load Tilemap JSON and its required Tileset Images
+    this.load.tilemapTiledJSON('mapa_taberna', 'assets/sprites/tavern/taberna.json');
+    this.load.image('fondo', 'assets/sprites/tavern/Environment/Structures/Buildings/Floors.png');
+    this.load.image('Alchemy_Table_01-Sheet', 'assets/sprites/tavern/Environment/Structures/Stations/Alchemy/Alchemy_Table_01-Sheet.png');
+    this.load.image('Alchemy_Table_02-Sheet', 'assets/sprites/tavern/Environment/Structures/Stations/Alchemy/Alchemy_Table_02-Sheet.png');
+    this.load.image('Alchemy_Table_03-Sheet', 'assets/sprites/tavern/Environment/Structures/Stations/Alchemy/Alchemy_Table_03-Sheet.png');
+    this.load.image('Anvil', 'assets/sprites/tavern/Environment/Structures/Stations/Anvil/Anvil.png');
+    this.load.image('Vegetation', 'assets/sprites/tavern/Environment/Props/Static/Vegetation.png');
+    this.load.image('Dungeon_Props', 'assets/sprites/tavern/Environment/Props/Static/Dungeon_Props.png');
+    this.load.image('Rocks', 'assets/sprites/tavern/Environment/Props/Static/Rocks.png');
   }
 
   create() {
@@ -125,41 +126,41 @@ class TavernScene extends Phaser.Scene {
       return;
     }
 
-    // Store layers in an array so we can scroll them in update()
-    this.bgLayers = [];
-    
-    // Create TileSprites for the parallax effect. We make them the size of the window.
-    const width = this.cameras.main.width;
-    const height = this.cameras.main.height;
+    // Create the Tilemap
+    const map = this.make.tilemap({ key: 'mapa_taberna' });
 
-    // We scale them up to cover the height of the screen exactly (so no vertical repeating)
-    const addLayer = (key: string, scrollFactor: number) => {
-      const layer = this.add.tileSprite(0, 0, width, height, key).setOrigin(0, 0);
-      
-      // Get the actual height of the loaded image
-      const textureHeight = this.textures.get(key).getSourceImage().height;
-      
-      // Scale exactly to screen height
-      layer.tileScaleY = height / textureHeight;
-      layer.tileScaleX = layer.tileScaleY; 
-      
-      // Store the parallax speed factor
-      layer.setData('parallaxSpeed', scrollFactor);
-      this.bgLayers.push(layer);
-    };
+    // Add tilesets (must match the names inside Tiled JSON)
+    const tilesets = [
+      map.addTilesetImage('fondo', 'fondo'),
+      map.addTilesetImage('Alchemy_Table_01-Sheet', 'Alchemy_Table_01-Sheet'),
+      map.addTilesetImage('Alchemy_Table_02-Sheet', 'Alchemy_Table_02-Sheet'),
+      map.addTilesetImage('Alchemy_Table_03-Sheet', 'Alchemy_Table_03-Sheet'),
+      map.addTilesetImage('Anvil', 'Anvil'),
+      map.addTilesetImage('Vegetation', 'Vegetation'),
+      map.addTilesetImage('Dungeon_Props', 'Dungeon_Props'),
+      map.addTilesetImage('Rocks', 'Rocks')
+    ].filter(ts => ts !== null) as Phaser.Tilemaps.Tileset[];
 
-    // addLayer('bg-back', 0.1);
-    // addLayer('bg-middle', 0.3);
-    // addLayer('bg-lights', 0.5);
-    // addLayer('bg-front', 0.8);
+    // Generate Layers
+    const layer1 = map.createLayer('Capa de patrones 1', tilesets, 0, 0);
+    const layer2 = map.createLayer('Capa de patrones 2', tilesets, 0, 0);
 
-    // TEMPORARY: Adding classical ruin tiles as requested
-    const layer = this.add.tileSprite(0, 0, width, height, 'bg-ruins').setOrigin(0, 0);
-    const textureHeight = this.textures.get('bg-ruins').getSourceImage().height;
-    layer.tileScaleY = height / textureHeight;
-    layer.tileScaleX = layer.tileScaleY;
-    layer.setData('parallaxSpeed', 0.5);
-    this.bgLayers.push(layer);
+    // Scale up the map by 2 to look better on modern screens
+    const mapScale = 2;
+    layer1?.setScale(mapScale);
+    layer2?.setScale(mapScale);
+
+    // Enable collisions for everything placed on Layer 2
+    if (layer2) {
+      layer2.setCollisionByExclusion([-1]);
+      this.collisionLayer = layer2;
+    }
+
+    // Set world physics and camera bounds based on scaled map size
+    const mapWidth = map.widthInPixels * mapScale;
+    const mapHeight = map.heightInPixels * mapScale;
+    this.physics.world.setBounds(0, 0, mapWidth, mapHeight);
+    this.cameras.main.setBounds(0, 0, mapWidth, mapHeight);
 
     // --- ANIMATIONS ---
     const directions = ['down', 'left', 'right', 'up'];
@@ -185,7 +186,8 @@ class TavernScene extends Phaser.Scene {
     });
 
     // --- PLAYER SPRITE ---
-    this.player = this.physics.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY, 'idle_down');
+    // Start player in the middle of the map
+    this.player = this.physics.add.sprite(mapWidth / 2, mapHeight / 2, 'idle_down');
     
     // Scale up the pixel art slightly so it's not too small
     this.player.setScale(1.5);
@@ -195,7 +197,16 @@ class TavernScene extends Phaser.Scene {
     this.player.body.setOffset(37, 46); // Adjust offset to center the hitbox on the sprite
 
     this.player.setCollideWorldBounds(true);
+    
+    // Add collision between player and layer 2 obstacles
+    if (this.collisionLayer) {
+      this.physics.add.collider(this.player, this.collisionLayer);
+    }
+
     this.player.play('idle-down');
+    
+    // Make camera follow player
+    this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
 
     if (this.input.keyboard) {
       this.cursors = this.input.keyboard.createCursorKeys();
@@ -221,6 +232,13 @@ class TavernScene extends Phaser.Scene {
       otherPlayer.setScale(1.5);
       otherPlayer.body.setSize(22, 34); 
       otherPlayer.body.setOffset(37, 46);
+      
+      // Also make other players collide with the world bounds and layer 2
+      otherPlayer.setCollideWorldBounds(true);
+      if (this.collisionLayer) {
+        this.physics.add.collider(otherPlayer, this.collisionLayer);
+      }
+      
       this.otherPlayers.set(pos.userId, otherPlayer);
     }
 
@@ -313,15 +331,7 @@ class TavernScene extends Phaser.Scene {
       this.player.play(`run-${currentDir}`, true);
       this.player.setData('lastDir', currentDir);
 
-      // PARALLAX EFFECT: If player is moving horizontally, scroll the backgrounds!
-      if (this.bgLayers && this.player.body.velocity.x !== 0) {
-        this.bgLayers.forEach((layer: Phaser.GameObjects.TileSprite) => {
-          const speedFactor = layer.getData('parallaxSpeed');
-          // If moving right (velocity > 0), tile position moves right
-          layer.tilePositionX += (this.player.body.velocity.x * speedFactor * 0.016); // 0.016 is roughly delta time
-        });
-      }
-
+      // Si se movió, actualizamos la posición del último broadcast
     } else {
       const lastDir = this.player.getData('lastDir') || 'down';
       this.player.play(`idle-${lastDir}`, true);
