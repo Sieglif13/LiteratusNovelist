@@ -3781,6 +3781,52 @@
 .theme-sepia .sidebar-title,
 .theme-sepia .char-name,
 .theme-sepia .profile-name,
-.theme-sepia .profile-desc {
+.theme-sepia .profile-desc,
+.theme-sepia .topbar-initial {
   color: #4a3b32;
+}
+.theme-sepia .topbar-mode,
+.theme-sepia .ai-label,
+.theme-sepia .listening-status {
+  color: rgba(74, 59, 50, 0.7);
+}
+.theme-sepia .topbar-close-btn,
+.theme-sepia .topbar-back-btn,
+.theme-sepia .topbar-call-btn,
+.theme-sepia .sidebar-close-btn,
+.theme-sepia .sidebar-back-btn {
+  color: rgba(74, 59, 50, 0.7);
+}
+.theme-sepia .topbar-close-btn:hover,
+.theme-sepia .topbar-back-btn:hover,
+.theme-sepia .topbar-call-btn:hover,
+.theme-sepia .sidebar-close-btn:hover,
+.theme-sepia .sidebar-back-btn:hover {
+  background: rgba(91, 70, 54, 0.1);
+  color: #4a3b32;
+}
+
+/* THEME LIGHT EXTENSIONS FOR CHAT BUTTONS */
+.theme-light .topbar-initial {
+  color: #333;
+}
+.theme-light .topbar-mode,
+.theme-light .ai-label,
+.theme-light .listening-status {
+  color: rgba(0, 0, 0, 0.6);
+}
+.theme-light .topbar-close-btn,
+.theme-light .topbar-back-btn,
+.theme-light .topbar-call-btn,
+.theme-light .sidebar-close-btn,
+.theme-light .sidebar-back-btn {
+  color: rgba(0, 0, 0, 0.6);
+}
+.theme-light .topbar-close-btn:hover,
+.theme-light .topbar-back-btn:hover,
+.theme-light .topbar-call-btn:hover,
+.theme-light .sidebar-close-btn:hover,
+.theme-light .sidebar-back-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: #000;
 }

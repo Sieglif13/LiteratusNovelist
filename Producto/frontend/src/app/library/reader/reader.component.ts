@@ -358,7 +358,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
     // Resaltado: escuchar el word index del PiperVoice
 
     this.kokoroVoice.currentWordIndex$.pipe(takeUntil(this.destroy$)).subscribe(idx => {
-      if (this.currentAudioMode === 'kokoro') {
+      if (this.currentAudioMode === 'kokoro' && !this.isChatOpen) {
         this.currentWordIndex = idx;
         if (idx !== -1) {
           this.lastAudioWordIndex = idx;
@@ -1266,6 +1266,10 @@ export class ReaderComponent implements OnInit, OnDestroy {
     // Cerrar perfil y chat al cerrar el panel
     if (!this.isCharPanelOpen) {
       this.showCharProfile = false;
+      if (this.isChatOpen) {
+        this.isChatOpen = false;
+        this.kokoroVoice.stop();
+      }
     }
   }
 
@@ -1396,8 +1400,8 @@ export class ReaderComponent implements OnInit, OnDestroy {
   }
 
   closeChat() {
-
     this.isChatOpen = false;
+    this.kokoroVoice.stop();
   }
 
   private scrollChatToBottom() {

@@ -121,7 +121,7 @@
     <ng-container *ngIf="!showCharProfile && !isChatOpen">
       <div class="sidebar-header">
         <h3 class="sidebar-title">🎭 Personajes</h3>
-        <button class="sidebar-close-btn" (click)="toggleCharPanel()">✕</button>
+        <button class="sidebar-close-btn" (click)="toggleCharPanel()"><span class="material-symbols-rounded" style="font-size: 1.2rem;">close</span></button>
       </div>
 
       <div class="char-list">
@@ -165,9 +165,9 @@
     <ng-container *ngIf="showCharProfile && selectedAvatar && !isChatOpen">
       <div class="sidebar-header">
         <button class="sidebar-back-btn" (click)="closeCharProfile()">
-          <span>‹</span> Volver
+          <span class="material-symbols-rounded" style="font-size: 1.2rem; vertical-align: middle; margin-right: 2px;">arrow_back_ios_new</span> Volver
         </button>
-        <button class="sidebar-close-btn" (click)="toggleCharPanel()">✕</button>
+        <button class="sidebar-close-btn" (click)="toggleCharPanel()"><span class="material-symbols-rounded" style="font-size: 1.2rem;">close</span></button>
       </div>
 
       <div class="profile-hero">
@@ -206,7 +206,7 @@
 
       <!-- Header del chat -->
       <div class="chat-topbar">
-        <button class="topbar-back-btn" (click)="isChatOpen = false">‹</button>
+        <button class="topbar-back-btn" (click)="isChatOpen = false"><span class="material-symbols-rounded" style="font-size: 1.4rem;">arrow_back_ios_new</span></button>
         <div class="topbar-avatar">
           <img *ngIf="selectedAvatar?.avatar_image_url" [src]="selectedAvatar.avatar_image_url" [alt]="selectedAvatar?.name">
           <div *ngIf="!selectedAvatar?.avatar_image_url" class="topbar-initial">{{ selectedAvatar?.name?.charAt(0) }}</div>
@@ -227,10 +227,10 @@
                 [class.active]="isCallMode"
                 (click)="toggleCallMode()" 
                 title="Modo Llamada (Voz Inmersiva)">
-          📞
+          <span class="material-symbols-rounded" style="font-size: 1.2rem;">call</span>
         </button>
 
-        <button class="topbar-close-btn" (click)="isChatOpen = false; isCharPanelOpen = false">✕</button>
+        <button class="topbar-close-btn" (click)="isChatOpen = false; isCharPanelOpen = false"><span class="material-symbols-rounded" style="font-size: 1.3rem;">close</span></button>
       </div>
 
       <!-- PANEL DE VIDEO (solo si está activo manualmente o en Modo Llamada) -->
@@ -307,8 +307,8 @@
           <button class="chat-send-btn" 
                   (click)="sendMessage()" 
                   [disabled]="!chatInput.trim() || isSendingMessage">
-            <span *ngIf="!isSendingMessage">▶</span>
-            <span *ngIf="isSendingMessage" class="loader-spin">◷</span>
+            <span *ngIf="!isSendingMessage" class="material-symbols-rounded" style="font-size: 1.1rem; transform: translateX(2px);">send</span>
+            <span *ngIf="isSendingMessage" class="loader-spin material-symbols-rounded" style="font-size: 1.1rem;">progress_activity</span>
           </button>
         </div>
         <p class="chat-disclaimer">Esto es IA y no una persona real.</p>
