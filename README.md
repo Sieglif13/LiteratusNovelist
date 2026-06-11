@@ -79,8 +79,7 @@ LiteratusNovelist/
 ├── Gestion/         # Documentos de definición del proyecto e integrantes (Integrantes.txt).
 ├── Producto/        # Entregables técnicos y código fuente de la plataforma.
 │   ├── backend/     # API REST (Django) y lógicas de IA.
-│   ├── frontend/    # Aplicación cliente web (Angular).
-│   └── *.ps1        # Scripts PowerShell de utilidades y portabilidad.
+│   └── frontend/    # Aplicación cliente web (Angular).
 ├── .gitignore       # Archivos excluidos del control de versiones.
 └── README.md        # Este archivo.
 ```
@@ -113,22 +112,7 @@ npm start
 
 ---
 
-## Guía para Colaboradores y Pruebas (ZIP)
 
-Si has recibido este proyecto mediante un archivo ZIP para colaborar o realizar pruebas, sigue estos pasos para configurar el entorno rápidamente:
-
-1. **Descomprimir:** Extrae el contenido del ZIP en una carpeta local de fácil acceso.
-2. **Configurar Entorno:** Solicita y coloca los archivos de secretos (`.env` en `Producto/backend/` y `environment.ts` en `Producto/frontend/src/environments/`). Sin estos archivos, las funciones de IA y Pagos no estarán activas.
-3. **Importación Rápida con PowerShell:** 
-   El proyecto incluye un script de portabilidad para restaurar la base de datos y archivos multimedia (`media`) de forma automática.
-   - Abre una terminal de PowerShell dentro de la carpeta `Producto/`.
-   - Ejecuta el siguiente comando (asegúrate de tener PostgreSQL instalado y configurado):
-     ```powershell
-     .\import_portable.ps1 -BackupPath "ruta/a/la/carpeta/de/backup"
-     ```
-4. **Instalación de Dependencias:** Una vez restaurados los datos, sigue los pasos de la **Guía de Instalación Local** detallada anteriormente para instalar los paquetes de Python (pip) y Angular (npm).
-
----
 
 ## Equipo de Desarrollo
 
