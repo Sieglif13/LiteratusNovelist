@@ -61,6 +61,7 @@
           </div>
           <div class="trending-info">
             <h3 class="trending-title">{{ book.title }}</h3>
+            <p class="trending-author" *ngIf="book.author_name">{{ book.author_name }}</p>
             <div class="trending-tags" *ngIf="book.tags && book.tags.length">
               <span class="mini-tag" *ngFor="let tag of book.tags.slice(0,2)">{{ tag.name }}</span>
             </div>
@@ -184,6 +185,7 @@
           </div>
           <div class="trending-info">
             <h3 class="trending-title">{{ book.title }}</h3>
+            <p class="trending-author" *ngIf="book.author_name">{{ book.author_name }}</p>
             <div class="trending-tags" *ngIf="book.tags && book.tags.length">
               <span class="mini-tag" *ngFor="let tag of book.tags.slice(0,2)">{{ tag.name }}</span>
             </div>

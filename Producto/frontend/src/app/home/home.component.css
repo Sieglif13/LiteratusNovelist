@@ -668,10 +668,24 @@
 .trending-info { padding: 0 .25rem; }
 
 .trending-title {
-  margin: 0 0 .5rem;
-  font-size: 1rem;
+  margin: 0 0 .2rem;
+  font-size: 0.9rem;
   font-weight: 700;
   color: #f1f5f9;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.3;
+  min-height: 2.4em;
+}
+
+.trending-author {
+  margin: 0 0 .3rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #a78bfa;
+  font-style: italic;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

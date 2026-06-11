@@ -14,6 +14,7 @@ export interface Book {
   cover_image: string | null;
   tags?: { name: string; slug: string }[];
   price?: number;
+  author_name?: string;  // Nombre del autor para mostrar en las tarjetas
 }
 
 @Component({

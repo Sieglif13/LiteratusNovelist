@@ -86,10 +86,11 @@ class BookListSerializer(serializers.ModelSerializer):
     genres = GenreSerializer(many=True, read_only=True)
     tags = serializers.SerializerMethodField()
     price = serializers.SerializerMethodField()
+    author_name = serializers.SerializerMethodField()
     
     class Meta:
         model = Book
-        fields = ['id', 'title', 'slug', 'synopsis', 'is_featured', 'cover_image', 'genres', 'tags', 'price']
+        fields = ['id', 'title', 'slug', 'synopsis', 'is_featured', 'cover_image', 'genres', 'tags', 'price', 'author_name']
 
     def get_price(self, obj):
         editions = obj.editions.all()
@@ -98,6 +99,14 @@ class BookListSerializer(serializers.ModelSerializer):
 
     def get_tags(self, obj):
         return [{'name': t.name, 'slug': t.slug} for t in obj.tags.all()]
+
+    def get_author_name(self, obj):
+        """Devuelve el nombre del primer autor principal del libro."""
+        book_author = obj.author_books.select_related('author').filter(role='author').first()
+        if not book_author:
+            book_author = obj.author_books.select_related('author').first()
+        return book_author.author.full_name if book_author else None
+
 
 class BookDetailSerializer(serializers.ModelSerializer):
     """
