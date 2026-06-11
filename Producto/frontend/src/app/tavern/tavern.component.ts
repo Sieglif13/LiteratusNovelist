@@ -1,5 +1,6 @@
-import { Component, OnInit, OnDestroy, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild, AfterViewInit, inject } from '@angular/core';
 import Phaser from 'phaser';
+import { AuthService } from '../core/services/auth.service';
 
 @Component({
   selector: 'app-tavern',
@@ -9,7 +10,18 @@ import Phaser from 'phaser';
 export class TavernComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('gameContainer', { static: true }) gameContainer!: ElementRef;
   
+  authService = inject(AuthService);
   private game!: Phaser.Game;
+
+  sidebarOpen = false;
+
+  get isLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
+  }
+
+  toggleSidebar() {
+    this.sidebarOpen = !this.sidebarOpen;
+  }
 
   ngOnInit(): void {
     // Initialization logic if needed before view initializes
@@ -28,26 +40,34 @@ export class TavernComponent implements OnInit, AfterViewInit, OnDestroy {
   private initPhaser() {
     const config: Phaser.Types.Core.GameConfig = {
       type: Phaser.AUTO,
-      width: 800,
-      height: 600,
-      parent: this.gameContainer.nativeElement,
+      scale: {
+        mode: Phaser.Scale.RESIZE,
+        parent: this.gameContainer.nativeElement,
+        width: '100%',
+        height: '100%'
+      },
       physics: {
         default: 'arcade',
         arcade: {
           gravity: { x: 0, y: 0 },
           debug: false
         }
-      },
-      scene: TavernScene
+      }
     };
 
     this.game = new Phaser.Game(config);
+    this.game.scene.add('TavernScene', TavernScene, true, { isLoggedIn: this.isLoggedIn });
   }
 }
 
 class TavernScene extends Phaser.Scene {
   private player!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+  private isLoggedIn: boolean = false;
+
+  init(data: { isLoggedIn: boolean }) {
+    this.isLoggedIn = data.isLoggedIn;
+  }
 
   constructor() {
     super({ key: 'TavernScene' });
@@ -60,6 +80,17 @@ class TavernScene extends Phaser.Scene {
   }
 
   create() {
+    if (!this.isLoggedIn) {
+      // Escena Exterior (Cerrada)
+      this.cameras.main.setBackgroundColor('#0A1914');
+      this.add.text(400, 300, 'La Taberna está cerrada.\nInicia sesión para entrar.', {
+        font: '32px EB Garamond',
+        color: '#D4AF37',
+        align: 'center'
+      }).setOrigin(0.5);
+      return;
+    }
+
     // Basic background
     this.cameras.main.setBackgroundColor('#2d2d2d');
 
@@ -86,7 +117,7 @@ class TavernScene extends Phaser.Scene {
   }
 
   override update() {
-    if (!this.cursors) return;
+    if (!this.isLoggedIn || !this.cursors) return;
 
     const speed = 160;
     this.player.setVelocity(0);

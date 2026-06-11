@@ -1,45 +1,23 @@
 .tavern-wrapper {
-  padding: 2rem 5vw;
-  min-height: 90vh;
+  padding: 0;
+  min-height: calc(100vh - 70px);
   display: flex;
   flex-direction: column;
-  align-items: center;
-}
-
-.tavern-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.tavern-title {
-  font-family: var(--font-display);
-  font-size: 3rem;
-  color: var(--glow-gold);
-  margin-bottom: 0.5rem;
-}
-
-.tavern-subtitle {
-  color: var(--text-muted);
-  font-size: 1.1rem;
+  position: relative;
+  overflow: hidden;
 }
 
 .game-wrapper {
   display: flex;
-  gap: 2rem;
   width: 100%;
-  max-width: 1200px;
-  justify-content: center;
-  align-items: flex-start;
+  height: calc(100vh - 70px);
+  position: relative;
 }
 
 .game-frame {
-  border: 4px solid var(--glow-gold);
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.8), 0 0 20px rgba(212,175,55,0.2);
+  flex-grow: 1;
   background: #000;
-  width: 800px;
-  height: 600px;
+  height: 100%;
 }
 
 .phaser-container {
@@ -47,15 +25,49 @@
   height: 100%;
 }
 
-/* Sidebar para ver usuarios y chat futuro */
+/* Sidebar overlay */
 .tavern-sidebar {
+  position: absolute;
+  top: 0;
+  right: 0;
   width: 300px;
-  height: 600px;
+  height: 100%;
   display: flex;
   flex-direction: column;
   padding: 1.5rem;
-  background: var(--bg-surface);
-  border: 1px solid var(--glass-border);
+  background: rgba(17, 38, 29, 0.95);
+  border-left: 1px solid var(--glass-border);
+  transition: transform 0.3s ease;
+  z-index: 10;
+}
+
+.tavern-sidebar.collapsed {
+  transform: translateX(100%);
+}
+
+.toggle-sidebar-btn {
+  position: absolute;
+  top: 20px;
+  left: -80px;
+  background: var(--glow-gold);
+  color: #0A1914;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px 0 0 4px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: -4px 0 10px rgba(0,0,0,0.5);
+  transition: background 0.3s;
+}
+
+.toggle-sidebar-btn:hover {
+  background: #E5C158;
+}
+
+.sidebar-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .sidebar-title {

@@ -27,7 +27,7 @@ import { TavernComponent as TavernPage } from './tavern/tavern.component';
 
 const routes: Routes = [
   { path: 'home', component: HomeComponent },
-  { path: 'tavern', component: TavernPage, canActivate: [authGuard] },
+  { path: 'tavern', component: TavernPage },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
