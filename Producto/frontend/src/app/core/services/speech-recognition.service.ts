@@ -1,6 +1,7 @@
 import { Injectable, NgZone } from '@angular/core';
 import { Subject, BehaviorSubject, Subscription } from 'rxjs';
 import { PiperVoiceService } from './piper-voice.service';
+import { KokoroTtsService } from './kokoro-tts.service';
 
 // Tipos para la API nativa del navegador
 declare var window: any;
@@ -26,9 +27,7 @@ export class SpeechRecognitionService {
   private isHybridMode = false;
   private silenceTimer: any;
   private currentTranscript = '';
-  private isSimulatedMode = false; // Evita bucles infinitos de reinicio
 
-  
   // Audio Context variables para el visualizador
   private audioContext: AudioContext | null = null;
   private analyser: AnalyserNode | null = null;
@@ -36,16 +35,17 @@ export class SpeechRecognitionService {
   private mediaStream: MediaStream | null = null;
   private animationFrameId: number = 0;
 
-  private piperSub: Subscription | null = null;
-  private wasListeningBeforePiper = false;
+  private voiceSub: Subscription | null = null;
+  private wasListeningBeforeVoice = false;
 
   constructor(
     private zone: NgZone,
-    private piperVoice: PiperVoiceService
+    private piperVoice: PiperVoiceService,
+    private kokoroVoice: KokoroTtsService
   ) {
     this.checkPlatform();
     this.initBrowserSpeechRecognition();
-    this.setupPiperSync();
+    this.setupVoiceSync();
   }
 
   private checkPlatform() {
@@ -99,37 +99,28 @@ export class SpeechRecognitionService {
     };
 
     this.recognition.onerror = (event: any) => {
-      console.error('Error en reconocimiento de voz:', event.error);
+      console.warn('Reconocimiento de voz:', event.error);
       if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
          this.stopListening();
       } else if (event.error === 'network') {
-         // Para propósitos de demostración inmersiva, si la red falla, 
-         // ignoramos el error y mantenemos el visualizador simulado activo.
-         if (!this.isSimulatedMode) {
-           console.warn("Modo de escucha simulada activo (falla de red ignorada).");
-           this.isSimulatedMode = true;
-           if (!this.isListeningSubject.value) {
-             this.isListeningSubject.next(true);
-             this.updateAudioLevel();
-           }
-         }
+         console.error("Falla de red en Web Speech API. Navegadores como Brave pueden bloquear esto por defecto.");
       }
-
     };
 
     this.recognition.onend = () => {
       this.zone.run(() => {
         // En modo continuo, si se corta inesperadamente y deberíamos seguir escuchando, reiniciamos.
         if (this.isListeningSubject.value) {
-            if (!this.isSimulatedMode) {
+            // Delay corto para evitar DOMException "recognition has already started"
+            setTimeout(() => {
+              if (this.isListeningSubject.value) {
                 try {
                    this.recognition.start();
                 } catch(e) {
-                   this.isListeningSubject.next(false);
-                   this.stopAudioVisualizer();
+                   console.warn("No se pudo reiniciar el reconocimiento", e);
                 }
-            }
-            // Si está en isSimulatedMode, no hacemos nada (mantiene el UI activo)
+              }
+            }, 300);
         } else {
            this.isListeningSubject.next(false);
            this.stopAudioVisualizer();
@@ -138,19 +129,19 @@ export class SpeechRecognitionService {
     };
   }
 
-  private setupPiperSync() {
-    // Sincronización: silenciar el micrófono mientras Piper habla
-    this.piperSub = this.piperVoice.isSpeaking$.subscribe(isSpeaking => {
+  private setupVoiceSync() {
+    // Sincronización: silenciar el micrófono mientras Kokoro habla (IA respondio)
+    this.voiceSub = this.kokoroVoice.isSpeaking$.subscribe(isSpeaking => {
       if (isSpeaking) {
         if (this.isListeningSubject.value) {
-          this.wasListeningBeforePiper = true;
+          this.wasListeningBeforeVoice = true;
           this.pauseListening();
         }
       } else {
-        if (this.wasListeningBeforePiper) {
-          this.wasListeningBeforePiper = false;
+        if (this.wasListeningBeforeVoice) {
+          this.wasListeningBeforeVoice = false;
           // Pequeño delay para no captar la cola del audio
-          setTimeout(() => this.resumeListening(), 500); 
+          setTimeout(() => this.resumeListening(), 800); 
         }
       }
     });
@@ -175,7 +166,6 @@ export class SpeechRecognitionService {
     this.currentTranscript = '';
     this.partialTranscriptSubject.next('');
     this.isListeningSubject.next(true); // Evitar onend restart bug
-    this.isSimulatedMode = false;
 
     try {
       if (!this.mediaStream) {
@@ -195,7 +185,6 @@ export class SpeechRecognitionService {
     }
 
     this.isListeningSubject.next(false);
-    this.isSimulatedMode = false;
     
     if (this.recognition) {
       this.recognition.stop();
@@ -285,6 +274,6 @@ export class SpeechRecognitionService {
 
   ngOnDestroy() {
     this.stopListening();
-    if (this.piperSub) this.piperSub.unsubscribe();
+    if (this.voiceSub) this.voiceSub.unsubscribe();
   }
 }

@@ -3829,4 +3829,34 @@
 .theme-light .sidebar-back-btn:hover {
   background: rgba(0, 0, 0, 0.08);
   color: #000;
+}
+
+/* FORZAR COLORES CLAROS EN MODO LLAMADA PARA TODOS LOS TEMAS */
+/* Como el modo llamada (immersive) siempre tiene fondo oscuro, forzamos texto claro */
+.immersive-footer .chat-input-box {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+.theme-light .immersive-footer .chat-text-input,
+.theme-sepia .immersive-footer .chat-text-input,
+.immersive-footer .chat-text-input {
+  color: white !important;
+}
+.theme-light .immersive-footer .chat-text-input::placeholder,
+.theme-sepia .immersive-footer .chat-text-input::placeholder,
+.immersive-footer .chat-text-input::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+.theme-light .immersive-footer .chat-disclaimer,
+.theme-sepia .immersive-footer .chat-disclaimer,
+.immersive-footer .chat-disclaimer {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+.theme-light .immersive-footer .listening-status,
+.theme-sepia .immersive-footer .listening-status,
+.immersive-footer .listening-status {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+.immersive-footer .partial-transcript {
+  color: #a855f7 !important;
 }
