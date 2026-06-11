@@ -18,13 +18,25 @@ export class DiscoverComponent implements OnInit, OnDestroy {
   isPlaying = false;
 
   ngOnInit(): void {
-    this.api.get<any>('catalog/books/?format=json&ordering=?&page_size=24').subscribe({
+    // Evitar '?' sin codificar en la URL que puede dar error 400 en algunos servidores
+    // Mejor pedimos los más populares/recientes y los mezclamos en el frontend.
+    this.api.get<any>('catalog/books/?ordering=-view_count,-created_at&page_size=50').subscribe({
       next: (res: any) => {
         const data = Array.isArray(res) ? res : (res.results ?? []);
-        this.books = data.filter((b: any) => b.cover_image || b.synopsis);
+        // Filtramos los que tienen sinopsis (esencial para el text-to-speech)
+        let validBooks = data.filter((b: any) => b.synopsis && b.synopsis.trim().length > 0);
+        
+        // Shuffle aleatorio en el frontend
+        validBooks.sort(() => 0.5 - Math.random());
+        
+        // Tomamos los primeros 24
+        this.books = validBooks.slice(0, 24);
         this.isLoading = false;
       },
-      error: () => { this.isLoading = false; }
+      error: (err) => { 
+        console.error('Error al cargar descubrir:', err);
+        this.isLoading = false; 
+      }
     });
   }
 
