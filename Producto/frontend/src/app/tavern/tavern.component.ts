@@ -108,6 +108,9 @@ class TavernScene extends Phaser.Scene {
     this.load.image('bg-middle', 'assets/sprites/background/parallax-forest-middle-trees.png');
     this.load.image('bg-lights', 'assets/sprites/background/parallax-forest-lights.png');
     this.load.image('bg-front', 'assets/sprites/background/parallax-forest-front-trees.png');
+    
+    // Classical Ruin Tiles
+    this.load.image('bg-ruins', 'assets/sprites/background/classical_ruin_tiles.png');
   }
 
   create() {
@@ -145,10 +148,18 @@ class TavernScene extends Phaser.Scene {
       this.bgLayers.push(layer);
     };
 
-    addLayer('bg-back', 0.1);
-    addLayer('bg-middle', 0.3);
-    addLayer('bg-lights', 0.5);
-    addLayer('bg-front', 0.8);
+    // addLayer('bg-back', 0.1);
+    // addLayer('bg-middle', 0.3);
+    // addLayer('bg-lights', 0.5);
+    // addLayer('bg-front', 0.8);
+
+    // TEMPORARY: Adding classical ruin tiles as requested
+    const layer = this.add.tileSprite(0, 0, width, height, 'bg-ruins').setOrigin(0, 0);
+    const textureHeight = this.textures.get('bg-ruins').getSourceImage().height;
+    layer.tileScaleY = height / textureHeight;
+    layer.tileScaleX = layer.tileScaleY;
+    layer.setData('parallaxSpeed', 0.5);
+    this.bgLayers.push(layer);
 
     // --- ANIMATIONS ---
     const directions = ['down', 'left', 'right', 'up'];
