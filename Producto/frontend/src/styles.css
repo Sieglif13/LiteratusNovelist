@@ -13,7 +13,7 @@
    ──────────────────────────────────────────────────────────────────────── */
 
 :root {
-  /* Paleta de color — Classic Literature Artisanal */
+  /* Paleta de color — Classic Literature Artisanal (Default) */
   --bg-color:        #0A1914;  /* Deep Emerald Dark */
   --bg-surface:      #11261d;  /* Darker surface */
   --text-main:       #fcfaf2;  /* Parchment white */
@@ -25,13 +25,30 @@
   --glow-purple:     #8B0000;  /* Deep Burgundy */
   --glow-gold:       #D4AF37;  /* Old Gold */
 
-  /* Sistema tipográfico */
+  /* Sistema tipográfico Default */
   --font-display:    'Cormorant Garamond', 'EB Garamond', Georgia, serif;
   --font-ui:         'Plus Jakarta Sans', 'Outfit', system-ui, sans-serif;
-  --font-body:       'EB Garamond', Georgia, serif; /* Ahora el cuerpo principal es Serif para sentirse como un libro */
+  --font-body:       'EB Garamond', Georgia, serif;
   --font-brand:      'Cinzel', 'Trajan Pro', Georgia, serif;
   --font-literary:   'EB Garamond', Georgia, serif;
 }
+
+/* Tema Clásico Original (Neón) para demo al cliente */
+[data-theme="neon"] {
+  --bg-color:        #0b0f1a;
+  --bg-surface:      #0f172a;
+  --text-main:       #f1f5f9;
+  --text-muted:      #94a3b8;
+  --text-subtle:     #475569;
+  --glass-bg:        rgba(255, 255, 255, 0.03);
+  --glass-border:    rgba(255, 255, 255, 0.08);
+  --glow-accent:     #3b82f6;
+  --glow-purple:     #8b5cf6;
+  --glow-gold:       #a855f7; /* Override para que los bordes gold sean morados */
+  
+  --font-body:       'Plus Jakarta Sans', 'Outfit', system-ui, sans-serif;
+}
+
 
 
 * {
@@ -57,9 +74,6 @@ body {
   overflow-x: hidden;
   /*
    * FONDO ARTESANAL — Tres capas:
-   * 1. Ruido SVG codificado (textura de pergamino / papel envejecido)
-   * 2. Radial gradients sutiles en Oro Viejo y Borgoña para profundidad
-   * 3. Color base #0A1914 (Verde Esmeralda Profundo)
    */
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"),
@@ -68,6 +82,14 @@ body {
     radial-gradient(ellipse 40% 35% at 50% 100%, rgba(212, 175, 55, 0.03), transparent);
   background-attachment: fixed;
   background-size: 300px 300px, 100% 100%, 100% 100%, 100% 100%;
+}
+
+[data-theme="neon"] body {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse 60% 50% at 15% 55%, rgba(59, 130, 246, 0.12), transparent),
+    radial-gradient(ellipse 55% 45% at 85% 25%, rgba(139, 92, 246, 0.14), transparent),
+    radial-gradient(ellipse 40% 35% at 50% 100%, rgba(245, 158, 11, 0.04), transparent);
 }
 
 /* Base Glass Container */
@@ -117,11 +139,27 @@ body {
   box-shadow: inset 0 0 0 0 var(--glow-gold);
 }
 
+[data-theme="neon"] .glass-btn {
+  background: linear-gradient(135deg, var(--glow-accent), var(--glow-purple));
+  color: white;
+  border: none;
+  border-radius: 8px;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  box-shadow: none;
+}
+
 .glass-btn:hover {
   background: var(--glow-gold);
   color: #000;
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+[data-theme="neon"] .glass-btn:hover {
+  background: linear-gradient(135deg, var(--glow-accent), var(--glow-purple));
+  color: white;
+  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
 }
 
 .glass-btn:disabled {

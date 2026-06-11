@@ -34,6 +34,15 @@ export class DashboardLayoutComponent implements OnInit {
     this.sidebarCollapsed = !this.sidebarCollapsed;
   }
 
+  toggleTheme(): void {
+    const htmlEl = document.documentElement;
+    if (htmlEl.getAttribute('data-theme') === 'neon') {
+      htmlEl.removeAttribute('data-theme');
+    } else {
+      htmlEl.setAttribute('data-theme', 'neon');
+    }
+  }
+
   logout(): void {
     this.auth.clearTokens();
     this.router.navigate(['/']);
