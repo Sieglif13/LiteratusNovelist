@@ -102,10 +102,16 @@ class BookListSerializer(serializers.ModelSerializer):
 
     def get_author_name(self, obj):
         """Devuelve el nombre del primer autor principal del libro."""
-        book_author = obj.author_books.select_related('author').filter(role='author').first()
-        if not book_author:
-            book_author = obj.author_books.select_related('author').first()
-        return book_author.author.full_name if book_author else None
+        # Usamos .all() y Python para aprovechar el prefetch_related y evitar N+1 queries
+        book_authors = list(obj.book_authors.all())
+        if not book_authors:
+            return None
+        
+        main_author = next((ba for ba in book_authors if ba.role == 'author'), None)
+        if not main_author:
+            main_author = book_authors[0]
+            
+        return main_author.author.full_name
 
 
 class BookDetailSerializer(serializers.ModelSerializer):
