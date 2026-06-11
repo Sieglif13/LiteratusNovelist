@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy, ElementRef, ViewChild, AfterViewInit, inject } from '@angular/core';
 import Phaser from 'phaser';
 import { AuthService } from '../core/services/auth.service';
+import { MultiplayerService, PlayerPosition } from '../core/services/multiplayer.service';
 
 @Component({
   selector: 'app-tavern',
@@ -11,6 +12,7 @@ export class TavernComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('gameContainer', { static: true }) gameContainer!: ElementRef;
   
   authService = inject(AuthService);
+  multiplayerService = inject(MultiplayerService);
   private game!: Phaser.Game;
 
   sidebarOpen = false;
@@ -56,7 +58,11 @@ export class TavernComponent implements OnInit, AfterViewInit, OnDestroy {
     };
 
     this.game = new Phaser.Game(config);
-    this.game.scene.add('TavernScene', TavernScene, true, { isLoggedIn: this.isLoggedIn });
+    this.game.scene.add('TavernScene', TavernScene, true, { 
+      isLoggedIn: this.isLoggedIn,
+      multiplayerService: this.multiplayerService,
+      userId: this.authService.currentUser()?.id || 'anonymous'
+    });
   }
 }
 
@@ -65,9 +71,17 @@ class TavernScene extends Phaser.Scene {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private isLoggedIn: boolean = false;
   private bgLayers: Phaser.GameObjects.TileSprite[] = [];
+  
+  // Multiplayer properties
+  private multiplayerService!: MultiplayerService;
+  private userId!: string;
+  private otherPlayers: Map<string, Phaser.Types.Physics.Arcade.SpriteWithDynamicBody> = new Map();
+  private lastBroadcastTime = 0;
 
-  init(data: { isLoggedIn: boolean }) {
+  init(data: { isLoggedIn: boolean, multiplayerService: MultiplayerService, userId: string }) {
     this.isLoggedIn = data.isLoggedIn;
+    this.multiplayerService = data.multiplayerService;
+    this.userId = data.userId;
   }
 
   constructor() {
@@ -175,9 +189,52 @@ class TavernScene extends Phaser.Scene {
     if (this.input.keyboard) {
       this.cursors = this.input.keyboard.createCursorKeys();
     }
+
+    // Connect to multiplayer
+    if (this.multiplayerService) {
+      this.multiplayerService.connect(this.userId);
+      
+      // Listen for other players moving
+      this.multiplayerService.playerMoved$.subscribe((pos: PlayerPosition) => {
+        this.updateOtherPlayer(pos);
+      });
+    }
   }
 
-  override update() {
+  private updateOtherPlayer(pos: PlayerPosition) {
+    let otherPlayer = this.otherPlayers.get(pos.userId);
+    
+    // Create sprite if it doesn't exist
+    if (!otherPlayer) {
+      otherPlayer = this.physics.add.sprite(pos.x, pos.y, 'idle_down');
+      otherPlayer.setScale(1.5);
+      otherPlayer.body.setSize(22, 34); 
+      otherPlayer.body.setOffset(37, 46);
+      this.otherPlayers.set(pos.userId, otherPlayer);
+    }
+
+    // Move to new position using tween for smoothness
+    this.tweens.add({
+      targets: otherPlayer,
+      x: pos.x,
+      y: pos.y,
+      duration: 100, // Sync with broadcast rate
+      onComplete: () => {
+        // After movement, decide if they stopped (could be improved with explicit stop events)
+      }
+    });
+
+    // Determine animation
+    // If they are actively moving to a new spot, play RUN, otherwise IDLE
+    const distance = Phaser.Math.Distance.Between(otherPlayer.x, otherPlayer.y, pos.x, pos.y);
+    if (distance > 2) {
+      otherPlayer.play(`run-${pos.dir}`, true);
+    } else {
+      otherPlayer.play(`idle-${pos.dir}`, true);
+    }
+  }
+
+  override update(time: number, delta: number) {
     if (!this.isLoggedIn || !this.cursors) return;
 
     const speed = 200;
@@ -257,6 +314,21 @@ class TavernScene extends Phaser.Scene {
     } else {
       const lastDir = this.player.getData('lastDir') || 'down';
       this.player.play(`idle-${lastDir}`, true);
+    }
+
+    // BROADCAST POSITION (Throttle to ~10 times per second to save Supabase Quota)
+    if (this.multiplayerService && time > this.lastBroadcastTime + 100) {
+      // Only broadcast if we actually moved or changed direction
+      const lastX = this.player.getData('lastX');
+      const lastY = this.player.getData('lastY');
+      
+      if (lastX !== this.player.x || lastY !== this.player.y) {
+        this.multiplayerService.broadcastPosition(this.player.x, this.player.y, currentDir);
+        
+        this.player.setData('lastX', this.player.x);
+        this.player.setData('lastY', this.player.y);
+        this.lastBroadcastTime = time;
+      }
     }
   }
 }

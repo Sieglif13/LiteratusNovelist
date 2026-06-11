@@ -27,6 +27,7 @@
     "@capacitor/cli": "^8.4.0",
     "@capacitor/core": "^8.4.0",
     "@lucide/angular": "^1.16.0",
+    "@supabase/supabase-js": "^2.108.1",
     "lottie-web": "^5.13.0",
     "lucide-angular": "^1.0.0",
     "ngx-lottie": "^12.0.0",
