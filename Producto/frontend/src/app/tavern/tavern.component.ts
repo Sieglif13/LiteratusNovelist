@@ -115,13 +115,15 @@ class TavernScene extends Phaser.Scene {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
 
-    // We scale them up to cover the height of the screen
+    // We scale them up to cover the height of the screen exactly (so no vertical repeating)
     const addLayer = (key: string, scrollFactor: number) => {
       const layer = this.add.tileSprite(0, 0, width, height, key).setOrigin(0, 0);
       
-      // Calculate scale to make the image fit the screen height
-      // Assuming the original image is relatively small (e.g., 272px height)
-      layer.tileScaleY = height / 272; // You can tweak this if the image is distorted
+      // Get the actual height of the loaded image
+      const textureHeight = this.textures.get(key).getSourceImage().height;
+      
+      // Scale exactly to screen height
+      layer.tileScaleY = height / textureHeight;
       layer.tileScaleX = layer.tileScaleY; 
       
       // Store the parallax speed factor
@@ -133,13 +135,6 @@ class TavernScene extends Phaser.Scene {
     addLayer('bg-middle', 0.3);
     addLayer('bg-lights', 0.5);
     addLayer('bg-front', 0.8);
-
-    // Instruction text (moved below background so it renders on top)
-    this.add.text(this.cameras.main.centerX, 100, 'Bosque Parallax\nCaminando en el aire (Prueba técnica)', {
-      font: '24px EB Garamond',
-      color: '#D4AF37',
-      align: 'center'
-    }).setOrigin(0.5);
 
     // --- ANIMATIONS ---
     const directions = ['down', 'left', 'right', 'up'];
@@ -191,30 +186,54 @@ class TavernScene extends Phaser.Scene {
     let isMoving = false;
     let currentDir = 'down';
 
-    // Vertical movement
-    if (this.cursors.up.isDown) {
-      this.player.setVelocityY(-speed);
-      currentDir = 'up';
-      isMoving = true;
-    } else if (this.cursors.down.isDown) {
-      this.player.setVelocityY(speed);
-      currentDir = 'down';
-      isMoving = true;
-    }
+    // 1. TOUCH / MOBILE MOVEMENT
+    const pointer = this.input.activePointer;
+    if (pointer.isDown) {
+      // Calculate distance between player and pointer
+      const distance = Phaser.Math.Distance.Between(this.player.x, this.player.y, pointer.worldX, pointer.worldY);
+      
+      // Only move if we are not already at the target (prevents jittering)
+      if (distance > 10) {
+        this.physics.moveToObject(this.player, { x: pointer.worldX, y: pointer.worldY }, speed);
+        isMoving = true;
+        
+        // Determine direction based on velocity
+        if (Math.abs(this.player.body.velocity.x) > Math.abs(this.player.body.velocity.y)) {
+          currentDir = this.player.body.velocity.x < 0 ? 'left' : 'right';
+        } else {
+          currentDir = this.player.body.velocity.y < 0 ? 'up' : 'down';
+        }
+      }
+    } 
+    // 2. KEYBOARD MOVEMENT (Fallback for PC)
+    else {
+      // Vertical movement
+      if (this.cursors.up.isDown) {
+        this.player.setVelocityY(-speed);
+        currentDir = 'up';
+        isMoving = true;
+      } else if (this.cursors.down.isDown) {
+        this.player.setVelocityY(speed);
+        currentDir = 'down';
+        isMoving = true;
+      }
 
-    // Horizontal movement
-    if (this.cursors.left.isDown) {
-      this.player.setVelocityX(-speed);
-      currentDir = 'left';
-      isMoving = true;
-    } else if (this.cursors.right.isDown) {
-      this.player.setVelocityX(speed);
-      currentDir = 'right';
-      isMoving = true;
-    }
+      // Horizontal movement
+      if (this.cursors.left.isDown) {
+        this.player.setVelocityX(-speed);
+        currentDir = 'left';
+        isMoving = true;
+      } else if (this.cursors.right.isDown) {
+        this.player.setVelocityX(speed);
+        currentDir = 'right';
+        isMoving = true;
+      }
 
-    // Normalize diagonal speed
-    this.player.body.velocity.normalize().scale(speed);
+      // Normalize diagonal speed for keyboard
+      if (isMoving) {
+        this.player.body.velocity.normalize().scale(speed);
+      }
+    }
 
     // Play appropriate animation
     if (isMoving) {
