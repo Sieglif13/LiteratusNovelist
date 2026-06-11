@@ -1415,9 +1415,17 @@ export class ReaderComponent implements OnInit, OnDestroy {
 
   private async speakChatReply(text: string) {
     const charName = this.selectedAvatar?.name || 'Unknown';
+    const nameLower = charName.toLowerCase();
+    
     let voiceId = 'ef_dora'; // Default female
-    if (charName.toLowerCase().includes('príncipe') || charName.toLowerCase().includes('principe') || charName.toLowerCase().includes('autor')) {
-      voiceId = 'em_santa'; // Male
+    
+    // Voces masculinas maduras/autoridad
+    if (nameLower.includes('alcalde') || nameLower.includes('rey') || nameLower.includes('padre') || nameLower.includes('señor')) {
+      voiceId = 'em_santa';
+    } 
+    // Voces masculinas juveniles
+    else if (nameLower.includes('príncipe') || nameLower.includes('principe') || nameLower.includes('autor') || nameLower.includes('joven') || nameLower.includes('niño')) {
+      voiceId = 'em_alex'; 
     }
 
     this.kokoroVoice.speak(text, this.chatSession?.avatar_id || this.authorAvatar?.id || 1, 0, voiceId);
