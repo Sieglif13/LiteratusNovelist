@@ -74,9 +74,19 @@ class TavernScene extends Phaser.Scene {
   }
 
   preload() {
-    // Placeholder assets
-    // this.load.image('tiles', 'assets/tavern_tiles.png');
-    // this.load.tilemapTiledJSON('map', 'assets/tavern_map.json');
+    if (!this.isLoggedIn) return;
+
+    // Load IDLE spritesheets (8 frames each, 96x80)
+    this.load.spritesheet('idle_down', 'assets/sprites/you/IDLE/idle_down.png', { frameWidth: 96, frameHeight: 80 });
+    this.load.spritesheet('idle_left', 'assets/sprites/you/IDLE/idle_left.png', { frameWidth: 96, frameHeight: 80 });
+    this.load.spritesheet('idle_right', 'assets/sprites/you/IDLE/idle_right.png', { frameWidth: 96, frameHeight: 80 });
+    this.load.spritesheet('idle_up', 'assets/sprites/you/IDLE/idle_up.png', { frameWidth: 96, frameHeight: 80 });
+
+    // Load RUN spritesheets (8 frames each, 96x80)
+    this.load.spritesheet('run_down', 'assets/sprites/you/RUN/run_down.png', { frameWidth: 96, frameHeight: 80 });
+    this.load.spritesheet('run_left', 'assets/sprites/you/RUN/run_left.png', { frameWidth: 96, frameHeight: 80 });
+    this.load.spritesheet('run_right', 'assets/sprites/you/RUN/run_right.png', { frameWidth: 96, frameHeight: 80 });
+    this.load.spritesheet('run_up', 'assets/sprites/you/RUN/run_up.png', { frameWidth: 96, frameHeight: 80 });
   }
 
   create() {
@@ -91,25 +101,51 @@ class TavernScene extends Phaser.Scene {
       return;
     }
 
-    // Basic background
+    // Basic background (placeholder for tavern map)
     this.cameras.main.setBackgroundColor('#2d2d2d');
 
     // Instruction text
-    this.add.text(400, 300, 'Taberna en Construcción\nUsa las flechas para moverte', {
+    this.add.text(this.cameras.main.centerX, 100, 'Taberna (Sin mapa aún)\nUsa las flechas para moverte', {
       font: '24px EB Garamond',
       color: '#D4AF37',
       align: 'center'
     }).setOrigin(0.5);
 
-    // Create a placeholder player (a simple colored box)
-    const graphics = this.add.graphics();
-    graphics.fillStyle(0x8B0000, 1);
-    graphics.fillRect(0, 0, 32, 48);
-    graphics.generateTexture('player_placeholder', 32, 48);
-    graphics.destroy();
+    // --- ANIMATIONS ---
+    const directions = ['down', 'left', 'right', 'up'];
+    
+    // Create Idle animations
+    directions.forEach(dir => {
+      this.anims.create({
+        key: `idle-${dir}`,
+        frames: this.anims.generateFrameNumbers(`idle_${dir}`, { start: 0, end: 7 }),
+        frameRate: 8,
+        repeat: -1
+      });
+    });
 
-    this.player = this.physics.add.sprite(400, 400, 'player_placeholder');
+    // Create Run animations
+    directions.forEach(dir => {
+      this.anims.create({
+        key: `run-${dir}`,
+        frames: this.anims.generateFrameNumbers(`run_${dir}`, { start: 0, end: 7 }),
+        frameRate: 12,
+        repeat: -1
+      });
+    });
+
+    // --- PLAYER SPRITE ---
+    this.player = this.physics.add.sprite(this.cameras.main.centerX, this.cameras.main.centerY, 'idle_down');
+    
+    // Scale up the pixel art slightly so it's not too small
+    this.player.setScale(1.5);
+    
+    // Set the collision box to be smaller than the 96x80 canvas (just the feet/body)
+    this.player.body.setSize(22, 34); 
+    this.player.body.setOffset(37, 46); // Adjust offset to center the hitbox on the sprite
+
     this.player.setCollideWorldBounds(true);
+    this.player.play('idle-down');
 
     if (this.input.keyboard) {
       this.cursors = this.input.keyboard.createCursorKeys();
@@ -119,19 +155,50 @@ class TavernScene extends Phaser.Scene {
   override update() {
     if (!this.isLoggedIn || !this.cursors) return;
 
-    const speed = 160;
+    const speed = 200;
     this.player.setVelocity(0);
 
-    if (this.cursors.left.isDown) {
-      this.player.setVelocityX(-speed);
-    } else if (this.cursors.right.isDown) {
-      this.player.setVelocityX(speed);
-    }
+    let isMoving = false;
+    let currentDir = 'down';
 
+    // Vertical movement
     if (this.cursors.up.isDown) {
       this.player.setVelocityY(-speed);
+      currentDir = 'up';
+      isMoving = true;
     } else if (this.cursors.down.isDown) {
       this.player.setVelocityY(speed);
+      currentDir = 'down';
+      isMoving = true;
+    }
+
+    // Horizontal movement
+    if (this.cursors.left.isDown) {
+      this.player.setVelocityX(-speed);
+      currentDir = 'left';
+      isMoving = true;
+    } else if (this.cursors.right.isDown) {
+      this.player.setVelocityX(speed);
+      currentDir = 'right';
+      isMoving = true;
+    }
+
+    // Normalize diagonal speed
+    this.player.body.velocity.normalize().scale(speed);
+
+    // Play appropriate animation
+    if (isMoving) {
+      // Prioritize horizontal animation if moving diagonally
+      if (this.player.body.velocity.x !== 0) {
+        currentDir = this.player.body.velocity.x < 0 ? 'left' : 'right';
+      }
+      
+      this.player.play(`run-${currentDir}`, true);
+      // Save last direction for idle state
+      this.player.setData('lastDir', currentDir);
+    } else {
+      const lastDir = this.player.getData('lastDir') || 'down';
+      this.player.play(`idle-${lastDir}`, true);
     }
   }
 }
