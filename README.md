@@ -26,12 +26,12 @@ El proyecto cuenta con una arquitectura robusta y características de vanguardia
 - **Motor de Inteligencia Artificial (Art-Engine):**
   - **Chat Contextual:** Integración con Google Gemini 2.0 para permitir a los usuarios conversar de forma natural con los avatares de los personajes (ej. El Principito), respetando su personalidad e historia.
   - **Reconocimiento de Voz (STT):** Dictado y transcripción por voz (Web Speech API) integrado en el chat para permitir una conversación bidireccional completamente hablada con los personajes.
-  - **Generación Automática:** Automatización de perfiles psicológicos, estilos de voz y sinopsis utilizando DeepSeek.
-  - **Síntesis de Voz (TTS):** Narraciones generadas dinámicamente con Piper TTS para dotar a cada personaje de una voz única y expresiva.
+  - **Generación Automática:** Automatización de perfiles psicológicos, estilos de voz y sinopsis utilizando modelos LLM.
+  - **Síntesis de Voz (TTS) Local:** Narraciones generadas dinámicamente con **Kokoro TTS** (ONNX Runtime Web), ejecutándose directamente en el navegador del usuario para dotar a cada personaje de una voz única y expresiva sin costo de servidor.
 - **Pasarela de Pago (Transbank):** Pagos reales integrados con Webpay Plus, manejando transacciones atómicas seguras (`select_for_update`) para la adquisición de obras y recargas de billetera.
 - **Sistema Económico (La Taberna):** Sistema de moneda virtual ("Tinta") que incentiva el uso de la plataforma, permite adquirir contenido premium y gestionar el inventario del usuario.
 - **Dashboard Administrativo (Literatus Nexus):** Panel de control exclusivo para la gestión de relaciones Libro-Autor, carga masiva de archivos EPUB, multimedia, administración del catálogo y un **Editor de Avatares** dedicado para cargar, recortar y asignar dinámicamente imágenes de perfil a personajes y autores.
-- **Diseño Premium UI/UX:** Interfaz desarrollada en Angular utilizando la estética *Glassmorphism*, modo oscuro (Dark Mode), tipografías modernas y animaciones fluidas para una experiencia de usuario de primera clase.
+- **Diseño Premium UI/UX:** Interfaz desarrollada en Angular utilizando la estética *Glassmorphism*, selector de temas dinámicos (Dark Mode, Clásico Esmeralda, Moderno), tipografías modernas y animaciones fluidas para una experiencia de usuario de primera clase.
 
 ---
 
@@ -39,8 +39,7 @@ El proyecto cuenta con una arquitectura robusta y características de vanguardia
 
 - **Fase 1-5:** Cimientos, API REST y Frontend Base.
 - **Fase 6:** Integración con Gemini 2.0 y Chat de Personajes.
-- **Fase 7:** Migración a Vista Detalle Full-Page y Rediseño Glassmorphism.
-- **Fase 8:** Implementación de Economía de Tinta, La Taberna y Estabilización de Sesión.
+- **Fase 7:** Migración a Vista Detalle Full-Page, Rediseño Glassmorphism, Selector de Temas, Integración STT y Kokoro TTS local.
 
 ---
 
@@ -49,6 +48,8 @@ El proyecto cuenta con una arquitectura robusta y características de vanguardia
 Aún existen áreas de crecimiento planeadas para completar el ciclo de vida del producto:
 
 - [ ] **Modo Offline PWA:** Habilitar Service Workers para descargar en caché los EPUBs y audios, permitiendo la lectura sin conexión a internet.
+- [ ] **Mundo Interactivo (La Taberna):** Implementación de un entorno RPG Top-Down multijugador con motor gráfico (Phaser) y sincronización en tiempo real para que los usuarios interactúen entre sí.
+- [ ] **Economía de Tinta:** Sistema de moneda virtual que incentiva el uso de la plataforma y permite adquirir contenido.
 - [ ] **Clubes de Lectura Sociales:** Espacios de debate o foros en tiempo real integrados en la plataforma para discutir sobre obras y capítulos específicos.
 - [ ] **Sistema de Logros y Misiones:** Profundizar la gamificación otorgando medallas por rachas diarias de lectura, páginas leídas y géneros explorados.
 - [ ] **Dashboard Analítico para Docentes/Editores:** Gráficos de retención de lectura, progreso de usuarios y métricas de interacción con la IA.
@@ -62,8 +63,8 @@ Aún existen áreas de crecimiento planeadas para completar el ciclo de vida del
 | :--- | :--- |
 | **Backend** | Python 3.13, Django 6.x, Django REST Framework |
 | **Base de Datos** | PostgreSQL (Arquitectura relacional 3NF, uso de UUIDs, Soft Delete) |
-| **Inteligencia Artificial** | Google Gemini 2.0 Flash, DeepSeek API, Whisper (OpenAI), Piper TTS, Web Speech API (STT) |
-| **Frontend** | Angular 18+, TypeScript, Vanilla CSS (Glassmorphism, variables CSS) |
+| **Inteligencia Artificial** | Google Gemini 2.0 Flash, Kokoro TTS (ONNX Runtime Web), Whisper (OpenAI), Web Speech API (STT) |
+| **Frontend** | Angular 18+, TypeScript, Vanilla CSS (Glassmorphism, variables CSS dinámicas) |
 | **Pagos y Seguridad** | SDK Transbank Webpay Plus, JWT (JSON Web Tokens), Transacciones Atómicas Db |
 
 ---
