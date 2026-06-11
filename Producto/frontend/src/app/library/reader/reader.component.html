@@ -439,7 +439,7 @@
               title="Pausar"
               style="position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
         <span *ngIf="currentAudioMode !== 'kokoro'">⏸</span>
-        <div *ngIf="currentAudioMode === 'kokoro'" #waveLottie class="lottie-theme-filter" style="position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; transform: translate(-42%, -50%) scale(1.4); display: flex; align-items: center; justify-content: center; transform-origin: 50% 50%;"></div>
+        <div *ngIf="currentAudioMode === 'kokoro'" #waveLottie class="lottie-theme-filter" style="position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; transform: translate(-32%, -50%) scale(1.5); display: flex; align-items: center; justify-content: center; transform-origin: 50% 50%;"></div>
       </button>
     </div>
 
@@ -659,7 +659,7 @@
       <span *ngIf="isAudioLoading || isKokoroProcessing" class="loader-spin">◷</span>
       
       <!-- Lottie Kokoro: Aparece como botón de pausa cuando Kokoro está hablando -->
-      <div *ngIf="!isAudioLoading && !isKokoroProcessing && currentAudioMode === 'kokoro' && (kokoroVoice.isSpeaking$ | async)" #waveLottieFab class="lottie-theme-filter" style="position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; transform: translate(-42%, -50%) scale(1.4); display: flex; align-items: center; justify-content: center; transform-origin: 50% 50%;"></div>
+      <div *ngIf="!isAudioLoading && !isKokoroProcessing && currentAudioMode === 'kokoro' && (kokoroVoice.isSpeaking$ | async)" #waveLottieFab class="lottie-theme-filter" style="position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; transform: translate(-32%, -50%) scale(1.5); display: flex; align-items: center; justify-content: center; transform-origin: 50% 50%;"></div>
     </button>
   </div>
 
