@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { ChatService, ChatMessage } from '../../core/services/chat.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PiperVoiceService } from '../../core/services/piper-voice.service';
+import { KokoroTtsService } from '../../core/services/kokoro-tts.service';
 
 @Component({
   selector: 'app-ai-chat',
@@ -12,7 +12,7 @@ export class AiChatComponent implements OnInit, AfterViewChecked {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   public chatService = inject(ChatService);
-  public piperVoice = inject(PiperVoiceService);
+  public kokoroVoice = inject(KokoroTtsService);
   
   @ViewChild('scrollMe') private myScrollContainer!: ElementRef;
 
@@ -27,10 +27,8 @@ export class AiChatComponent implements OnInit, AfterViewChecked {
   isWriting: boolean = false;
   realTimeVoiceActive: boolean = false;
 
-  // Observables para la UI
-  piperReady$ = this.piperVoice.isReady$;
-  piperProgress$ = this.piperVoice.loadProgress$;
-  piperSpeaking$ = this.piperVoice.isSpeaking$;
+  kokoroProcessing$ = this.kokoroVoice.isProcessing$;
+  kokoroSpeaking$ = this.kokoroVoice.isSpeaking$;
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
@@ -110,9 +108,6 @@ export class AiChatComponent implements OnInit, AfterViewChecked {
 
   async toggleVoice() {
     this.realTimeVoiceActive = !this.realTimeVoiceActive;
-    if (this.realTimeVoiceActive) {
-      await this.piperVoice.initModel();
-    }
   }
 
   sendMessage() {
@@ -126,7 +121,7 @@ export class AiChatComponent implements OnInit, AfterViewChecked {
       next: (res) => {
         this.isWriting = false;
         if (this.realTimeVoiceActive) {
-          this.piperVoice.speak(res.reply);
+          this.kokoroVoice.speak(res.reply, this.avatarId || 1);
         }
       },
       error: () => {

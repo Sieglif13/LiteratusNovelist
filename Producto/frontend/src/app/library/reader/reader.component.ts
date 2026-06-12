@@ -321,7 +321,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
       this.cdr.detectChanges();
     });
 
-    // Sincronizar Avatar animado con PiperVoice
+    // Sincronizar Avatar animado con KokoroVoice
     this.kokoroVoice.isSpeaking$.pipe(takeUntil(this.destroy$)).subscribe(isSpeaking => {
       this.isVideoSpeaking = isSpeaking;
       if (isSpeaking) {
@@ -355,7 +355,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
       this.cdr.detectChanges();
     });
 
-    // Resaltado: escuchar el word index del PiperVoice
+    // Resaltado: escuchar el word index del KokoroVoice
 
     this.kokoroVoice.currentWordIndex$.pipe(takeUntil(this.destroy$)).subscribe(idx => {
       if (this.currentAudioMode === 'kokoro' && !this.isChatOpen) {

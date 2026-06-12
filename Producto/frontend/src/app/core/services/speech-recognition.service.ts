@@ -1,6 +1,5 @@
 import { Injectable, NgZone } from '@angular/core';
 import { Subject, BehaviorSubject, Subscription } from 'rxjs';
-import { PiperVoiceService } from './piper-voice.service';
 import { KokoroTtsService } from './kokoro-tts.service';
 
 // Tipos para la API nativa del navegador
@@ -40,7 +39,6 @@ export class SpeechRecognitionService {
 
   constructor(
     private zone: NgZone,
-    private piperVoice: PiperVoiceService,
     private kokoroVoice: KokoroTtsService
   ) {
     this.checkPlatform();

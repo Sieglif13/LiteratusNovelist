@@ -34,15 +34,15 @@
       </div>
 
       <div class="chat-actions">
-        <!-- VOZ PIPER -->
+        <!-- VOZ KOKORO -->
         <div class="voice-control" [class.active]="realTimeVoiceActive">
           <button class="voice-btn" (click)="toggleVoice()"
             [title]="realTimeVoiceActive ? 'Desactivar voz' : 'Activar voz local'">
             <span class="icon">🔊</span>
           </button>
           <div class="piper-status" *ngIf="realTimeVoiceActive">
-            <span class="speaking-wave" *ngIf="piperSpeaking$ | async"></span>
-            <small *ngIf="(piperReady$ | async) === false">Cargando voz: {{ piperProgress$ | async }}%</small>
+            <span class="speaking-wave" *ngIf="kokoroSpeaking$ | async"></span>
+            <small *ngIf="kokoroProcessing$ | async">Procesando voz...</small>
           </div>
         </div>
       </div>
