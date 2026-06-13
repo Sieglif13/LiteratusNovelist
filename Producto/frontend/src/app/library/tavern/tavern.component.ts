@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
 import { ChatService } from '../../core/services/chat.service';
@@ -8,7 +8,7 @@ import { ChatService } from '../../core/services/chat.service';
   templateUrl: './tavern.component.html',
   styleUrls: ['./tavern.component.css']
 })
-export class TavernComponent implements OnInit {
+export class TavernComponent implements OnInit, AfterViewInit {
   private api = inject(ApiService);
   private chatService = inject(ChatService);
 
@@ -30,6 +30,14 @@ export class TavernComponent implements OnInit {
     if (this.isLoggedIn()) {
       this.fetchBalance();
     }
+  }
+
+  ngAfterViewInit(): void {
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } }),
+      { threshold: 0.12 }
+    );
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   }
 
   isLoggedIn(): boolean {
