@@ -69,6 +69,40 @@ Aún existen áreas de crecimiento planeadas para completar el ciclo de vida del
 
 ---
 
+## Arquitectura del Proyecto
+
+El proyecto sigue un patrón cliente-servidor desacoplado:
+1. **Frontend (SPA):** Construido en Angular, maneja el enrutamiento del lado del cliente, el renderizado de la UI, el estado global (servicios) y la ejecución de modelos locales en el navegador (Kokoro TTS).
+2. **Backend (API RESTful):** Desarrollado en Django y Django REST Framework, provee servicios web, persistencia de datos y se comunica con servicios externos (Gemini AI, Transbank).
+3. **Almacenamiento (Supabase/PostgreSQL):** La base de datos relacional aloja a usuarios, catálogo de libros, perfiles de IA, registros de tinta y datos de transacciones. Los archivos multimedia (Carátulas, EPUBs, Avatares) se gestionan mediante Storage en la nube.
+
+---
+
+## Endpoints de la API (Principales)
+
+El Backend expone una API REST para el consumo del Frontend. Algunos de los endpoints críticos incluyen:
+
+### Autenticación y Usuarios
+- `POST /api/users/register/`: Registro de nuevos usuarios y asignación de tinta inicial.
+- `POST /api/users/login/`: Autenticación y generación de JWT.
+- `GET /api/users/me/`: Obtiene el perfil del usuario autenticado, incluyendo su balance de Tinta.
+
+### Catálogo y Biblioteca
+- `GET /api/catalog/books/`: Lista los libros disponibles en la tienda (soporta filtros y paginación).
+- `GET /api/catalog/books/{slug}/`: Detalles de un libro específico (incluye metadatos para el EPUB).
+- `GET /api/catalog/books/recommendations/`: Libros recomendados basados en el historial del usuario.
+- `GET /api/catalog/characters/`: Lista todos los personajes de IA disponibles para interactuar.
+
+### Integración de IA (Chat)
+- `POST /api/ai/chat/`: Recibe un prompt del usuario y retorna una respuesta generada por Gemini respetando el `system_prompt` del personaje seleccionado.
+
+### Economía y Pagos
+- `POST /api/economy/ink-packages/`: Lista los paquetes de Tinta disponibles para compra.
+- `POST /api/economy/purchase-ink/`: Inicia una transacción con Transbank Webpay para recargar Tinta.
+- `POST /api/economy/buy-book/`: Deduce Tinta del balance del usuario y otorga acceso al libro o personaje seleccionado, utilizando `select_for_update` para evitar condiciones de carrera.
+
+---
+
 ## Estructura del Repositorio
 
 Cumpliendo con los estándares académicos y organizativos requeridos, el repositorio se divide en tres áreas:
