@@ -1258,3 +1258,29 @@
   letter-spacing: 0.06em;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE FIXES (Global & Chat Demo)
+═══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .chat-demo-section {
+    padding: 2rem 4vw 2rem;
+  }
+  .chat-demo-window {
+    min-height: 280px; /* Da más espacio vertical a los textos de la IA */
+    padding: 1.5rem 1rem 3rem;
+  }
+  .chat-conv {
+    inset: 1.5rem 1rem 3rem;
+  }
+  .chat-bubble {
+    max-width: 95%; /* Que los globos ocupen más ancho en celular */
+    padding: 0.75rem 1rem;
+    font-size: 0.88rem;
+  }
+  .char-bubble-body {
+    font-size: 0.85rem;
+  }
+  .char-avatar {
+    font-size: 20px !important; /* Material symbols size fix */
+  }
+}
