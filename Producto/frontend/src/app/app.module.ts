@@ -23,7 +23,6 @@ import { PaymentSuccessComponent } from './catalog/payment-success/payment-succe
 import { PaymentFailureComponent } from './catalog/payment-failure/payment-failure.component';
 import { LibraryListComponent } from './library/library-list/library-list.component';
 import { CharacterHubComponent } from './characters/character-hub/character-hub.component';
-import { TavernDialogComponent } from './library/tavern-dialog/tavern-dialog.component';
 import { AudioVisualizerComponent } from './core/components/audio-visualizer/audio-visualizer.component';
 
 import { MatMenuModule } from '@angular/material/menu';
@@ -56,7 +55,6 @@ import { DiscoverComponent } from './discover/discover.component';
     PaymentFailureComponent,
     LibraryListComponent,
     CharacterHubComponent,
-    TavernDialogComponent,
     ProfileComponent,
     AuthorListComponent,
     AudioVisualizerComponent,

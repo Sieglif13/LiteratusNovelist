@@ -99,29 +99,34 @@
   100% { transform: translateY(-10vh)  scale(1.2); opacity: 0; }
 }
 
-/* ── Fábrica de tinta (esquina) ─────────────────────────── */
-.ink-factory-container {
-  position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
-  z-index: 10;
-  pointer-events: none;
-}
-
+/* ── Fábrica de tinta (inline en el hero) ──────────────── */
 .ink-factory-sprite {
-  width: 220px;
-  height: 220px;
+  width: 120px;
+  height: 120px;
   background-image: url('/assets/sprites/factories/Alchemy_Table_03.gif');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  filter: drop-shadow(0 0 18px rgba(201,168,76,0.35));
+  filter: drop-shadow(0 0 14px rgba(201,168,76,0.35));
   animation: floatFactory 5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+/* La de la derecha se voltea como espejo */
+.ink-factory-sprite--mirror {
+  transform: scaleX(-1);
 }
 
 @keyframes floatFactory {
   0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(-10px); }
+  50%       { transform: translateY(-8px); }
+}
+.ink-factory-sprite--mirror {
+  animation: floatFactoryMirror 5s ease-in-out infinite;
+}
+@keyframes floatFactoryMirror {
+  0%, 100% { transform: scaleX(-1) translateY(0); }
+  50%       { transform: scaleX(-1) translateY(-8px); }
 }
 
 /* ── Scroll reveal ──────────────────────────────────────── */
@@ -150,10 +155,19 @@
 .hero-section {
   text-align: center;
   padding: 3rem 1rem 2.5rem;
-  max-width: 760px;
+  max-width: 960px;
   margin: 0 auto 2rem;
   /* Override reveal para que el hero tenga su propia animación */
   transition-delay: 0.1s;
+}
+
+.hero-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
 }
 
 .hero-eyebrow {
