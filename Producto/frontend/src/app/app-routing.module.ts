@@ -26,7 +26,7 @@ import { DiscoverComponent } from './discover/discover.component';
 
 const routes: Routes = [
   { path: 'home', component: HomeComponent },
-  { path: 'tavern', component: TavernComponent, canActivate: [authGuard] },
+  { path: 'tavern', component: TavernComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },

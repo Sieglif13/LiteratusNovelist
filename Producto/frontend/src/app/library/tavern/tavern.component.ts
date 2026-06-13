@@ -1,4 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
 import { ChatService } from '../../core/services/chat.service';
 
@@ -23,8 +24,16 @@ export class TavernComponent implements OnInit {
     { title: 'Cofre de Maestro', amount: 5000, price: '$14.990', icon: 'crown', color: '#ffd700' }
   ];
 
+  private router = inject(Router);
+
   ngOnInit(): void {
-    this.fetchBalance();
+    if (this.isLoggedIn()) {
+      this.fetchBalance();
+    }
+  }
+
+  isLoggedIn(): boolean {
+    return !!localStorage.getItem('access_token');
   }
 
   fetchBalance(): void {
@@ -33,6 +42,9 @@ export class TavernComponent implements OnInit {
         this.inkBalance = res.ink_balance;
         this.chatService.updateInkBalance(this.inkBalance);
         this.animateOdometer();
+      },
+      error: () => {
+        console.warn('Usuario no autenticado o error al obtener balance');
       }
     });
   }
@@ -61,6 +73,11 @@ export class TavernComponent implements OnInit {
   }
 
   watchAd(): void {
+    if (!this.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     if (this.adLoading) return;
 
     this.adLoading = true;
@@ -90,6 +107,10 @@ export class TavernComponent implements OnInit {
   }
 
   buyChest(chest: any): void {
+    if (!this.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
     alert(`Redirigiendo a pasarela de pago para el ${chest.title}...`);
   }
 }
