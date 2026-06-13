@@ -112,7 +112,49 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // Las animaciones se inicializan en los setters de ViewChild
+    // Scroll reveal para todas las secciones
+    const revealObserver = new IntersectionObserver(
+      (entries) => entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('visible'); revealObserver.unobserve(e.target); }
+      }),
+      { threshold: 0.1 }
+    );
+    document.querySelectorAll('.reveal-section').forEach(el => revealObserver.observe(el));
+
+    // Animación de contadores de stats
+    const statsObserver = new IntersectionObserver(
+      (entries) => entries.forEach(e => {
+        if (e.isIntersecting) {
+          this.animateCounters();
+          statsObserver.unobserve(e.target);
+        }
+      }),
+      { threshold: 0.5 }
+    );
+    const statsEl = document.querySelector('.stats-section');
+    if (statsEl) statsObserver.observe(statsEl);
+  }
+
+  private animateCounters(): void {
+    const counters = [
+      { id: 'stat-books', target: 500 },
+      { id: 'stat-chars', target: 2000 },
+      { id: 'stat-convs', target: 50000 },
+      { id: 'stat-authors', target: 100 }
+    ];
+    counters.forEach(({ id, target }) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const duration = 1800;
+      const start = performance.now();
+      const update = (now: number) => {
+        const progress = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.floor(ease * target).toLocaleString('es-CL');
+        if (progress < 1) requestAnimationFrame(update);
+      };
+      requestAnimationFrame(update);
+    });
   }
 
   ngOnDestroy(): void {

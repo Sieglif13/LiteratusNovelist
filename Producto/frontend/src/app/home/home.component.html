@@ -1,7 +1,7 @@
 <div class="home-wrapper">
 
   <!-- ═══════════════════════════════════════════════════════════
-       HERO SECTION
+       1. HERO SECTION
   ═══════════════════════════════════════════════════════════ -->
   <header class="hero-section">
     <div class="hero-bg-particles">
@@ -13,24 +13,81 @@
         <span class="glow-span">Vívela.</span>
       </h1>
       <p class="hero-subheadline">
-        Explora clásicos inmortales y conversa con sus personajes mediante IA en tiempo real.
+        Explora los grandes clásicos de la literatura universal y conversa con sus personajes mediante inteligencia artificial en tiempo real.
       </p>
       <div class="hero-ctas">
-        <a routerLink="/catalog" class="cta-primary">
-          Explorar Tienda
+        <a routerLink="/catalog" class="cta-primary" id="hero-cta-explore">
+          Explorar Historias
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M5 12h14M12 5l7 7-7 7" />
           </svg>
         </a>
-        <a routerLink="/catalog/authors" class="cta-ghost">Explorar Nuestros Autores</a>
+        <a routerLink="/characters" class="cta-ghost cta-ghost--ai" id="hero-cta-characters">
+          <span class="cta-ai-dot"></span>
+          Hablar con Personajes
+        </a>
       </div>
     </div>
     <div class="hero-visual">
-      <!-- Reemplazo temporal de vuelta al mago Lottie por emergencia -->
-      <div class="hero-lottie-container" #readingContainer>
-      </div>
+      <div class="hero-lottie-container" #readingContainer></div>
     </div>
   </header>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       2. DEMO DE CHAT IA (diferencial inmediato)
+  ═══════════════════════════════════════════════════════════ -->
+  <section class="chat-demo-section reveal-section" aria-label="Demostración de chat con personajes">
+    <div class="chat-demo-inner">
+      <div class="chat-demo-label">
+        <span class="pulse-dot-sm"></span>
+        <span>IA en tiempo real</span>
+      </div>
+      <h2 class="chat-demo-title">Conversa con los grandes personajes</h2>
+      <p class="chat-demo-sub">Así es como se siente leer en Literatus.</p>
+
+      <div class="chat-demo-window">
+        <!-- Conversación 1: Don Quijote -->
+        <div class="chat-conv chat-conv-1">
+          <div class="chat-bubble chat-bubble--user">¿Por qué luchas contra molinos?</div>
+          <div class="chat-bubble chat-bubble--char">
+            <span class="char-avatar">🗡</span>
+            <div class="char-bubble-body">
+              <span class="char-name">Don Quijote</span>
+              Porque donde otros ven molinos, yo veo gigantes. El valor no reside en la victoria, sino en no bajar la espada.
+            </div>
+          </div>
+        </div>
+        <!-- Conversación 2: Drácula -->
+        <div class="chat-conv chat-conv-2">
+          <div class="chat-bubble chat-bubble--user">¿Temes a la eternidad?</div>
+          <div class="chat-bubble chat-bubble--char">
+            <span class="char-avatar">🧛</span>
+            <div class="char-bubble-body">
+              <span class="char-name">Drácula</span>
+              La eternidad es un castigo más cruel que la muerte. Cuando conoces a todos los seres que han existido, la soledad se vuelve infinita.
+            </div>
+          </div>
+        </div>
+        <!-- Conversación 3: Sherlock Holmes -->
+        <div class="chat-conv chat-conv-3">
+          <div class="chat-bubble chat-bubble--user">¿Cómo resuelves un misterio?</div>
+          <div class="chat-bubble chat-bubble--char">
+            <span class="char-avatar">🔍</span>
+            <div class="char-bubble-body">
+              <span class="char-name">Sherlock Holmes</span>
+              Eliminadas todas las imposibilidades, lo que queda, por improbable que sea, debe ser la verdad. La lógica no falla jamás.
+            </div>
+          </div>
+        </div>
+        <!-- Dots indicadores -->
+        <div class="chat-dots">
+          <span class="ch-dot ch-dot-1"></span>
+          <span class="ch-dot ch-dot-2"></span>
+          <span class="ch-dot ch-dot-3"></span>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- Loading State -->
   <div class="loading-skeleton" *ngIf="isLoading">
@@ -42,13 +99,93 @@
   <ng-container *ngIf="!isLoading">
 
     <!-- ═══════════════════════════════════════════════════════════
-         SECCIÓN: TENDENCIAS DE LECTURA (Movido aquí)
+         3. SECCIÓN IA – PERSONAJES (movida al tope)
     ═══════════════════════════════════════════════════════════ -->
-    <section class="trending-section" *ngIf="trendingBooks.length > 0">
+    <section class="characters-feature-section reveal-section">
+      <div class="section-header characters-header">
+        <div class="char-header-left">
+          <div class="char-label-pill">
+            <span class="pulse-dot"></span>
+            IA Activa
+          </div>
+          <h2 class="section-title">Conversa con los Personajes</h2>
+          <p class="char-subtitle">Estos libros tienen inteligencia artificial integrada. Lee y chatea con sus personajes en tiempo real.</p>
+        </div>
+        <a routerLink="/characters" class="char-see-all">Ver todos los personajes →</a>
+      </div>
+
+      <div class="char-carousel-track">
+        <div class="char-book-card" *ngFor="let book of featuredWithCharacters; let i = index"
+             (click)="goToCharBook(book.slug)">
+          <div class="char-cover-wrap">
+            <img [src]="book.cover" [alt]="book.title" class="char-cover-img" loading="lazy"
+                 onerror="this.src='assets/default_cover.jpg'">
+            <div class="char-cover-overlay">
+              <button class="char-cta-btn">Abrir libro →</button>
+            </div>
+            <div class="ia-badge">
+              <span class="ia-dot"></span>
+              <span>IA Activa</span>
+            </div>
+          </div>
+          <div class="char-book-meta">
+            <h3 class="char-book-title">{{ book.title }}</h3>
+            <p class="char-book-author">{{ book.author }}</p>
+            <span class="char-genre-tag">{{ book.genre }}</span>
+            <div class="char-count-chip">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/></svg>
+              {{ book.characterCount }} personajes IA
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         4. ¿CÓMO FUNCIONA?
+    ═══════════════════════════════════════════════════════════ -->
+    <section class="how-it-works-section reveal-section" aria-label="¿Cómo funciona Literatus?">
+      <div class="section-header" style="text-align:center; justify-content:center;">
+        <h2 class="section-title">¿Cómo funciona?</h2>
+      </div>
+      <div class="how-steps">
+        <div class="how-step" id="step-1">
+          <div class="how-step-num">01</div>
+          <div class="how-step-icon">📖</div>
+          <h3 class="how-step-title">Escoge un libro</h3>
+          <p class="how-step-desc">Explora nuestra biblioteca de clásicos universales y elige tu próxima aventura.</p>
+        </div>
+        <div class="how-connector" aria-hidden="true"></div>
+        <div class="how-step" id="step-2">
+          <div class="how-step-num">02</div>
+          <div class="how-step-icon">✨</div>
+          <h3 class="how-step-title">Comienza a leer</h3>
+          <p class="how-step-desc">Sumérgete en la historia con una experiencia de lectura inmersiva y fluida.</p>
+        </div>
+        <div class="how-connector" aria-hidden="true"></div>
+        <div class="how-step" id="step-3">
+          <div class="how-step-num">03</div>
+          <div class="how-step-icon">💬</div>
+          <h3 class="how-step-title">Habla con los personajes</h3>
+          <p class="how-step-desc">Activa la IA y conversa directamente con los protagonistas de la historia.</p>
+        </div>
+        <div class="how-connector" aria-hidden="true"></div>
+        <div class="how-step" id="step-4">
+          <div class="how-step-num">04</div>
+          <div class="how-step-icon">🌟</div>
+          <h3 class="how-step-title">Descubre perspectivas</h3>
+          <p class="how-step-desc">Cada conversación revela secretos, rutas alternativas y finales inesperados.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         5. TENDENCIAS
+    ═══════════════════════════════════════════════════════════ -->
+    <section class="trending-section reveal-section" *ngIf="trendingBooks.length > 0">
       <div class="section-header">
         <h2 class="section-title"><svg lucideFlame [size]="28" class="lucide-icon" style="color: #f97316; margin-right: 8px;"></svg> Tendencias</h2>
       </div>
-
       <div class="trending-track">
         <div class="trending-card" *ngFor="let book of trendingBooks; trackBy: trackBySlug"
           (click)="goToBook(book.slug)">
@@ -71,13 +208,12 @@
     </section>
 
     <!-- ═══════════════════════════════════════════════════════════
-         SECCIÓN: RECOMENDADOS PARA TI (Sistema Inteligente)
+         6. RECOMENDADOS
     ═══════════════════════════════════════════════════════════ -->
-    <section class="recommended-section" *ngIf="recommendedBooks.length > 0">
+    <section class="recommended-section reveal-section" *ngIf="recommendedBooks.length > 0">
       <div class="section-header">
         <h2 class="section-title"><svg lucideStar [size]="28" class="lucide-icon" style="color: #eab308; margin-right: 8px;"></svg> Recomendados</h2>
       </div>
-
       <div class="recommended-track">
         <div class="recommended-card" *ngFor="let book of recommendedBooks; trackBy: trackBySlug"
           (click)="goToBook(book.slug)">
@@ -95,15 +231,42 @@
     </section>
 
     <!-- ═══════════════════════════════════════════════════════════
-       BANNER DECORATIVO: Lottie "librito" + Frase Inspiradora
-  ═══════════════════════════════════════════════════════════ -->
-    <section class="inspirational-banner">
-      <div class="saludo-container" #saludoContainer>
+         7. ESTADÍSTICAS / PRUEBA SOCIAL
+    ═══════════════════════════════════════════════════════════ -->
+    <section class="stats-section reveal-section" aria-label="Estadísticas de la plataforma">
+      <div class="stats-grid">
+        <div class="stat-item" data-target="500">
+          <span class="stat-number" id="stat-books">0</span>
+          <span class="stat-plus">+</span>
+          <span class="stat-label">Libros</span>
+        </div>
+        <div class="stat-item" data-target="2000">
+          <span class="stat-number" id="stat-chars">0</span>
+          <span class="stat-plus">+</span>
+          <span class="stat-label">Personajes</span>
+        </div>
+        <div class="stat-item" data-target="50000">
+          <span class="stat-number" id="stat-convs">0</span>
+          <span class="stat-plus">+</span>
+          <span class="stat-label">Conversaciones</span>
+        </div>
+        <div class="stat-item" data-target="100">
+          <span class="stat-number" id="stat-authors">0</span>
+          <span class="stat-plus">+</span>
+          <span class="stat-label">Autores</span>
+        </div>
       </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         8. HISTORIAS QUE COBRAN VIDA (banner inspiracional)
+    ═══════════════════════════════════════════════════════════ -->
+    <section class="inspirational-banner reveal-section">
+      <div class="saludo-container" #saludoContainer></div>
       <div class="banner-text">
         <blockquote class="banner-quote">
-          "Un lector vive mil vidas antes de morir.<br>
-          <span class="quote-sub">El que nunca lee, vive sólo una."</span>
+          "No solo leas lo que ocurrió.<br>
+          <span class="quote-sub">Pregunta a los protagonistas por qué ocurrió."</span>
         </blockquote>
         <p class="banner-desc">
           En <strong>Literatus Novelist</strong> cada libro es un portal. Lee, escucha y conversa
@@ -113,66 +276,18 @@
     </section>
 
     <!-- ═══════════════════════════════════════════════════════════
-         SECCIÓN: CON PERSONAJES IA (Libros con Avatares Activos)
+         9. DESCUBRIMIENTO
     ═══════════════════════════════════════════════════════════ -->
-    <section class="characters-feature-section">
-      <div class="section-header characters-header">
-        <div class="char-header-left">
-          <div class="char-label-pill">
-            <span class="pulse-dot"></span>
-            IA Activa
-          </div>
-          <h2 class="section-title">Conversa con los Personajes</h2>
-          <p class="char-subtitle">Estos libros tienen inteligencia artificial integrada. Lee y chatea con sus personajes en tiempo real.</p>
-        </div>
-        <a routerLink="/characters" class="char-see-all">Ver todos los personajes →</a>
-      </div>
-
-      <div class="char-carousel-track">
-        <div class="char-book-card" *ngFor="let book of featuredWithCharacters; let i = index"
-             (click)="goToCharBook(book.slug)">
-          <div class="char-cover-wrap">
-            <img [src]="book.cover" [alt]="book.title" class="char-cover-img" loading="lazy"
-                 onerror="this.src='assets/default_cover.jpg'">
-            <div class="char-cover-overlay">
-              <button class="char-cta-btn">Abrir libro →</button>
-            </div>
-            <!-- Badge IA -->
-            <div class="ia-badge">
-              <span class="ia-dot"></span>
-              <span>IA Activa</span>
-            </div>
-          </div>
-          <div class="char-book-meta">
-            <h3 class="char-book-title">{{ book.title }}</h3>
-            <p class="char-book-author">{{ book.author }}</p>
-            <span class="char-genre-tag">{{ book.genre }}</span>
-            <div class="char-count-chip">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/></svg>
-              {{ book.characterCount }} personajes IA
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ═══════════════════════════════════════════════════════════
-         SECCIÓN: DESCUBRIMIENTO (Botón + Carrusel Aleatorio)
-    ═══════════════════════════════════════════════════════════ -->
-    <section class="discovery-section">
+    <section class="discovery-section reveal-section">
       <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 2rem;">
         <div style="display: flex; flex-direction: column;">
           <h2 class="section-title" style="margin-bottom: 5px;"><span class="material-symbols-rounded" style="color: #3b82f6; font-size: 32px; margin-right: 8px; vertical-align: middle;">explore</span> Descubrimiento</h2>
           <span class="explore-hint" style="color: var(--text-muted); font-size: 0.95rem; font-style: italic; margin-left: 40px;">Explora todo aquí ➔</span>
         </div>
         <div class="explore-action-container">
-          <a routerLink="/catalog" class="cta-primary" style="margin: 0;">
-            Explorar Tienda
-          </a>
+          <a routerLink="/catalog" class="cta-primary" style="margin: 0;">Explorar Tienda</a>
         </div>
       </div>
-
-      <!-- Carrusel Aleatorio (Reutiliza el diseño de trending-track) -->
       <div class="trending-track" *ngIf="randomDiscoveryBooks.length > 0">
         <div class="trending-card" *ngFor="let book of randomDiscoveryBooks; trackBy: trackBySlug"
           (click)="goToBook(book.slug)">
@@ -191,6 +306,29 @@
             </div>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         10. CTA TABERNA – Puente hacia compra de tinta
+    ═══════════════════════════════════════════════════════════ -->
+    <section class="ink-cta-section reveal-section" aria-label="Consigue más tinta">
+      <div class="ink-cta-inner">
+        <div class="ink-cta-glow" aria-hidden="true"></div>
+        <p class="ink-cta-eyebrow">
+          <span class="ink-cta-dot"></span>
+          Taberna de Tinta
+        </p>
+        <h2 class="ink-cta-title">¿Necesitas más Tinta?</h2>
+        <p class="ink-cta-sub">
+          Obtén recursos para seguir conversando con tus personajes favoritos<br>y continuar tu aventura literaria.
+        </p>
+        <a routerLink="/tavern" class="cta-primary ink-cta-btn" id="home-tavern-cta">
+          Visitar la Taberna
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </a>
       </div>
     </section>
 
