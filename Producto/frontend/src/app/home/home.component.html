@@ -18,9 +18,7 @@
       <div class="hero-ctas">
         <a routerLink="/catalog" class="cta-primary" id="hero-cta-explore">
           Explorar Historias
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M5 12h14M12 5l7 7-7 7" />
-          </svg>
+          <span class="material-symbols-rounded" style="font-size:20px;">arrow_forward</span>
         </a>
         <a routerLink="/characters" class="cta-ghost cta-ghost--ai" id="hero-cta-characters">
           <span class="cta-ai-dot"></span>
@@ -133,7 +131,7 @@
             <p class="char-book-author">{{ book.author }}</p>
             <span class="char-genre-tag">{{ book.genre }}</span>
             <div class="char-count-chip">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0 1 12 0v2"/></svg>
+              <span class="material-symbols-rounded" style="font-size:14px;">person</span>
               {{ book.characterCount }} personajes IA
             </div>
           </div>
@@ -184,7 +182,7 @@
     ═══════════════════════════════════════════════════════════ -->
     <section class="trending-section reveal-section" *ngIf="trendingBooks.length > 0">
       <div class="section-header">
-        <h2 class="section-title"><svg lucideFlame [size]="28" class="lucide-icon" style="color: #f97316; margin-right: 8px;"></svg> Tendencias</h2>
+        <h2 class="section-title"><span class="material-symbols-rounded" style="color: #f97316; font-size: 28px; margin-right: 8px; vertical-align: middle;">local_fire_department</span> Tendencias</h2>
       </div>
       <div class="trending-track">
         <div class="trending-card" *ngFor="let book of trendingBooks; trackBy: trackBySlug"
@@ -212,7 +210,7 @@
     ═══════════════════════════════════════════════════════════ -->
     <section class="recommended-section reveal-section" *ngIf="recommendedBooks.length > 0">
       <div class="section-header">
-        <h2 class="section-title"><svg lucideStar [size]="28" class="lucide-icon" style="color: #eab308; margin-right: 8px;"></svg> Recomendados</h2>
+        <h2 class="section-title"><span class="material-symbols-rounded" style="color: #eab308; font-size: 28px; margin-right: 8px; vertical-align: middle;">star</span> Recomendados</h2>
       </div>
       <div class="recommended-track">
         <div class="recommended-card" *ngFor="let book of recommendedBooks; trackBy: trackBySlug"
@@ -325,9 +323,7 @@
         </p>
         <a routerLink="/tavern" class="cta-primary ink-cta-btn" id="home-tavern-cta">
           Visitar la Taberna
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M5 12h14M12 5l7 7-7 7" />
-          </svg>
+          <span class="material-symbols-rounded" style="font-size:18px;">arrow_forward</span>
         </a>
       </div>
     </section>

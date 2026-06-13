@@ -10,12 +10,12 @@
 ═══════════════════════════════════════════ */
 .hero-section {
   position: relative;
-  min-height: auto; /* Reducido para evitar el gap */
+  min-height: auto;
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
   gap: 3rem;
-  padding: 4rem 6vw 2rem; /* Ajustado el padding vertical */
+  padding: 1.5rem 6vw 2rem; /* Reducido para eliminar el gap con el navbar */
   overflow: hidden;
 }
 
