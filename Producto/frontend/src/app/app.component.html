@@ -20,7 +20,7 @@
       <li><a routerLink="/categories" routerLinkActive="active-link" (click)="menuOpen = false">Categorías</a></li>
       <li><a routerLink="/authors" routerLinkActive="active-link" (click)="menuOpen = false">Autores</a></li>
       <li><a routerLink="/characters" routerLinkActive="active-link" (click)="menuOpen = false">Personajes</a></li>
-      <li><a routerLink="/tavern" routerLinkActive="active-link" (click)="menuOpen = false">La Taberna 🍻</a></li>
+      <li><a routerLink="/tavern" routerLinkActive="active-link" (click)="menuOpen = false">La Taberna</a></li>
       <li *ngIf="isLoggedIn"><a routerLink="/library" routerLinkActive="active-link" (click)="menuOpen = false">Mi Biblioteca</a></li>
 
       <li *ngIf="!isLoggedIn" class="auth-btn"><a routerLink="/login" (click)="menuOpen = false">Login</a></li>

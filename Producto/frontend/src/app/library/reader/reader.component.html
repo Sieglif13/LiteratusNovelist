@@ -452,7 +452,7 @@
   <!-- ═══════════════════════════════════════════════════════════════ -->
   <!-- LIENZO DE LECTURA (renderizado nativo Angular para highlighting) -->
   <!-- ═══════════════════════════════════════════════════════════════ -->
-  <main class="reading-canvas html-reader" [ngClass]="'font-' + currentFontFamily" (scroll)="onCanvasScroll($event)" (click)="onCanvasClick($event)">
+  <main class="reading-canvas html-reader" [ngClass]="'font-' + currentFontFamily" [class.tap-to-scroll-active]="tapToScrollActive" (scroll)="onCanvasScroll($event)" (click)="onCanvasClick($event)">
     <!-- Título principal del capítulo -->
     <!-- Título principal del capítulo con soporte para highlighting -->
     <h1 class="chapter-title-main">

@@ -61,8 +61,80 @@ export class TavernComponent implements OnInit, AfterViewInit, OnDestroy {
     this.game.scene.add('TavernScene', TavernScene, true, { 
       isLoggedIn: this.isLoggedIn,
       multiplayerService: this.multiplayerService,
-      userId: this.authService.currentUser()?.id || 'anonymous'
+      userId: this.authService.currentUser()?.id || 'anonymous',
+      onSocratesInteract: () => this.openSocratesChat()
     });
+  }
+
+  // --- LOGICA DEL CHAT CON SOCRATES (MVP) ---
+  isChatOpen = false;
+  chatMessages: {sender: string, text: string}[] = [];
+  currentMessage = '';
+  isWaitingResponse = false;
+  
+  openSocratesChat() {
+    if (!this.isChatOpen) {
+      this.isChatOpen = true;
+      if (this.chatMessages.length === 0) {
+        this.chatMessages.push({ sender: 'Socrates', text: '¡Ho ho ho! Digo... ¡Saludos, viajero! Soy Sócrates. ¿De qué deseas conversar hoy? (Cuesta 5 💧 de Tinta)' });
+        this.speakSanta('¡Ho ho ho! Saludos, viajero. Soy Sócrates. ¿De qué deseas conversar hoy?');
+      }
+    }
+  }
+
+  closeChat() {
+    this.isChatOpen = false;
+  }
+
+  sendMessage(event?: Event) {
+    if (event) event.preventDefault();
+    if (!this.currentMessage.trim() || this.isWaitingResponse) return;
+
+    // Aquí deducimos la tinta (Simulación)
+    const user = this.authService.currentUser();
+    // Lo ideal es llamar a un endpoint, pero simulamos aquí para el MVP.
+    const cost = 5; 
+    
+    // Si no tiene tinta, mostraríamos un error. Asumimos que sí para el MVP.
+    // this.authService.deductInk(cost) ...
+
+    this.chatMessages.push({ sender: 'You', text: this.currentMessage });
+    const userText = this.currentMessage;
+    this.currentMessage = '';
+    this.isWaitingResponse = true;
+
+    // Simular llamada a la IA de Sócrates
+    setTimeout(() => {
+      this.isWaitingResponse = false;
+      const resp = `Interesante punto sobre "${userText}". ¡Jo jo jo! La verdadera sabiduría está en reconocer la propia ignorancia... ¡y en los regalos de Navidad!`;
+      this.chatMessages.push({ sender: 'Socrates', text: resp });
+      this.speakSanta(resp);
+      
+      // Auto-scroll the chat
+      setTimeout(() => {
+        const chatBox = document.querySelector('.chat-messages');
+        if (chatBox) chatBox.scrollTop = chatBox.scrollHeight;
+      }, 50);
+    }, 1500);
+  }
+
+  speakSanta(text: string) {
+    if ('speechSynthesis' in window) {
+      // Cancelar cualquier síntesis anterior
+      window.speechSynthesis.cancel();
+      
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'es-ES';
+      utterance.pitch = 0.3; // Voz grave tipo Santa
+      utterance.rate = 0.85; // Habla un poco más pausado
+      
+      // Buscar una voz masculina profunda si es posible
+      const voices = window.speechSynthesis.getVoices();
+      const maleVoice = voices.find(v => v.name.includes('Google español') || v.name.includes('Microsoft Pablo') || v.lang === 'es-ES');
+      if (maleVoice) utterance.voice = maleVoice;
+
+      window.speechSynthesis.speak(utterance);
+    }
   }
 }
 
@@ -76,11 +148,19 @@ class TavernScene extends Phaser.Scene {
   private userId!: string;
   private otherPlayers: Map<string, Phaser.Types.Physics.Arcade.SpriteWithDynamicBody> = new Map();
   private lastBroadcastTime = 0;
+  
+  // Socrates properties
+  private socrates!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
+  private interactionPrompt!: Phaser.GameObjects.Text;
+  private spaceKey!: Phaser.Input.Keyboard.Key;
+  private onSocratesInteract!: () => void;
+  private isNearSocrates = false;
 
-  init(data: { isLoggedIn: boolean, multiplayerService: MultiplayerService, userId: string }) {
+  init(data: { isLoggedIn: boolean, multiplayerService: MultiplayerService, userId: string, onSocratesInteract: () => void }) {
     this.isLoggedIn = data.isLoggedIn;
     this.multiplayerService = data.multiplayerService;
     this.userId = data.userId;
+    this.onSocratesInteract = data.onSocratesInteract;
   }
 
   constructor() {
@@ -112,6 +192,9 @@ class TavernScene extends Phaser.Scene {
     this.load.image('Vegetation', 'assets/sprites/tavern/Environment/Props/Static/Vegetation.png');
     this.load.image('Dungeon_Props', 'assets/sprites/tavern/Environment/Props/Static/Dungeon_Props.png');
     this.load.image('Rocks', 'assets/sprites/tavern/Environment/Props/Static/Rocks.png');
+    
+    // Música de taberna (placeholder)
+    this.load.audio('tavern_music', 'https://actions.google.com/sounds/v1/water/rain_on_roof.ogg'); // Reemplazar con MP3 real de taberna
   }
 
   create() {
@@ -159,6 +242,12 @@ class TavernScene extends Phaser.Scene {
       this.collisionLayer = layer1;
     }
 
+    // Play Tavern Music (loop)
+    try {
+      const music = this.sound.add('tavern_music', { loop: true, volume: 0.3 });
+      music.play();
+    } catch (e) { console.error("Could not play tavern music", e); }
+
     // Set world physics and camera bounds based on scaled map size
     const mapWidth = map.widthInPixels * mapScale;
     const mapHeight = map.heightInPixels * mapScale;
@@ -195,10 +284,10 @@ class TavernScene extends Phaser.Scene {
     // Scale up the pixel art slightly so it's not too small
     this.player.setScale(1.5);
     
-    // Hacemos que la caja de colisión sea SOLO los pies del personaje (un cuadrito pequeño).
-    // Así puede "asomar" la cabeza por encima de las mesas y acercarse más a los objetos.
-    this.player.body.setSize(16, 16); 
-    this.player.body.setOffset(40, 64); // Bajamos la caja de colisión a los pies
+    // Reducimos enormemente la caja de colisión para que no existan "espacios invisibles"
+    // Hacemos la caja muy pequeña (10x10) centrada en la base de los pies.
+    this.player.body.setSize(10, 10); 
+    this.player.body.setOffset(43, 70); 
 
     this.player.setCollideWorldBounds(true);
     
@@ -214,7 +303,31 @@ class TavernScene extends Phaser.Scene {
 
     if (this.input.keyboard) {
       this.cursors = this.input.keyboard.createCursorKeys();
+      this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     }
+    
+    // --- ADD SOCRATES NPC ---
+    // Posicionamos a Sócrates cerca del centro
+    this.socrates = this.physics.add.sprite(mapWidth / 2 + 100, mapHeight / 2, 'idle_down');
+    this.socrates.setScale(1.5);
+    this.socrates.body.setSize(16, 16);
+    this.socrates.body.setOffset(40, 64);
+    this.socrates.setImmovable(true);
+    // Tinted red to simulate Santa's suit color
+    this.socrates.setTint(0xff6666); 
+    this.socrates.play('idle-down');
+    if (this.collisionLayer) this.physics.add.collider(this.socrates, this.collisionLayer);
+    this.physics.add.collider(this.player, this.socrates);
+
+    // Texto de Socrates
+    this.add.text(this.socrates.x, this.socrates.y - 45, 'Sócrates', {
+      font: '12px Arial', color: '#ffea00', stroke: '#000', strokeThickness: 3
+    }).setOrigin(0.5);
+
+    // Prompt de interacción (oculto por defecto)
+    this.interactionPrompt = this.add.text(0, 0, '[ESPACIO] Charlar', {
+      font: '14px EB Garamond', color: '#ffffff', backgroundColor: '#000000aa', padding: { x: 5, y: 5 }
+    }).setOrigin(0.5).setVisible(false).setDepth(100);
 
     // Connect to multiplayer
     if (this.multiplayerService) {
@@ -269,6 +382,22 @@ class TavernScene extends Phaser.Scene {
 
   override update(time: number, delta: number) {
     if (!this.isLoggedIn || !this.cursors) return;
+
+    // Check distance to Socrates
+    const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, this.socrates.x, this.socrates.y);
+    if (dist < 80) {
+      this.isNearSocrates = true;
+      this.interactionPrompt.setPosition(this.socrates.x, this.socrates.y - 80);
+      this.interactionPrompt.setVisible(true);
+      
+      // Press Space to chat
+      if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
+        if (this.onSocratesInteract) this.onSocratesInteract();
+      }
+    } else {
+      this.isNearSocrates = false;
+      this.interactionPrompt.setVisible(false);
+    }
 
     const speed = 200;
     this.player.setVelocity(0);

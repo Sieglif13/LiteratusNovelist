@@ -3859,4 +3859,10 @@
 }
 .immersive-footer .partial-transcript {
   color: #a855f7 !important;
+}
+
+/* Evitar selección de texto durante Toque Fluido (Tap to Scroll) */
+.reading-canvas.tap-to-scroll-active {
+  user-select: none;
+  -webkit-user-select: none;
 }
