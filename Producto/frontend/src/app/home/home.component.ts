@@ -112,27 +112,37 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // Scroll reveal para todas las secciones
+    // Observar secciones que ya existen al iniciar (chat demo)
+    this.initRevealObserver();
+  }
+
+  private initRevealObserver(): void {
     const revealObserver = new IntersectionObserver(
       (entries) => entries.forEach(e => {
-        if (e.isIntersecting) { e.target.classList.add('visible'); revealObserver.unobserve(e.target); }
-      }),
-      { threshold: 0.1 }
-    );
-    document.querySelectorAll('.reveal-section').forEach(el => revealObserver.observe(el));
-
-    // Animación de contadores de stats
-    const statsObserver = new IntersectionObserver(
-      (entries) => entries.forEach(e => {
         if (e.isIntersecting) {
-          this.animateCounters();
-          statsObserver.unobserve(e.target);
+          e.target.classList.add('visible');
+          revealObserver.unobserve(e.target);
         }
       }),
-      { threshold: 0.5 }
+      { threshold: 0.05 }
     );
+    // Observa TODAS las reveal-section presentes en el DOM en este momento
+    document.querySelectorAll('.reveal-section:not(.visible)').forEach(el => revealObserver.observe(el));
+
+    // Animación de contadores de stats
     const statsEl = document.querySelector('.stats-section');
-    if (statsEl) statsObserver.observe(statsEl);
+    if (statsEl) {
+      const statsObserver = new IntersectionObserver(
+        (entries) => entries.forEach(e => {
+          if (e.isIntersecting) {
+            this.animateCounters();
+            statsObserver.unobserve(e.target);
+          }
+        }),
+        { threshold: 0.3 }
+      );
+      statsObserver.observe(statsEl);
+    }
   }
 
   private animateCounters(): void {
@@ -181,7 +191,11 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
         this.allBooks = response.results || response;
         this.buildSections();
         this.isLoading = false;
-        setTimeout(() => this.initAutoScroll(), 500);
+        // Re-observar las secciones que se acaban de renderizar (dentro de *ngIf)
+        setTimeout(() => {
+          this.initAutoScroll();
+          this.initRevealObserver();
+        }, 150);
       },
       error: () => {
         this.errorMsg = 'No se pudo cargar el catálogo.';

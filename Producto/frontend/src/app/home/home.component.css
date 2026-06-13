@@ -190,7 +190,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* El Lottie define la altura fluida ahora */
+  min-height: 320px; /* Espacio mínimo para el Lottie en desktop */
 }
 
 .hero-lottie-container {
