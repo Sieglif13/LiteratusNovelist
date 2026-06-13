@@ -4,6 +4,33 @@
   padding: 4rem 2rem;
   color: #fff;
   min-height: 100vh;
+  /* El fondo de madera cubrirá toda la pantalla */
+  background-image: url('/assets/sprites/fondo-madera.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  border-radius: 20px;
+  box-shadow: inset 0 0 100px rgba(0,0,0,0.8);
+}
+
+/* CONTENEDOR DE LA FÁBRICA DE TINTA */
+.ink-factory-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 3rem;
+  height: 250px; /* Ajustaremos esto al tamaño real de tu animación */
+}
+
+.ink-factory-sprite {
+  width: 250px;
+  height: 250px;
+  /* Aquí cargaremos el GIF o spritesheet que me envíes */
+  background-image: url('/assets/sprites/fabrica-tinta.gif');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.4));
 }
 
 .tavern-header {

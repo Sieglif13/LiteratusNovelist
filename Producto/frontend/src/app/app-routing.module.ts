@@ -23,11 +23,10 @@ import { CharacterHubComponent } from './characters/character-hub/character-hub.
 import { CategoriesComponent } from './categories/categories.component';
 import { CategoryDetailComponent } from './categories/category-detail/category-detail.component';
 import { DiscoverComponent } from './discover/discover.component';
-import { TavernComponent as TavernPage } from './tavern/tavern.component';
 
 const routes: Routes = [
   { path: 'home', component: HomeComponent },
-  { path: 'tavern', component: TavernPage },
+  { path: 'tavern', component: TavernComponent, canActivate: [authGuard] },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
@@ -40,7 +39,6 @@ const routes: Routes = [
   { path: 'payment/success', component: PaymentSuccessComponent },
   { path: 'payment/failure', component: PaymentFailureComponent },
   { path: 'library', component: LibraryListComponent, canActivate: [authGuard] },
-  { path: 'ink-shop', component: TavernComponent, canActivate: [authGuard] },
   { path: 'reader/:id', component: ReaderComponent, canActivate: [authGuard] },
   {
     path: 'dashboard',
