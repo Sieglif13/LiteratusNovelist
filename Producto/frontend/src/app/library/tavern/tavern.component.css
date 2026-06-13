@@ -5,7 +5,7 @@
   color: #fff;
   min-height: 100vh;
   /* El fondo de madera cubrirá toda la pantalla */
-  background-image: url('/assets/sprites/fondo-madera.png');
+  background-image: url('/assets/sprites/tavern/taberna_space.png');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -25,8 +25,8 @@
 .ink-factory-sprite {
   width: 250px;
   height: 250px;
-  /* Aquí cargaremos el GIF o spritesheet que me envíes */
-  background-image: url('/assets/sprites/fabrica-tinta.gif');
+  /* Aquí cargaremos el GIF que estás exportando */
+  background-image: url('/assets/sprites/factories/Alchemy_Table_01.gif');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
