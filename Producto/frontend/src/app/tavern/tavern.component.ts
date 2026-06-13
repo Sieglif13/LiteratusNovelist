@@ -237,7 +237,20 @@ class TavernScene extends Phaser.Scene {
     layer2?.setScale(mapScale);
 
     // Enable collisions for everything placed on Layer 1 (Obstacles)
-    if (layer1) {
+    // NOTA: Como ahora usaremos una capa dedicada de colisiones, intentamos cargarla primero.
+    let colLayer = map.createLayer('colisiones', tilesets, 0, 0);
+    
+    if (colLayer) {
+      // Si el usuario creó la capa "colisiones", la usamos y la ocultamos.
+      colLayer.setScale(mapScale);
+      colLayer.setCollisionByExclusion([-1]);
+      colLayer.setVisible(false); // La hacemos invisible
+      this.collisionLayer = colLayer;
+      
+      // Aseguramos que la capa 1 (objetos) ya no tenga colisiones para no chocar dos veces
+      if (layer1) layer1.setCollisionByExclusion([]); 
+    } else if (layer1) {
+      // Fallback: Si no existe la capa "colisiones", usamos la capa 1 como antes
       layer1.setCollisionByExclusion([-1]);
       this.collisionLayer = layer1;
     }
