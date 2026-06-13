@@ -293,7 +293,13 @@ export class KokoroTtsService {
           },
           body: JSON.stringify({
             model: "kokoro",
-            input: sentence.text.replace(/[*_\[\]]/g, ''), 
+            // Removemos acentos para evitar que Kokoro pronuncie "acentuada"
+            input: sentence.text.replace(/[*_\[\]]/g, '')
+                                .replace(/[áÁ]/g, 'a')
+                                .replace(/[éÉ]/g, 'e')
+                                .replace(/[íÍ]/g, 'i')
+                                .replace(/[óÓ]/g, 'o')
+                                .replace(/[úÚüÜ]/g, 'u'), 
             voice: this.overrideVoiceId || this.selectedVoiceId, 
             response_format: "mp3",
             speed: 1.0

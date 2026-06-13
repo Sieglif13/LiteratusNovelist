@@ -751,6 +751,30 @@
   color: #93c5fd;
 }
 
+/* ═══════════════════════════════════════════
+   ANIMACIÓN DE CARGA ESTILO SAMSUNG
+═══════════════════════════════════════════ */
+@keyframes samsungLoad {
+  0% { opacity: 0; transform: translateY(40px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.trending-card, .recommended-card {
+  animation: samsungLoad 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+
+/* Cascada de aparición (staggered delay) */
+.trending-card:nth-child(1), .recommended-card:nth-child(1) { animation-delay: 0.05s; }
+.trending-card:nth-child(2), .recommended-card:nth-child(2) { animation-delay: 0.10s; }
+.trending-card:nth-child(3), .recommended-card:nth-child(3) { animation-delay: 0.15s; }
+.trending-card:nth-child(4), .recommended-card:nth-child(4) { animation-delay: 0.20s; }
+.trending-card:nth-child(5), .recommended-card:nth-child(5) { animation-delay: 0.25s; }
+.trending-card:nth-child(6), .recommended-card:nth-child(6) { animation-delay: 0.30s; }
+.trending-card:nth-child(7), .recommended-card:nth-child(7) { animation-delay: 0.35s; }
+.trending-card:nth-child(8), .recommended-card:nth-child(8) { animation-delay: 0.40s; }
+.trending-card:nth-child(9), .recommended-card:nth-child(9) { animation-delay: 0.45s; }
+.trending-card:nth-child(10), .recommended-card:nth-child(10) { animation-delay: 0.50s; }
+
 /* Se han removido las secciones antiguas (Liyumi, Search, Discovery Grid) 
    para mantener el código limpio y mantenible. */
 
