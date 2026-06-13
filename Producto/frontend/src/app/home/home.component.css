@@ -605,7 +605,7 @@
    TRENDING SECTION
 ═══════════════════════════════════════════ */
 .trending-section {
-  padding: 2rem 6vw 3rem;
+  padding: 1.5rem 6vw 1.5rem;
 }
 
 .trending-track {
@@ -1133,7 +1133,7 @@
    STATS / PRUEBA SOCIAL
 ═══════════════════════════════════════════════════════════ */
 .stats-section {
-  padding: 4rem 6vw;
+  padding: 2.5rem 6vw;
   background: linear-gradient(135deg, rgba(212,175,55,0.04) 0%, rgba(168,85,247,0.04) 100%);
   border-top: 1px solid rgba(255,255,255,0.05);
   border-bottom: 1px solid rgba(255,255,255,0.05);
