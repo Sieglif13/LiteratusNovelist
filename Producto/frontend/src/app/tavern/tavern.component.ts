@@ -193,8 +193,8 @@ class TavernScene extends Phaser.Scene {
     this.load.image('Dungeon_Props', 'assets/sprites/tavern/Environment/Props/Static/Dungeon_Props.png');
     this.load.image('Rocks', 'assets/sprites/tavern/Environment/Props/Static/Rocks.png');
     
-    // Música de taberna (placeholder)
-    this.load.audio('tavern_music', 'https://actions.google.com/sounds/v1/water/rain_on_roof.ogg'); // Reemplazar con MP3 real de taberna
+    // Música de taberna
+    this.load.audio('tavern_music', 'assets/audio/A_Waltz_for_the_Snowfall.mp3');
   }
 
   create() {
