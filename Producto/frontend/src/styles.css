@@ -58,8 +58,7 @@
 }
 
 html {
-  overflow-x: hidden;
-  max-width: 100vw;
+  /* Removed overflow-x: hidden and max-width: 100vw to prevent double vertical scrollbars on Windows/Chrome */
 }
 
 body {
