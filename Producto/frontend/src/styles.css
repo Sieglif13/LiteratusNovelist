@@ -58,7 +58,7 @@
 }
 
 html {
-  overflow: hidden; /* Oculta el scroll del sistema operativo para evitar la doble barra */
+  overflow-x: clip; /* Evita desbordamiento horizontal sin causar doble scrollbar */
 }
 
 body {
@@ -68,10 +68,10 @@ body {
   font-size: 16px;
   font-weight: 400;
   line-height: 1.6;
-  height: 100vh;
-  overflow-y: auto;
-  overflow-x: hidden;
+  min-height: 100vh;
   margin: 0;
+  overflow-x: clip; /* Usar clip en vez de hidden impide la creación de un contexto de scroll en Windows */
+  overflow-y: visible !important;
   /*
    * FONDO ARTESANAL — Tres capas:
    */
