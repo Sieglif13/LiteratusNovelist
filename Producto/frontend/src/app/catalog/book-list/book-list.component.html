@@ -60,8 +60,9 @@
   <!-- Grid Principal de Tarjetas -->
   <div class="grid-container" *ngIf="!isLoading && books.length > 0">
     
-    <div class="glass-panel book-card" *ngFor="let book of books"
-         [routerLink]="['/book', book.slug]">
+    <div class="glass-panel book-card" *ngFor="let book of books; let i = index"
+         [routerLink]="['/book', book.slug]"
+         [style.animation-delay]="(i * 40) + 'ms'">
       
       <!-- Se asume imagen default si Django retorna null en la cubierta -->
       <div class="card-image" 
