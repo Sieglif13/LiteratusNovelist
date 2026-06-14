@@ -34,6 +34,8 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   recommendedBooks: Book[] = []; // Nueva lista de recomendados
   discoveryBooks: Book[] = [];
   randomDiscoveryBooks: Book[] = []; // Para el carrusel aleatorio
+  totalBooksCount: number = 1854; // Fallback exact count
+
 
   // Libros con personajes IA activos (hardcoded — ya tienen AIAvatars configurados)
   featuredWithCharacters = [
@@ -147,7 +149,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private animateCounters(): void {
     const counters = [
-      { id: 'stat-books', target: 20 },
+      { id: 'stat-books', target: this.totalBooksCount },
       { id: 'stat-chars', target: 25 },
       { id: 'stat-convs', target: 150 },
       { id: 'stat-authors', target: 10 }
@@ -188,6 +190,9 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     // Carga paralela: Catálogo General y Recomendaciones
     this.api.get<any>('catalog/books/?ordering=-is_featured,-created_at&page_size=50').subscribe({
       next: (response) => {
+        if (response && response.count) {
+          this.totalBooksCount = response.count;
+        }
         this.allBooks = response.results || response;
         this.buildSections();
         this.isLoading = false;

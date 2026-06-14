@@ -805,12 +805,14 @@
   
   .hero-visual {
     position: absolute;
-    top: 60px;
-    right: 5vw;
-    width: 160px; /* Agrandado un 60% para celulares */
-    height: 160px; /* Agrandado un 60% para celulares */
+    top: 10px;
+    right: 0px;
+    width: 100px; /* Reducido para no tapar el texto */
+    height: 100px; /* Reducido para no tapar el texto */
     margin-top: 0;
     display: flex;
+    opacity: 0.6;
+    pointer-events: none;
   }
   .hero-lottie-container {
     max-width: 100%;
