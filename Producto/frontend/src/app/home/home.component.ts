@@ -147,10 +147,10 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private animateCounters(): void {
     const counters = [
-      { id: 'stat-books', target: 1850 },
-      { id: 'stat-chars', target: 3000 },
-      { id: 'stat-convs', target: 15000 },
-      { id: 'stat-authors', target: 250 }
+      { id: 'stat-books', target: 20 },
+      { id: 'stat-chars', target: 25 },
+      { id: 'stat-convs', target: 150 },
+      { id: 'stat-authors', target: 10 }
     ];
     counters.forEach(({ id, target }) => {
       const el = document.getElementById(id);
