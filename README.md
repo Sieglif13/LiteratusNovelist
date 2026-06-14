@@ -47,13 +47,8 @@ El proyecto cuenta con una arquitectura robusta y características de vanguardia
 
 Aún existen áreas de crecimiento planeadas para completar el ciclo de vida del producto:
 
-- [ ] **Modo Offline PWA:** Habilitar Service Workers para descargar en caché los EPUBs y audios, permitiendo la lectura sin conexión a internet.
-- [ ] **Mundo Interactivo (La Taberna):** Implementación de un entorno RPG Top-Down multijugador con motor gráfico (Phaser) y sincronización en tiempo real para que los usuarios interactúen entre sí.
-- [ ] **Economía de Tinta:** Sistema de moneda virtual que incentiva el uso de la plataforma y permite adquirir contenido.
-- [ ] **Clubes de Lectura Sociales:** Espacios de debate o foros en tiempo real integrados en la plataforma para discutir sobre obras y capítulos específicos.
-- [ ] **Sistema de Logros y Misiones:** Profundizar la gamificación otorgando medallas por rachas diarias de lectura, páginas leídas y géneros explorados.
-- [ ] **Dashboard Analítico para Docentes/Editores:** Gráficos de retención de lectura, progreso de usuarios y métricas de interacción con la IA.
-- [ ] **Exportación de Reportes PDF/Excel:** Generación automática de reportes de ventas de tinta, usuarios activos y libros más leídos en el panel de administrador.
+- [x] **Modo Offline PWA:** Service Workers habilitados para cachear el catálogo y los capítulos, permitiendo la lectura ininterrumpida sin conexión a internet.
+- [x] **Exportación de Reportes PDF:** Generación de reportes administrativos (usuarios, libros, personajes) directamente desde el Dashboard.
 
 ---
 
