@@ -212,13 +212,20 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     this.api.get<any>('catalog/books/recommendations/').subscribe({
       next: (response) => {
         this.recommendedBooks = response.results || response;
+        setTimeout(() => {
+          if (!this.destroy$.isStopped) {
+            this.initRevealObserver();
+            this.initAutoScroll(); // También inicializar auto scroll para los recomendados si es necesario
+          }
+        }, 100);
       }
     });
   }
 
   private initAutoScroll(): void {
-    const tracks = document.querySelectorAll('.trending-track, .recommended-track');
+    const tracks = document.querySelectorAll('.trending-track:not(.scroll-init), .recommended-track:not(.scroll-init)');
     tracks.forEach((track: any) => {
+      track.classList.add('scroll-init');
       let isInteracting = false;
 
       track.addEventListener('mouseenter', () => isInteracting = true);
