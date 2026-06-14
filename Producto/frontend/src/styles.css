@@ -58,7 +58,7 @@
 }
 
 html {
-  /* Removed overflow-x: hidden and max-width: 100vw to prevent double vertical scrollbars on Windows/Chrome */
+  overflow: hidden; /* Oculta el scroll del sistema operativo para evitar la doble barra */
 }
 
 body {
@@ -68,7 +68,9 @@ body {
   font-size: 16px;
   font-weight: 400;
   line-height: 1.6;
-  min-height: 100vh;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
   margin: 0;
   /*
    * FONDO ARTESANAL — Tres capas:
