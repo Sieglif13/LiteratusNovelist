@@ -38,9 +38,9 @@
             {{ heroBook.book_authors[0].author?.full_name || heroBook.book_authors[0] }}
           </p>
 
-          <!-- CITA DRAMÁTICA en lugar de sinopsis genérica -->
+          <!-- VISTAZO a la sinopsis -->
           <blockquote class="hero-quote" *ngIf="heroBook.synopsis">
-            "{{ getDramaticQuote(heroBook) }}"
+            "{{ getSynopsisSnippet(heroBook) }}"
           </blockquote>
 
           <div class="hero-stats">
@@ -111,15 +111,15 @@
   </section>
 
   <!-- ═══════════════════════════════════════════════════════════════ -->
-  <!-- 3. CITAS INMORTALES  —  Flashcards con citas impactantes        -->
+  <!-- 3. TEASERS  —  Vistazos rápidos a las historias                 -->
   <!-- ═══════════════════════════════════════════════════════════════ -->
   <section class="discover-quotes" *ngIf="quoteBooks.length > 0 && !isLoading">
     <div class="quotes-header">
       <h2 class="section-title">
-        <span class="material-symbols-rounded" style="color: #ef4444; font-size: 1.3rem; vertical-align: middle; margin-right: 8px;">format_quote</span>
-        Citas que te dejarán sin palabras
+        <span class="material-symbols-rounded" style="color: #ef4444; font-size: 1.3rem; vertical-align: middle; margin-right: 8px;">auto_stories</span>
+        Un vistazo a la historia
       </h2>
-      <p class="section-subtitle">Una frase. Un libro. Una obsesión por leerlo entero.</p>
+      <p class="section-subtitle">Un pequeño fragmento de la sinopsis para despertar tu curiosidad.</p>
     </div>
 
     <div class="quotes-grid">
@@ -131,8 +131,7 @@
         </div>
         <div class="quote-card-overlay"></div>
         <div class="quote-card-content">
-          <span class="quote-card-emoji">❝</span>
-          <p class="quote-text">{{ getDramaticQuote(book) }}</p>
+          <p class="quote-text">"{{ getSynopsisSnippet(book) }}"</p>
           <div class="quote-card-meta">
             <span class="quote-book">{{ book.title }}</span>
             <span class="quote-author">{{ book.book_authors?.[0]?.author?.full_name || 'Autor desconocido' }}</span>

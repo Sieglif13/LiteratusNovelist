@@ -132,13 +132,12 @@ export class DiscoverComponent implements OnInit, OnDestroy {
       'el-principe-feliz-y-otros-cuentos-wilde-oscar',
       'la-metamorfosis-kafka-franz',
       'las-metamorfosis-ovidio',
+      'el-corazon-delator-allan-poe-edgar',
+      'alicia-en-el-pais-de-las-maravillas-carroll-lewis',
+      'el-cuervo-allan-poe-edgar',
+      'la-caida-de-la-casa-usher-allan-poe-edgar'
     ]);
     this.iaBooks = pool.filter(b => iaSlugs.has(b.slug));
-    // If not enough, pad with random from pool (to ensure we have some if pool allows)
-    if (this.iaBooks.length < 4 && pool.length > 0) {
-      const extras = pool.filter(b => !iaSlugs.has(b.slug)).slice(0, 8 - this.iaBooks.length);
-      this.iaBooks = [...this.iaBooks, ...extras];
-    }
 
     // Quick reads: estimated reading time < 30 min or short page count
     this.quickBooks = pool.filter(b => {
@@ -149,7 +148,7 @@ export class DiscoverComponent implements OnInit, OnDestroy {
       this.quickBooks = [...this.quickBooks, ...pool.slice(0, 15 - this.quickBooks.length)];
     }
 
-    // Quote cards: 3 random books with dramatic quotes
+    // Teaser cards: 3 random books with a snippet from their synopsis
     this.quoteBooks = pool.slice(0, 3);
 
     // Matchmaker: "If you liked X, try Y" pairs
@@ -189,12 +188,12 @@ export class DiscoverComponent implements OnInit, OnDestroy {
   }
 
   /* ═══════════════════════════════════════════════════════════════════
-     HERO QUOTE — Extract a dramatic sentence from synopsis
+     HERO TEASER — Extract a snippet from synopsis
      ═══════════════════════════════════════════════════════════════════ */
-  getDramaticQuote(book: any): string {
+  getSynopsisSnippet(book: any): string {
     if (!book?.synopsis) return '';
     const text = book.synopsis.trim();
-    // Try to extract the most impactful sentence (first sentence of second paragraph, or longest)
+    // Try to extract an impactful sentence (first or second sentence)
     const sentences = text.split(/[.!?]/).map((s: string) => s.trim()).filter((s: string) => s.length > 20 && s.length < 200);
     if (sentences.length === 0) return text.slice(0, 180) + '...';
     // Pick the second sentence if it exists and is good, otherwise first
