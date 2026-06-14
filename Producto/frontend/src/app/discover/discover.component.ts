@@ -10,7 +10,7 @@ import { AuthService } from '../core/services/auth.service';
 interface Mood {
   id: string;
   label: string;
-  emoji: string;
+  icon: string;
   filterFn: (b: any) => boolean;
 }
 
@@ -44,15 +44,15 @@ export class DiscoverComponent implements OnInit, OnDestroy {
   /* ── Mood Picker ── */
   activeMood: string | null = null;
   moods: Mood[] = [
-    { id: 'all', label: 'Todo', emoji: '✨', filterFn: () => true },
-    { id: 'dark', label: 'Algo oscuro', emoji: '🌑', filterFn: (b) => this.hasTag(b, 'terror') || this.hasTag(b, 'gótico') || this.hasTag(b, 'misterio') },
-    { id: 'brave', label: 'Sentirme valiente', emoji: '⚔️', filterFn: (b) => this.hasTag(b, 'aventura') || this.hasTag(b, 'épico') || this.hasTag(b, 'acción') },
-    { id: 'short', label: 'Tengo 15 minutos', emoji: '⏱️', filterFn: (b) => {
+    { id: 'all', label: 'Todo', icon: 'apps', filterFn: () => true },
+    { id: 'dark', label: 'Algo oscuro', icon: 'dark_mode', filterFn: (b) => this.hasTag(b, 'terror') || this.hasTag(b, 'policíaca') || this.hasTag(b, 'suspense') },
+    { id: 'brave', label: 'Sentirme valiente', icon: 'swords', filterFn: (b) => this.hasTag(b, 'acción') || this.hasTag(b, 'aventura') || this.hasTag(b, 'mitos') || this.hasTag(b, 'leyendas') },
+    { id: 'short', label: 'Lectura rápida', icon: 'timer', filterFn: (b) => {
       const time = String(b.estimated_reading_time || '');
-      return time.includes('15') || time.includes('20') || time.includes('30');
+      return time.includes('15') || time.includes('20') || time.includes('30') || this.hasTag(b, 'cuentos') || this.hasTag(b, 'novela corta') || this.hasTag(b, 'antologías');
     } },
-    { id: 'reflect', label: 'Para reflexionar', emoji: '🧠', filterFn: (b) => this.hasTag(b, 'filosofía') || this.hasTag(b, 'ensayo') || this.hasTag(b, 'poesía') },
-    { id: 'love', label: 'Un poco de romance', emoji: '❤️', filterFn: (b) => this.hasTag(b, 'romántica') || this.hasTag(b, 'amor') || this.hasTag(b, 'drama') },
+    { id: 'reflect', label: 'Para reflexionar', icon: 'psychology', filterFn: (b) => this.hasTag(b, 'filosofía') || this.hasTag(b, 'ensayos') || this.hasTag(b, 'psicología') || this.hasTag(b, 'sociedad') },
+    { id: 'love', label: 'Un poco de romance', icon: 'favorite', filterFn: (b) => this.hasTag(b, 'romántica') || this.hasTag(b, 'erótica') || this.hasTag(b, 'poesía') },
   ];
 
   /* ── Rows ── */
@@ -119,15 +119,14 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     this.heroBook = this.allBooks[idx];
   }
 
-  private buildRows(): void {
-    const pool = this.allBooks;
+  private buildRows(pool: any[] = this.allBooks): void {
 
     // Trending: top viewed + featured first
     this.trendingBooks = [...pool]
       .sort((a, b) => (b.view_count || 0) - (a.view_count || 0))
       .slice(0, 15);
 
-    // IA Books: hardcoded slugs that have IA characters (matching home page logic)
+    // IA Books: hardcoded slugs that have IA characters
     const iaSlugs = new Set([
       'el-gato-negro-allan-poe-edgar',
       'el-principe-feliz-y-otros-cuentos-wilde-oscar',
@@ -135,8 +134,8 @@ export class DiscoverComponent implements OnInit, OnDestroy {
       'las-metamorfosis-ovidio',
     ]);
     this.iaBooks = pool.filter(b => iaSlugs.has(b.slug));
-    // If not enough, pad with random
-    if (this.iaBooks.length < 4) {
+    // If not enough, pad with random from pool (to ensure we have some if pool allows)
+    if (this.iaBooks.length < 4 && pool.length > 0) {
       const extras = pool.filter(b => !iaSlugs.has(b.slug)).slice(0, 8 - this.iaBooks.length);
       this.iaBooks = [...this.iaBooks, ...extras];
     }
@@ -185,9 +184,8 @@ export class DiscoverComponent implements OnInit, OnDestroy {
 
     const filtered = this.activeMood ? this.allBooks.filter(filter) : this.allBooks;
 
-    // Rebuild rows from filtered pool
-    this.trendingBooks = filtered.slice(0, 15);
-    this.quoteBooks = filtered.slice(0, 3);
+    // Rebuild all rows from filtered pool so nothing stays unfiltered
+    this.buildRows(filtered);
   }
 
   /* ═══════════════════════════════════════════════════════════════════

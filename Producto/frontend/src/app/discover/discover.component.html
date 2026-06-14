@@ -92,12 +92,23 @@
               *ngFor="let mood of moods"
               [class.active]="activeMood === mood.id"
               (click)="setMood(mood.id)">
-        <span class="mood-emoji">{{ mood.emoji }}</span>
+        <span class="material-symbols-rounded mood-icon">{{ mood.icon }}</span>
         <span class="mood-label">{{ mood.label }}</span>
       </button>
     </div>
   </section>
 
+  <!-- Empty State if Mood Filter Returns 0 Books -->
+  <section class="discover-empty-state" *ngIf="activeMood && trendingBooks.length === 0 && !isLoading">
+    <div class="empty-state-content">
+      <span class="material-symbols-rounded empty-icon">auto_stories</span>
+      <h3>Aún no tenemos historias para este ambiente</h3>
+      <p>Estamos trabajando para traer más libros de esta temática. ¡Intenta con otro estado de ánimo!</p>
+      <button class="cta-hero-primary" style="margin: 1.5rem auto 0; max-width: 200px;" (click)="setMood('all')">
+        Ver todo el catálogo
+      </button>
+    </div>
+  </section>
 
   <!-- ═══════════════════════════════════════════════════════════════ -->
   <!-- 3. CITAS INMORTALES  —  Flashcards con citas impactantes        -->
