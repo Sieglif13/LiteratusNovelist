@@ -2,7 +2,7 @@
   <h1>Literatus Novelist</h1>
   <p><b>Plataforma inmersiva de lectura interactiva potenciada por Inteligencia Artificial</b></p>
   
-  [![Angular](https://img.shields.io/badge/Angular-18+-DD0031?style=for-the-badge&logo=angular&logoColor=white)](https://angular.io/)
+  [![Angular](https://img.shields.io/badge/Angular-17.3-DD0031?style=for-the-badge&logo=angular&logoColor=white)](https://angular.io/)
   [![Django](https://img.shields.io/badge/Django-6.x-092E20?style=for-the-badge&logo=django&logoColor=white)](https://www.djangoproject.com/)
   [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
   [![Gemini](https://img.shields.io/badge/Google%20Gemini-8E75B2?style=for-the-badge&logo=google&logoColor=white)](https://deepmind.google/technologies/gemini/)
@@ -59,7 +59,7 @@ Aún existen áreas de crecimiento planeadas para completar el ciclo de vida del
 | **Backend** | Python 3.13, Django 6.x, Django REST Framework |
 | **Base de Datos** | PostgreSQL (Arquitectura relacional 3NF, uso de UUIDs, Soft Delete) |
 | **Inteligencia Artificial** | Google Gemini 2.0 Flash, Kokoro TTS (ONNX Runtime Web), Whisper (OpenAI), Web Speech API (STT) |
-| **Frontend** | Angular 18+, TypeScript, Vanilla CSS (Glassmorphism, variables CSS dinámicas) |
+| **Frontend** | Angular 17.3, TypeScript, Vanilla CSS (Glassmorphism, variables CSS dinámicas) |
 | **Pagos y Seguridad** | SDK Transbank Webpay Plus, JWT (JSON Web Tokens), Transacciones Atómicas Db |
 
 ---

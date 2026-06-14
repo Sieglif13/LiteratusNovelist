@@ -82,14 +82,14 @@
   gap: 0.8rem;
 }
 
-.footer-col a {
+.footer-col a, .footer-col span {
   color: #94a3b8;
   text-decoration: none;
   font-size: 0.9rem;
   transition: all 0.3s;
 }
 
-.footer-col a:hover {
+.footer-col a:hover, .footer-col span:hover {
   color: #c4b5fd;
   text-shadow: 0 0 8px rgba(168, 85, 247, 0.4);
 }
@@ -113,13 +113,13 @@
   gap: 1.5rem;
 }
 
-.legal-links a {
+.legal-links a, .legal-links span {
   color: #64748b;
   text-decoration: none;
   transition: color 0.3s;
 }
 
-.legal-links a:hover {
+.legal-links a:hover, .legal-links span:hover {
   color: #94a3b8;
 }
 

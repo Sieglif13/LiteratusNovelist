@@ -147,10 +147,10 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private animateCounters(): void {
     const counters = [
-      { id: 'stat-books', target: 500 },
-      { id: 'stat-chars', target: 2000 },
-      { id: 'stat-convs', target: 50000 },
-      { id: 'stat-authors', target: 100 }
+      { id: 'stat-books', target: 1850 },
+      { id: 'stat-chars', target: 3000 },
+      { id: 'stat-convs', target: 15000 },
+      { id: 'stat-authors', target: 250 }
     ];
     counters.forEach(({ id, target }) => {
       const el = document.getElementById(id);
@@ -193,6 +193,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
         this.isLoading = false;
         // Re-observar las secciones que se acaban de renderizar (dentro de *ngIf)
         setTimeout(() => {
+          if (this.destroy$.isStopped) return; // FIX: Prevenir memory leaks
           this.initAutoScroll();
           this.initRevealObserver();
         }, 150);
