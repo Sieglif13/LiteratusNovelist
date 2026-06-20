@@ -14,6 +14,11 @@
 
 ---
 
+## Demo en Vivo 🚀
+Puedes probar la aplicación funcionando en el siguiente enlace: **[https://www.novelatus.tech/](https://www.novelatus.tech/)**
+
+---
+
 ## Estado del Proyecto
 
 **MVP funcional en desarrollo.** El repositorio contiene una aplicacion full-stack operativa con API REST, frontend Angular, flujo de autenticacion JWT, catalogo de libros, biblioteca personal, lector con capitulos HTML, chat con personajes IA, TTS, pagos Webpay y dashboard administrativo. Aun requiere hardening de seguridad, normalizacion de configuracion y mejoras de producto antes de considerarse listo para produccion.

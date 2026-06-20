@@ -84,7 +84,10 @@ export class ReaderComponent implements OnInit, OnDestroy {
   kokoroProgress$ = this.kokoroVoice.downloadProgress$;
 
   downloadLocalEngine() {
-    this.kokoroVoice.downloadLocalEngine();
+    const confirmed = window.confirm('⚠️ Nota: La voz neuronal local descarga un modelo de IA en tu navegador.\n\nSe recomienda tener un equipo con tarjeta gráfica dedicada (GPU) para evitar lentitud. ¿Estás seguro de que deseas continuar y activar el motor local?');
+    if (confirmed) {
+      this.kokoroVoice.downloadLocalEngine();
+    }
   }
 
   // Getters para separar autor de personajes en el panel
