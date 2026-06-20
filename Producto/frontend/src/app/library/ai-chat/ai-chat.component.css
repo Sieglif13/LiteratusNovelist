@@ -377,3 +377,5 @@
   33% { content: ".."; }
   66% { content: "..."; }
 }
+
+.btn-kokoro-local { background: #333; color: #ff5555; border: 1px solid #ff5555; padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 5px; box-shadow: 0 0 5px rgba(255,85,85,0.2); } .btn-kokoro-local.active { background: #1a4a1a; color: #55ff55; border-color: #55ff55; box-shadow: 0 0 8px rgba(85,255,85,0.4); pointer-events: none; } .btn-kokoro-local.downloading { background: #4a4a1a; color: #ffff55; border-color: #ffff55; pointer-events: none; } .kokoro-progress-bar { width: 120px; height: 4px; background: #222; border-radius: 2px; margin-top: 5px; overflow: hidden; } .kokoro-progress-fill { height: 100%; background: #ffff55; transition: width 0.2s ease; }

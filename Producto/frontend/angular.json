@@ -33,7 +33,12 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/manifest.webmanifest"
+              "src/manifest.webmanifest",
+              {
+                "glob": "**/*.bin",
+                "input": "node_modules/kokoro-js/voices",
+                "output": "/voices"
+              }
             ],
             "styles": [
               "src/styles.css"

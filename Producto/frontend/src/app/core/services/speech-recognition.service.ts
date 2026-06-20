@@ -128,20 +128,27 @@ export class SpeechRecognitionService {
   }
 
   private setupVoiceSync() {
-    // Sincronización: silenciar el micrófono mientras Kokoro habla (IA respondio)
-    this.voiceSub = this.kokoroVoice.isSpeaking$.subscribe(isSpeaking => {
-      if (isSpeaking) {
-        if (this.isListeningSubject.value) {
-          this.wasListeningBeforeVoice = true;
-          this.pauseListening();
+    // Sincronización: silenciar el micrófono mientras Kokoro procesa o habla
+    // Combinamos isProcessing$ e isSpeaking$ para abarcar todo el ciclo
+    import('rxjs').then(({ combineLatest }) => {
+      this.voiceSub = combineLatest([
+        this.kokoroVoice.isProcessing$,
+        this.kokoroVoice.isSpeaking$
+      ]).subscribe(([isProc, isSpeak]) => {
+        const isBusy = isProc || isSpeak;
+        if (isBusy) {
+          if (this.isListeningSubject.value) {
+            this.wasListeningBeforeVoice = true;
+            this.pauseListening();
+          }
+        } else {
+          if (this.wasListeningBeforeVoice) {
+            this.wasListeningBeforeVoice = false;
+            // Mayor delay para asegurar que el eco de los parlantes se disipe
+            setTimeout(() => this.resumeListening(), 1500); 
+          }
         }
-      } else {
-        if (this.wasListeningBeforeVoice) {
-          this.wasListeningBeforeVoice = false;
-          // Pequeño delay para no captar la cola del audio
-          setTimeout(() => this.resumeListening(), 800); 
-        }
-      }
+      });
     });
   }
 

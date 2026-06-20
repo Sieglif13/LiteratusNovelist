@@ -395,6 +395,19 @@
           {{ v.name }}
         </option>
       </select>
+
+      <button class="btn-kokoro-local" 
+              [ngClass]="{'active': (engineMode$ | async) === 'local', 'downloading': kokoroDownloading$ | async}"
+              (click)="downloadLocalEngine()"
+              [disabled]="(kokoroDownloading$ | async) || (engineMode$ | async) === 'local'">
+        <i class="fas fa-microchip"></i>
+        <span *ngIf="(engineMode$ | async) === 'local'">Latencia Cero (Local)</span>
+        <span *ngIf="(engineMode$ | async) !== 'local' && !(kokoroDownloading$ | async)">Activar Motor Local</span>
+        <span *ngIf="kokoroDownloading$ | async">Descargando... {{ kokoroProgress$ | async }}%</span>
+      </button>
+      <div class="kokoro-progress-bar" *ngIf="kokoroDownloading$ | async">
+         <div class="kokoro-progress-fill" [style.width.%]="kokoroProgress$ | async"></div>
+      </div>
     </div>
 
     <!-- Control de velocidad (solo modo nativo) -->

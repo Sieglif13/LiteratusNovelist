@@ -79,6 +79,13 @@ export class ReaderComponent implements OnInit, OnDestroy {
   selectedAvatar: any = null;
   showCharProfile: boolean = false;
   isKokoroProcessing = false;
+  engineMode$ = this.kokoroVoice.engineMode$;
+  kokoroDownloading$ = this.kokoroVoice.isDownloadingModel$;
+  kokoroProgress$ = this.kokoroVoice.downloadProgress$;
+
+  downloadLocalEngine() {
+    this.kokoroVoice.downloadLocalEngine();
+  }
 
   // Getters para separar autor de personajes en el panel
   get authorAvatar(): any {

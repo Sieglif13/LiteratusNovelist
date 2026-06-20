@@ -29,6 +29,13 @@ export class AiChatComponent implements OnInit, AfterViewChecked {
 
   kokoroProcessing$ = this.kokoroVoice.isProcessing$;
   kokoroSpeaking$ = this.kokoroVoice.isSpeaking$;
+  engineMode$ = this.kokoroVoice.engineMode$;
+  kokoroDownloading$ = this.kokoroVoice.isDownloadingModel$;
+  kokoroProgress$ = this.kokoroVoice.downloadProgress$;
+
+  downloadLocalEngine() {
+    this.kokoroVoice.downloadLocalEngine();
+  }
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {

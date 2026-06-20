@@ -13,17 +13,34 @@ export class KokoroTtsService {
 
   // ── Estado público ────────────────────────────────────────────────────
   isSpeaking$ = new BehaviorSubject<boolean>(false);
-  isProcessing$ = new BehaviorSubject<boolean>(false); // Nuevo: indica si está llamando a la API
+  isProcessing$ = new BehaviorSubject<boolean>(false); // Indica si está generando (remoto o local)
+  isDownloadingModel$ = new BehaviorSubject<boolean>(false); // Indica si está descargando modelo ONNX
+  downloadProgress$ = new BehaviorSubject<number>(0); // 0 a 100
+  
+  engineMode$ = new BehaviorSubject<'remote' | 'local'>('remote');
+
   currentSentenceIdx$ = new BehaviorSubject<number>(-1);
   currentWordIndex$ = new BehaviorSubject<number>(-1);
   error$ = new BehaviorSubject<string | null>(null);
 
   // ── Estado interno ────────────────────────────────────────────────────
-  kokoroVoices = [
+  remoteVoices = [
     { id: 'ef_dora', name: 'Dora (Femenina España)' },
     { id: 'em_alex', name: 'Alex (Masculino España)' },
     { id: 'em_santa', name: 'Santa (Masculino España)' }
   ];
+
+  localVoices = [
+    { id: 'af_bella', name: 'Bella (Femenina USA)' },
+    { id: 'af_nicole', name: 'Nicole (Femenina USA)' },
+    { id: 'am_adam', name: 'Adam (Masculino USA)' },
+    { id: 'bf_emma', name: 'Emma (Femenina UK)' }
+  ];
+
+  get kokoroVoices() {
+    return this.engineMode$.value === 'remote' ? this.remoteVoices : this.localVoices;
+  }
+
   selectedVoiceId = 'ef_dora';
 
   private audioCtx: AudioContext | null = null;
@@ -44,10 +61,75 @@ export class KokoroTtsService {
   private playbackOffset: number = 0; // Tiempo pausado acumulado
   private karaokeInterval: any = null;
   
-  private currentSpeakId = 0; // Nuevo: ID único por cada vez que se llama a speak()
+  private currentSpeakId = 0;
   private overrideVoiceId: string | null = null;
 
+  // Instancia Local de KokoroTTS (cargada dinámicamente)
+  private ttsInstance: any = null;
+  
+  constructor() {
+    const savedMode = localStorage.getItem('kokoro-engine-mode') as 'remote' | 'local';
+    if (savedMode === 'local') {
+      // Si el usuario tenía "local" guardado, iniciamos la descarga en background sin bloquear
+      this.engineMode$.next('local');
+      this.downloadLocalEngine().catch(err => console.error("Fallo auto-load local:", err));
+    }
+  }
+
   // ── API Pública ───────────────────────────────────────────────────────
+
+  /**
+   * Permite cambiar manualmente al modo local y descargarlo
+   */
+  async downloadLocalEngine(): Promise<void> {
+    if (this.ttsInstance) {
+      this.engineMode$.next('local');
+      localStorage.setItem('kokoro-engine-mode', 'local');
+      return;
+    }
+
+    this.isDownloadingModel$.next(true);
+    this.downloadProgress$.next(0);
+    this.error$.next(null);
+
+    try {
+      // Import dinámico para no bloat el app si usan 'remote'
+      const { KokoroTTS } = await import('kokoro-js');
+      
+      // Detectar si el navegador soporta WebGPU para aceleración gráfica
+      const deviceType = (navigator as any).gpu ? 'webgpu' : 'wasm';
+      
+      this.ttsInstance = await KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX', {
+        dtype: 'q8',
+        device: deviceType,
+        progress_callback: (info: any) => {
+          if (info.status === 'progress' && info.total) {
+             const percent = Math.round((info.loaded / info.total) * 100);
+             this.downloadProgress$.next(percent);
+          } else if (info.status === 'done') {
+             this.downloadProgress$.next(100);
+          }
+        }
+      });
+      
+      this.engineMode$.next('local');
+      localStorage.setItem('kokoro-engine-mode', 'local');
+      this.selectedVoiceId = 'af_bella'; // Auto-switch a una voz local válida
+      
+    } catch (err) {
+      console.error("[KokoroTTS] Error descargando modelo local:", err);
+      this.error$.next("Error al instalar motor local. Volviendo a modo remoto.");
+      this.setRemoteEngine();
+    } finally {
+      this.isDownloadingModel$.next(false);
+    }
+  }
+
+  setRemoteEngine() {
+    this.engineMode$.next('remote');
+    localStorage.setItem('kokoro-engine-mode', 'remote');
+    this.selectedVoiceId = 'ef_dora'; // Auto-switch a voz remota válida
+  }
 
   async speak(fullText: string, avatarId: number, startWordIdx: number = 0, voiceId?: string): Promise<void> {
     this.currentSpeakId++;
@@ -62,7 +144,6 @@ export class KokoroTtsService {
     const allSentences = this.buildSentences(fullText);
     if (allSentences.length === 0) return;
 
-    // Filtrar oraciones que ya pasaron
     const startIndex = allSentences.findIndex(s => s.baseWordIdx + s.wordCount > startWordIdx);
     const sentences = startIndex >= 0 ? allSentences.slice(startIndex) : allSentences;
 
@@ -109,7 +190,6 @@ export class KokoroTtsService {
     this.isPaused = true;
     this.isSpeaking$.next(false);
     
-    // Guardar el tiempo transcurrido exacto
     this.playbackOffset += this.audioCtx.currentTime - this.playbackStartTime;
     
     try { this.currentSource.stop(); } catch (_) {}
@@ -163,7 +243,7 @@ export class KokoroTtsService {
   }
 
   private async prefetchPipeline(sentences: KokoroSentence[], speakId: number): Promise<void> {
-    const BATCH_SIZE = 1; // Secuencial para evitar sobrecargar el Free Tier de HuggingFace y evitar drops
+    const BATCH_SIZE = 1; 
     for (let i = 0; i < sentences.length; i += BATCH_SIZE) {
       if (this.isStopped || this.currentSpeakId !== speakId) return;
 
@@ -241,10 +321,8 @@ export class KokoroTtsService {
       const elapsedTime = (this.audioCtx.currentTime - this.playbackStartTime) + this.playbackOffset;
       const totalTime = this.currentBuffer.duration;
       
-      // Asegurar que no excedemos el límite
       let progress = Math.min(1, elapsedTime / totalTime);
       
-      // Karaoke estricto estimando el progreso por caracteres
       const words = this.currentSentence.text.split(/\s+/).filter(w => w.length > 0);
       const totalChars = words.reduce((sum, w) => sum + w.length, 0);
       
@@ -264,7 +342,7 @@ export class KokoroTtsService {
 
       this.currentWordIndex$.next(this.currentSentence.baseWordIdx + targetWordLocalIdx);
       
-    }, 50); // Actualiza cada 50ms para suavidad en el karaoke
+    }, 50);
   }
 
   private stopKaraokeLoop() {
@@ -280,52 +358,72 @@ export class KokoroTtsService {
   ): Promise<{ buffer: AudioBuffer; sentence: KokoroSentence } | null> {
     if (!sentence.text.trim() || this.isStopped) return null;
 
+    const useLocal = this.engineMode$.value === 'local' && this.ttsInstance;
     const hfApiUrl = 'https://josuejheymi-kokoro-api.hf.space/v1/audio/speech';
 
     for (let attempt = 1; attempt <= retries; attempt++) {
       if (this.isStopped) return null;
       
       try {
-        const response = await fetch(hfApiUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            model: "kokoro",
-            // Removemos acentos para evitar que Kokoro pronuncie "acentuada"
-            input: sentence.text.replace(/[*_\[\]]/g, '')
-                                .replace(/[áÁ]/g, 'a')
-                                .replace(/[éÉ]/g, 'e')
-                                .replace(/[íÍ]/g, 'i')
-                                .replace(/[óÓ]/g, 'o')
-                                .replace(/[úÚüÜ]/g, 'u'), 
-            voice: this.overrideVoiceId || this.selectedVoiceId, 
-            response_format: "mp3",
-            speed: 1.0
-          })
-        });
-
-        if (!response.ok) {
-          throw new Error(`HF API error: ${response.status}`);
-        }
-        if (this.isStopped) return null;
-
-        const arrayBuffer = await response.arrayBuffer();
+        const textToSpeak = sentence.text.replace(/[*_\[\]]/g, '');
+        const voiceId = (this.overrideVoiceId || this.selectedVoiceId);
+        
+        let audioBuffer: AudioBuffer;
 
         if (!this.audioCtx || this.audioCtx.state === 'closed') {
           this.audioCtx = new AudioContext();
         }
-        const audioBuffer = await this.audioCtx.decodeAudioData(arrayBuffer);
+
+        if (useLocal) {
+           // MODO LOCAL ONNX
+           const rawAudio = await this.ttsInstance.generate(textToSpeak, {
+             voice: voiceId,
+             speed: 1.0
+           });
+           if (this.isStopped) return null;
+           
+           audioBuffer = this.audioCtx.createBuffer(1, rawAudio.audio.length, rawAudio.sampling_rate);
+           audioBuffer.copyToChannel(rawAudio.audio, 0);
+        } else {
+           // MODO REMOTO HF API
+           const response = await fetch(hfApiUrl, {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify({
+               model: "kokoro",
+               input: textToSpeak.replace(/[áÁ]/g, 'a')
+                                 .replace(/[éÉ]/g, 'e')
+                                 .replace(/[íÍ]/g, 'i')
+                                 .replace(/[óÓ]/g, 'o')
+                                 .replace(/[úÚüÜ]/g, 'u'), 
+               voice: voiceId, 
+               response_format: "mp3",
+               speed: 1.0
+             })
+           });
+
+           if (!response.ok) throw new Error(`HF API error: ${response.status}`);
+           if (this.isStopped) return null;
+
+           const arrayBuffer = await response.arrayBuffer();
+           audioBuffer = await this.audioCtx.decodeAudioData(arrayBuffer);
+        }
+
         return { buffer: audioBuffer, sentence };
         
       } catch (err) {
-        console.warn(`[KokoroTTS] Error en frase (Intento ${attempt}/${retries}):`, sentence.text, err);
-        if (attempt === retries) {
-          return null; // Solo fallar definitivamente tras X intentos
+        console.warn(`[KokoroTTS] Error en frase ${useLocal ? '(LOCAL)' : '(REMOTO)'} (Intento ${attempt}/${retries}):`, err);
+        
+        // Fallback automático si estamos en local y falla
+        if (useLocal && attempt === retries) {
+          console.warn("[KokoroTTS] Falló local. Cambiando temporalmente a Remoto.");
+          this.setRemoteEngine();
+          // Reintentar esta misma frase en el modo remoto haciendo una recursión
+          return this.fetchAudioBuffer(sentence, 2);
         }
-        // Esperar un poco antes del siguiente intento
-        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        if (attempt === retries) return null;
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
     }
     return null;
@@ -343,10 +441,9 @@ export class KokoroTtsService {
       currentWords.push(rawWords[i]);
       
       const currentText = currentWords.join(' ');
-      // Separar si es puntuación fuerte, si es muy largo y hay coma, o si es la última palabra
       const isPunctuation = /[.!?¿¡"]$/.test(rawWords[i]);
       const isTooLong = currentText.length > 150 && /[,;]$/.test(rawWords[i]);
-      const isExtremelyLong = currentText.length > 250; // Límite estricto para evitar truncamiento
+      const isExtremelyLong = currentText.length > 250; 
       
       if (isPunctuation || isTooLong || isExtremelyLong || i === rawWords.length - 1) {
         if (currentWords.length < 4 && i !== rawWords.length - 1 && !isExtremelyLong) {
