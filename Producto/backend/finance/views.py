@@ -108,6 +108,8 @@ def initiate_payment(request):
     except Exception as e:
         return Response({'error': f'Error al contactar Transbank: {str(e)}'}, status=502)
 
+    return_base_url = request.data.get('return_base_url')
+
     # --- Guardar transacción en DB ---
     Transaction.objects.create(
         user=request.user,
@@ -118,6 +120,7 @@ def initiate_payment(request):
         status='iniciada',
         item_type=item_type,
         item_reference=item_reference,
+        metadata={'return_base_url': return_base_url} if return_base_url else {}
     )
 
     return Response({
@@ -136,16 +139,19 @@ def confirm_payment(request):
     Luego redirige al frontend.
     """
     token = request.GET.get('token_ws') or request.POST.get('token_ws')
-    frontend_url = settings.FRONTEND_URL
 
     if not token:
-        return _redirect_to_frontend(frontend_url, 'failure', 'Token no recibido.')
+        return _redirect_to_frontend(settings.FRONTEND_URL, 'failure', 'Token no recibido.')
 
     # Buscar la transacción local de forma bloqueante
     try:
         local_txn = Transaction.objects.select_for_update().get(token=token)
     except Transaction.DoesNotExist:
-        return _redirect_to_frontend(frontend_url, 'failure', 'Transacción no encontrada.')
+        return _redirect_to_frontend(settings.FRONTEND_URL, 'failure', 'Transacción no encontrada.')
+
+    frontend_url = settings.FRONTEND_URL
+    if isinstance(local_txn.metadata, dict) and local_txn.metadata.get('return_base_url'):
+        frontend_url = local_txn.metadata.get('return_base_url')
 
     # Confirmar con Transbank
     try:
