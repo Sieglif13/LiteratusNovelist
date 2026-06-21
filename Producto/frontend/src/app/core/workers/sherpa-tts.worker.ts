@@ -15,11 +15,12 @@ addEventListener('message', async ({ data }) => {
   if (type === 'INIT') {
     try {
       if (!synthesizer) {
-        const modelToLoad = voiceModel && voiceModel !== 'Xenova/piper-es_ES-sharvard-medium' ? voiceModel : 'Xenova/mms-tts-spa';
+        // Si no se pasa modelo, usar piper por defecto
+        const modelToLoad = voiceModel ? voiceModel : 'Xenova/piper-es_ES-sharvard-medium';
         postMessage({ type: 'STATUS', message: `Descargando/Cargando modelo ${modelToLoad} desde IndexedDB...` });
         
-        // Detectar si la tarjeta gráfica está disponible (WebGPU)
-        const deviceType = (navigator as any).gpu ? 'webgpu' : 'wasm';
+        // Forzamos WASM siempre para TTS. WebGPU en celulares a menudo genera NaNs (sonido 'lelelele')
+        const deviceType = 'wasm';
 
         synthesizer = await pipeline('text-to-speech', modelToLoad, {
           progress_callback: (progress: any) => {
