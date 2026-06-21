@@ -10,7 +10,7 @@ env.backends.onnx.wasm.numThreads = 4;
 let synthesizer: any = null;
 
 addEventListener('message', async ({ data }) => {
-  const { type, text, voiceModel } = data;
+  const { type, text, voiceModel, isMobile } = data;
 
   if (type === 'INIT') {
     try {
@@ -19,8 +19,10 @@ addEventListener('message', async ({ data }) => {
         const modelToLoad = voiceModel && !voiceModel.includes('piper') ? voiceModel : 'Xenova/mms-tts-spa';
         postMessage({ type: 'STATUS', message: `Descargando/Cargando modelo ${modelToLoad} desde IndexedDB...` });
         
-        // Forzamos WASM siempre para TTS. WebGPU en celulares a menudo genera NaNs (sonido 'lelelele')
-        const deviceType = 'wasm';
+        // En PC activamos WebGPU para aceleración gráfica extrema (baja los 30s a ~2s). 
+        // En celular forzamos WASM para evitar el bug de audio corrupto ("lelelele").
+        const hasGpu = (navigator as any).gpu !== undefined;
+        const deviceType = (!isMobile && hasGpu) ? 'webgpu' : 'wasm';
 
         synthesizer = await pipeline('text-to-speech', modelToLoad, {
           progress_callback: (progress: any) => {

@@ -89,7 +89,9 @@ export class WasmTtsService {
 
       // Inicializar el modelo (descarga/caché)
       this.statusSubject.next('Inicializando motor local (WASM)...');
-      this.worker.postMessage({ type: 'INIT', voiceModel: 'Xenova/piper-es_ES-sharvard-medium' });
+      
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      this.worker.postMessage({ type: 'INIT', voiceModel: this.selectedVoiceModel, isMobile: isMobile });
     } else {
       console.error('Web Workers no soportados en este navegador.');
     }
