@@ -364,10 +364,10 @@
         <span class="ink-cost unlocked-badge">Nuevo</span>
       </div>
 
-      <!-- VOZ WASM (PIPER) -->
-      <div class="voice-option" [class.active]="currentAudioMode === 'wasm'" (click)="setAudioMode('wasm')">
+      <!-- VOZ WASM (PIPER) - OCULTO EN MÓVIL POR RENDIMIENTO -->
+      <div class="voice-option" *ngIf="!isMobile" [class.active]="currentAudioMode === 'wasm'" (click)="setAudioMode('wasm')">
         <div class="voice-info">
-          <span>Voz Piper Web</span>
+          <span>Voz Web (MMS)</span>
           <small>Inferencia 100% en Navegador</small>
         </div>
         <span class="ink-cost unlocked-badge" style="background: #2563eb;">Experimental</span>
@@ -419,8 +419,8 @@
       </div>
     </div>
 
-    <!-- Selector de voz local Wasm/Piper -->
-    <div class="audio-config" *ngIf="currentAudioMode === 'wasm'">
+    <!-- Selector de voz local Wasm/Piper (Solo PC) -->
+    <div class="audio-config" *ngIf="currentAudioMode === 'wasm' && !isMobile">
       <label class="config-label">
         <span class="material-symbols-rounded" style="font-size:1rem;vertical-align:middle;">piano</span>
         Voz Web

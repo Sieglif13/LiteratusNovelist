@@ -122,13 +122,13 @@ export class ReaderComponent implements OnInit, OnDestroy {
   currentAudioMode: 'native' | 'pro' | 'kokoro' | 'wasm' = 'native';
   currentWordIndex: number = -1;
   isAudioLoading: boolean = false;
-  // WasmTTS (Piper) Voces
+  // WasmTTS (Piper) Voces - Solo dejamos MMS porque Piper no tiene port oficial Web
   wasmVoices = [
-    { id: 'Xenova/piper-es_ES-sharvard-medium', name: 'Sharvard (Piper)' },
-    { id: 'Xenova/mms-tts-spa', name: 'MMS Español (Meta)' },
-    { id: 'Xenova/piper-es_ES-davefx-medium', name: 'DaveFX (Piper)' },
-    { id: 'Xenova/piper-es_ES-carlfm-x_low', name: 'CarlFM (Piper)' }
+    { id: 'Xenova/mms-tts-spa', name: 'MMS Español (Meta) - Pesado' }
   ];
+
+  // Detección de dispositivo móvil
+  isMobile: boolean = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
   // Configuración de la Novela
   chapterId: string | null = null;
