@@ -347,7 +347,7 @@
     <!-- Selector de modo -->
     <div class="voice-selector">
       <!-- VOZ ESTÁNDAR -->
-      <div class="voice-option" [class.active]="currentAudioMode === 'native'" (click)="currentAudioMode = 'native'">
+      <div class="voice-option" [class.active]="currentAudioMode === 'native'" (click)="setAudioMode('native')">
         <div class="voice-info">
           <span>Voz Estándar</span>
           <small>Nativa del navegador</small>
@@ -356,12 +356,21 @@
       </div>
 
       <!-- VOZ PREMIUM AI (KOKORO) -->
-      <div class="voice-option" [class.active]="currentAudioMode === 'kokoro'" (click)="currentAudioMode = 'kokoro'">
+      <div class="voice-option" [class.active]="currentAudioMode === 'kokoro'" (click)="setAudioMode('kokoro')">
         <div class="voice-info">
           <span>Voz Local</span>
           <small>Kokoro TTS - Voz Neuronal</small>
         </div>
         <span class="ink-cost unlocked-badge">Nuevo</span>
+      </div>
+
+      <!-- VOZ WASM (PIPER) -->
+      <div class="voice-option" [class.active]="currentAudioMode === 'wasm'" (click)="setAudioMode('wasm')">
+        <div class="voice-info">
+          <span>Voz Piper Web</span>
+          <small>Inferencia 100% en Navegador</small>
+        </div>
+        <span class="ink-cost unlocked-badge" style="background: #2563eb;">Experimental</span>
       </div>
 
       <!-- OTRAS OPCIONES OCULTAS TEMPORALMENTE -->
@@ -398,15 +407,52 @@
 
       <button class="btn-kokoro-local" 
               [ngClass]="{'active': (engineMode$ | async) === 'local', 'downloading': kokoroDownloading$ | async}"
-              (click)="downloadLocalEngine()"
-              [disabled]="(kokoroDownloading$ | async) || (engineMode$ | async) === 'local'">
+              (click)="toggleKokoroEngine()"
+              [disabled]="kokoroDownloading$ | async">
         <i class="fas fa-microchip"></i>
-        <span *ngIf="(engineMode$ | async) === 'local'">Latencia Cero (Local)</span>
+        <span *ngIf="(engineMode$ | async) === 'local'">Desactivar Motor Local</span>
         <span *ngIf="(engineMode$ | async) !== 'local' && !(kokoroDownloading$ | async)">Activar Motor Local</span>
         <span *ngIf="kokoroDownloading$ | async">Descargando... {{ kokoroProgress$ | async }}%</span>
       </button>
       <div class="kokoro-progress-bar" *ngIf="kokoroDownloading$ | async">
          <div class="kokoro-progress-fill" [style.width.%]="kokoroProgress$ | async"></div>
+      </div>
+    </div>
+
+    <!-- Selector de voz local Wasm/Piper -->
+    <div class="audio-config" *ngIf="currentAudioMode === 'wasm'">
+      <label class="config-label">
+        <span class="material-symbols-rounded" style="font-size:1rem;vertical-align:middle;">piano</span>
+        Voz Web
+      </label>
+      
+      <select class="voice-dropdown"
+              [value]="wasmVoice.selectedVoiceModel"
+              (change)="wasmVoice.setVoice($any($event.target).value); stopAudio(true); playAudio()">
+        <option *ngFor="let v of wasmVoices" [value]="v.id">
+          {{ v.name }}
+        </option>
+      </select>
+
+      <div class="wasm-progress-container" *ngIf="wasmVoice.isDownloading$ | async" style="margin-top: 10px;">
+         <div class="warning-box" style="background: rgba(255,165,0,0.1); border: 1px solid rgba(255,165,0,0.3); border-radius: 8px; padding: 8px; margin-bottom: 8px; display: flex; align-items: flex-start; gap: 8px;">
+            <span class="material-symbols-rounded" style="color: #fbbf24; font-size: 1.2rem;">warning</span>
+            <p style="font-size: 0.75rem; color: #fbbf24; margin: 0; line-height: 1.2;">
+               <strong>Aviso de Recursos:</strong> Este motor descarga y ejecuta un modelo de IA directamente en tu dispositivo. Puede consumir más batería y rendimiento.
+            </p>
+         </div>
+         <span class="status-label" style="font-size: 0.85rem; color: #a1a1aa; display: flex; align-items: center; gap: 6px;">
+            <span class="loader-spin material-symbols-rounded" style="font-size: 1rem;">sync</span> 
+            Descargando modelo seguro... {{ wasmVoice.progress$ | async }}%
+         </span>
+         <div class="kokoro-progress-bar" style="margin-top: 5px;">
+            <div class="kokoro-progress-fill" [style.width.%]="wasmVoice.progress$ | async"></div>
+         </div>
+      </div>
+      <div class="wasm-ready-container" *ngIf="!(wasmVoice.isDownloading$ | async) && wasmVoice.isInitialized" style="margin-top: 10px;">
+         <span class="status-label" style="font-size: 0.85rem; color: #4ade80; display: flex; align-items: center; gap: 4px;">
+           <span class="material-symbols-rounded" style="font-size: 1rem;">check_circle</span> Motor inferencial activado
+         </span>
       </div>
     </div>
 
@@ -451,8 +497,8 @@
               (click)="currentAudioMode === 'kokoro' ? kokoroVoice.stop() : audioService.pause()"
               title="Pausar"
               style="position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-        <span *ngIf="currentAudioMode !== 'kokoro'">⏸</span>
-        <div *ngIf="currentAudioMode === 'kokoro'" #waveLottie class="lottie-theme-filter" style="position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; transform: translate(-32%, -50%) scale(1.5); display: flex; align-items: center; justify-content: center; transform-origin: 50% 50%;"></div>
+        <span *ngIf="currentAudioMode !== 'kokoro' && currentAudioMode !== 'wasm'">⏸</span>
+        <div *ngIf="currentAudioMode === 'kokoro' || currentAudioMode === 'wasm'" #waveLottie class="lottie-theme-filter" style="position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; transform: translate(-32%, -50%) scale(1.5); display: flex; align-items: center; justify-content: center; transform-origin: 50% 50%;"></div>
       </button>
     </div>
 
@@ -665,14 +711,11 @@
       <!-- Icono Play: Si no está cargando y NO está reproduciendo -->
       <span class="material-symbols-rounded" *ngIf="!isAudioLoading && !isKokoroProcessing && (currentAudioMode === 'kokoro' ? !(kokoroVoice.isSpeaking$ | async) : !(audioService.isPlaying$ | async))">play_arrow</span>
       
-      <!-- Icono Pause (Nativo): Si SÍ está reproduciendo -->
-      <span class="material-symbols-rounded" *ngIf="!isAudioLoading && !isKokoroProcessing && currentAudioMode !== 'kokoro' && (audioService.isPlaying$ | async)">pause</span>
+      <!-- Icono de Pausa -->
+      <span class="material-symbols-rounded" *ngIf="!isAudioLoading && !isKokoroProcessing && currentAudioMode === 'native' && (audioService.isPlaying$ | async)">pause</span>
       
       <!-- Spinner -->
-      <span *ngIf="isAudioLoading || isKokoroProcessing" class="loader-spin">◷</span>
-      
-      <!-- Lottie Kokoro: Aparece como botón de pausa cuando Kokoro está hablando -->
-      <div *ngIf="!isAudioLoading && !isKokoroProcessing && currentAudioMode === 'kokoro' && (kokoroVoice.isSpeaking$ | async)" #waveLottieFab class="lottie-theme-filter" style="position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; transform: translate(-32%, -50%) scale(1.5); display: flex; align-items: center; justify-content: center; transform-origin: 50% 50%;"></div>
+      <div *ngIf="!isAudioLoading && !isKokoroProcessing && ((currentAudioMode === 'kokoro' && (kokoroVoice.isSpeaking$ | async)) || (currentAudioMode === 'wasm' && (audioService.isPlaying$ | async)))" #waveLottieFab class="lottie-theme-filter" style="position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; transform: translate(-32%, -50%) scale(1.5); display: flex; align-items: center; justify-content: center; transform-origin: 50% 50%;"></div>
     </button>
   </div>
 

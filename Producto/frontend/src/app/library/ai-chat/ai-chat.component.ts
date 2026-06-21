@@ -33,8 +33,15 @@ export class AiChatComponent implements OnInit, AfterViewChecked {
   kokoroDownloading$ = this.kokoroVoice.isDownloadingModel$;
   kokoroProgress$ = this.kokoroVoice.downloadProgress$;
 
-  downloadLocalEngine() {
-    this.kokoroVoice.downloadLocalEngine();
+  toggleKokoroEngine() {
+    if (this.kokoroVoice.engineMode$.value === 'local') {
+      this.kokoroVoice.setRemoteEngine();
+    } else {
+      const confirmed = window.confirm('⚠️ Nota: La voz neuronal local descarga un modelo de IA en tu navegador.\n\nSe recomienda tener un equipo con tarjeta gráfica dedicada (GPU) para evitar lentitud. ¿Estás seguro de que deseas continuar y activar el motor local?');
+      if (confirmed) {
+        this.kokoroVoice.downloadLocalEngine();
+      }
+    }
   }
 
   ngOnInit() {

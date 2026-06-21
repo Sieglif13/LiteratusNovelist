@@ -43,10 +43,10 @@
           <div class="piper-status" *ngIf="realTimeVoiceActive">
             <button class="btn-kokoro-local" 
                     [ngClass]="{'active': (engineMode$ | async) === 'local', 'downloading': kokoroDownloading$ | async}"
-                    (click)="downloadLocalEngine()"
-                    [disabled]="(kokoroDownloading$ | async) || (engineMode$ | async) === 'local'">
+                    (click)="toggleKokoroEngine()"
+                    [disabled]="kokoroDownloading$ | async">
               <i class="fas fa-microchip"></i>
-              <span *ngIf="(engineMode$ | async) === 'local'">Latencia Cero (Local)</span>
+              <span *ngIf="(engineMode$ | async) === 'local'">Desactivar Motor Local</span>
               <span *ngIf="(engineMode$ | async) !== 'local' && !(kokoroDownloading$ | async)">Activar Motor Local</span>
               <span *ngIf="kokoroDownloading$ | async">Descargando... {{ kokoroProgress$ | async }}%</span>
             </button>

@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { ApiService } from './api.service';
+import { WasmTtsService } from './wasm-tts.service';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
@@ -49,16 +50,25 @@ export class AudioService {
   private utterance:   SpeechSynthesisUtterance | null = null;
   private proAudio:    HTMLAudioElement | null = null;
   private proAlign:    AudioAlignment | null = null;
-  private currentMode: 'native' | 'pro' = 'native';
+  private currentMode: 'native' | 'pro' | 'wasm' = 'native';
   private lastCharIndex: number = 0;  // Para reanudar desde posición
   private currentText:   string = '';
   private nativeFallbackInterval: any = null;
   private textChunks: TextChunk[] = [];
   private currentChunkIndex: number = 0;
+  private wasmTts = inject(WasmTtsService);
 
   constructor() {
     this.loadVoices();
     window.speechSynthesis.onvoiceschanged = () => this.loadVoices();
+
+    this.wasmTts.playbackEnded$.subscribe(() => {
+      if (this.currentMode === 'wasm') {
+        this.isPlayingSubject.next(false);
+        this.wordIndexSubject.next(-1);
+        this.chapterEnd$.next();
+      }
+    });
   }
 
   // ── Voces ────────────────────────────────────────────────────────
@@ -380,6 +390,15 @@ export class AudioService {
     }
   }
 
+  // ── MODO WASM (Local Avanzado) ──────────────────────────────────
+  playWasm(text: string) {
+    this.cancelAll();
+    this.currentMode = 'wasm';
+    this.currentText = text;
+    this.isPlayingSubject.next(true);
+    this.wasmTts.play(text);
+  }
+
   // ── Controles ────────────────────────────────────────────────────
   pause() {
     this.isPlayingSubject.next(false);
@@ -390,6 +409,8 @@ export class AudioService {
       // Es más seguro cancelar la cola por completo y luego reiniciar desde el índice guardado.
       window.speechSynthesis.cancel();
       this.clearNativeInterval();
+    } else if (this.currentMode === 'wasm') {
+      this.wasmTts.pause();
     } else if (this.proAudio) {
       this.proAudio.pause();
     }
@@ -399,6 +420,8 @@ export class AudioService {
     if (this.currentMode === 'native') {
       // Reanudar iniciando una nueva síntesis desde la última palabra conocida.
       this.playNativeFrom(this.lastCharIndex);
+    } else if (this.currentMode === 'wasm') {
+      this.wasmTts.resume();
     } else if (this.proAudio) {
       this.proAudio.play();
     }
@@ -420,6 +443,7 @@ export class AudioService {
       this.proAudio.pause();
       this.proAudio = null;
     }
+    this.wasmTts.stop();
     this.isPlayingSubject.next(false);
   }
 }

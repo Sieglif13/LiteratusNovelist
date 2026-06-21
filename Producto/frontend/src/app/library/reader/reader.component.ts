@@ -11,7 +11,7 @@ import { KokoroTtsService } from '../../core/services/kokoro-tts.service';
 import { ChatService } from '../../core/services/chat.service';
 import { SpeechRecognitionService } from '../../core/services/speech-recognition.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
-
+import { WasmTtsService } from '../../core/services/wasm-tts.service';
 
 export interface ProgressData {
   percentage: number;
@@ -48,6 +48,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
   public kokoroVoice = inject(KokoroTtsService);
   public chatService = inject(ChatService);
   public speechService = inject(SpeechRecognitionService);
+  public wasmVoice = inject(WasmTtsService);
 
   // ── LECTURA ──────────────────────────────────────────────────────
 
@@ -83,10 +84,21 @@ export class ReaderComponent implements OnInit, OnDestroy {
   kokoroDownloading$ = this.kokoroVoice.isDownloadingModel$;
   kokoroProgress$ = this.kokoroVoice.downloadProgress$;
 
-  downloadLocalEngine() {
-    const confirmed = window.confirm('⚠️ Nota: La voz neuronal local descarga un modelo de IA en tu navegador.\n\nSe recomienda tener un equipo con tarjeta gráfica dedicada (GPU) para evitar lentitud. ¿Estás seguro de que deseas continuar y activar el motor local?');
-    if (confirmed) {
-      this.kokoroVoice.downloadLocalEngine();
+  toggleKokoroEngine() {
+    if (this.kokoroVoice.engineMode$.value === 'local') {
+      this.kokoroVoice.setRemoteEngine();
+    } else {
+      const confirmed = window.confirm('⚠️ Nota: La voz neuronal local descarga un modelo de IA en tu navegador.\n\nSe recomienda tener un equipo con tarjeta gráfica dedicada (GPU) para evitar lentitud. ¿Estás seguro de que deseas continuar y activar el motor local?');
+      if (confirmed) {
+        this.kokoroVoice.downloadLocalEngine();
+      }
+    }
+  }
+
+  setAudioMode(mode: 'native' | 'pro' | 'kokoro' | 'wasm') {
+    if (this.currentAudioMode !== mode) {
+      this.stopAudio(true);
+      this.currentAudioMode = mode;
     }
   }
 
@@ -107,9 +119,19 @@ export class ReaderComponent implements OnInit, OnDestroy {
   inkBalance: number = 0;
 
   // Audio Control
-  currentAudioMode: 'native' | 'pro' | 'kokoro' = 'native';
+  currentAudioMode: 'native' | 'pro' | 'kokoro' | 'wasm' = 'native';
   currentWordIndex: number = -1;
   isAudioLoading: boolean = false;
+  // WasmTTS (Piper) Voces
+  wasmVoices = [
+    { id: 'Xenova/piper-es_ES-sharvard-medium', name: 'Sharvard (Piper)' },
+    { id: 'Xenova/mms-tts-spa', name: 'MMS Español (Meta)' },
+    { id: 'Xenova/piper-es_ES-davefx-medium', name: 'DaveFX (Piper)' },
+    { id: 'Xenova/piper-es_ES-carlfm-x_low', name: 'CarlFM (Piper)' }
+  ];
+
+  // Configuración de la Novela
+  chapterId: string | null = null;
   isAudioPanelOpen: boolean = false;
   currentChapterPlainText: string = '';
   proErrorMessage: string = '';  // Mensaje de error Pro (no usa alert)
@@ -295,15 +317,28 @@ export class ReaderComponent implements OnInit, OnDestroy {
       }
     });
 
-    // Resaltado: escuchar el word index del AudioService
+    // Resaltado: escuchar el word index del AudioService (Nativo)
     this.audioService.currentWordIndex$.pipe(takeUntil(this.destroy$)).subscribe(idx => {
-      if (this.currentAudioMode !== 'kokoro') {
+      if (this.currentAudioMode === 'native') {
         this.currentWordIndex = idx;
         if (idx !== -1) {
           this.lastAudioWordIndex = idx;
           this.saveAudioPosition();
         }
         this.cdr.detectChanges(); // Forzar re-render sin borrar el DOM
+        if (idx !== -1) this.scrollWordIntoView(idx);
+      }
+    });
+
+    // Resaltado: escuchar el word index de WasmTTS (Piper)
+    this.wasmVoice.currentWordIndex$.pipe(takeUntil(this.destroy$)).subscribe(idx => {
+      if (this.currentAudioMode === 'wasm') {
+        this.currentWordIndex = idx;
+        if (idx !== -1) {
+          this.lastAudioWordIndex = idx;
+          this.saveAudioPosition();
+        }
+        this.cdr.detectChanges();
         if (idx !== -1) this.scrollWordIntoView(idx);
       }
     });
@@ -1059,6 +1094,8 @@ export class ReaderComponent implements OnInit, OnDestroy {
 
     if (this.currentAudioMode === 'native') {
       this.audioService.playNative(this.currentChapterPlainText, startWord);
+    } else if (this.currentAudioMode === 'wasm') {
+      this.audioService.playWasm(this.currentChapterPlainText);
     } else if (this.currentAudioMode === 'kokoro') {
       // MODO KOKORO TTS
       this.kokoroVoice.speak(this.currentChapterPlainText, this.authorAvatar?.id || 1, startWord);
@@ -1695,7 +1732,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
   }
 
   get showFloatingAudioControl(): boolean {
-    const isPlaying = this.currentAudioMode === 'kokoro' 
+    const isPlaying = this.currentAudioMode === 'kokoro'
       ? (this.kokoroVoice.isSpeaking$.value || this.isKokoroProcessing)
       : (this.audioService.isPlaying || this.isAudioLoading);
     return !this.isAudioPanelOpen && isPlaying;
