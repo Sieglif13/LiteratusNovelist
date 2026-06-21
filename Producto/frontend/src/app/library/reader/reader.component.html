@@ -374,6 +374,16 @@
         <span class="ink-cost unlocked-badge" style="background: #2563eb;">Experimental</span>
       </div>
 
+      <!-- VOZ NATIVA ANDROID (CAPACITOR) - OCULTO EN PC -->
+      <div class="voice-option" *ngIf="isMobile" [class.active]="currentAudioMode === 'native-android'" (click)="setAudioMode('native-android')">
+        <div class="voice-info">
+          <span>Voz Nativa (App)</span>
+          <small>Kokoro / Piper HD sin internet</small>
+          <small style="color: #4ade80; font-size: 0.7rem; display: block; margin-top: 2px;">⚡ Rendimiento Móvil Máximo</small>
+        </div>
+        <span class="ink-cost unlocked-badge" style="background: #e11d48;">Nativo</span>
+      </div>
+
       <!-- OTRAS OPCIONES OCULTAS TEMPORALMENTE -->
     </div>
 

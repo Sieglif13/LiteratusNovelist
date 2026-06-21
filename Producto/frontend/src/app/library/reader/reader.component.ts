@@ -12,6 +12,7 @@ import { ChatService } from '../../core/services/chat.service';
 import { SpeechRecognitionService } from '../../core/services/speech-recognition.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { WasmTtsService } from '../../core/services/wasm-tts.service';
+import { NativeTtsService } from '../../core/services/native-tts.service';
 
 export interface ProgressData {
   percentage: number;
@@ -49,6 +50,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
   public chatService = inject(ChatService);
   public speechService = inject(SpeechRecognitionService);
   public wasmVoice = inject(WasmTtsService);
+  public nativeTts = inject(NativeTtsService);
 
   // ── LECTURA ──────────────────────────────────────────────────────
 
@@ -95,7 +97,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
     }
   }
 
-  setAudioMode(mode: 'native' | 'pro' | 'kokoro' | 'wasm') {
+  setAudioMode(mode: 'native' | 'pro' | 'kokoro' | 'wasm' | 'native-android') {
     if (this.currentAudioMode !== mode) {
       this.stopAudio(true);
       this.currentAudioMode = mode;
@@ -119,7 +121,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
   inkBalance: number = 0;
 
   // Audio Control
-  currentAudioMode: 'native' | 'pro' | 'kokoro' | 'wasm' = 'native';
+  currentAudioMode: 'native' | 'pro' | 'kokoro' | 'wasm' | 'native-android' = 'native';
   currentWordIndex: number = -1;
   isAudioLoading: boolean = false;
   // WasmTTS (Piper) Voces - Solo dejamos MMS porque Piper no tiene port oficial Web
@@ -1056,6 +1058,9 @@ export class ReaderComponent implements OnInit, OnDestroy {
     // Si sigue visible, simplemente reanuda donde se quedó
     if (this.currentAudioMode === 'kokoro') {
       this.kokoroVoice.resume();
+    } else if (this.currentAudioMode === 'native-android') {
+      // Capacitor plugin doesn't have resume yet, we just speak the rest or re-send text
+      this.nativeTts.speak(this.currentChapterPlainText);
     } else {
       this.audioService.resume();
     }
@@ -1099,6 +1104,9 @@ export class ReaderComponent implements OnInit, OnDestroy {
     } else if (this.currentAudioMode === 'kokoro') {
       // MODO KOKORO TTS
       this.kokoroVoice.speak(this.currentChapterPlainText, this.authorAvatar?.id || 1, startWord);
+    } else if (this.currentAudioMode === 'native-android') {
+      // MODO NATIVO CAPACITOR
+      this.nativeTts.speak(this.currentChapterPlainText);
     } else {
       // MODO GRABADO
       if (!this.hasPremiumNarration) {
@@ -1167,6 +1175,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
   stopAudio(preventScroll: boolean = false) {
     this.audioService.stop();
     this.kokoroVoice.stop();
+    this.nativeTts.stop();
     this.currentWordIndex = -1;
 
     if (!preventScroll) {
@@ -1215,6 +1224,13 @@ export class ReaderComponent implements OnInit, OnDestroy {
     if (this.currentAudioMode === 'kokoro') {
       if (this.kokoroVoice.isSpeaking$.value) {
         this.kokoroVoice.stop();
+        this.isAudioPanelOpen = true;
+      } else {
+        this.playAudio();
+      }
+    } else if (this.currentAudioMode === 'native-android') {
+      if (this.nativeTts.isSpeaking$.value) {
+        this.nativeTts.stop();
         this.isAudioPanelOpen = true;
       } else {
         this.playAudio();
