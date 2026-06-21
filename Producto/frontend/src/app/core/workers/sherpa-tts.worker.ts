@@ -15,8 +15,8 @@ addEventListener('message', async ({ data }) => {
   if (type === 'INIT') {
     try {
       if (!synthesizer) {
-        // Fallback a MMS ya que Piper no está porteado a Transformers.js
-        const modelToLoad = voiceModel && voiceModel !== 'Xenova/piper-es_ES-sharvard-medium' ? voiceModel : 'Xenova/mms-tts-spa';
+        // Fallback general a MMS: Xenova no tiene modelos Piper porteados para Transformers.js
+        const modelToLoad = voiceModel && !voiceModel.includes('piper') ? voiceModel : 'Xenova/mms-tts-spa';
         postMessage({ type: 'STATUS', message: `Descargando/Cargando modelo ${modelToLoad} desde IndexedDB...` });
         
         // Forzamos WASM siempre para TTS. WebGPU en celulares a menudo genera NaNs (sonido 'lelelele')

@@ -426,7 +426,8 @@
         Voz Web
       </label>
       
-      <select class="voice-dropdown"
+      <select class="voice-select"
+              [disabled]="(wasmVoice.isDownloading$ | async)"
               [value]="wasmVoice.selectedVoiceModel"
               (change)="wasmVoice.setVoice($any($event.target).value); stopAudio(true); playAudio()">
         <option *ngFor="let v of wasmVoices" [value]="v.id">
