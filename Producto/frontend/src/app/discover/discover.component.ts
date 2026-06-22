@@ -263,13 +263,32 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     const text = book?.synopsis?.slice(0, 350);
     if (!text) return;
     this.stopAudio();
-    this.ttsUtterance = new SpeechSynthesisUtterance(text);
-    this.ttsUtterance.lang = 'es-ES';
-    this.ttsUtterance.rate = 0.92;
-    this.ttsUtterance.onstart = () => { this.isPlaying = true; this.currentAudioBook = book; };
-    this.ttsUtterance.onend = () => { this.isPlaying = false; this.currentAudioBook = null; };
-    this.ttsUtterance.onerror = () => { this.isPlaying = false; this.currentAudioBook = null; };
-    window.speechSynthesis.speak(this.ttsUtterance);
+    if (typeof SpeechSynthesisUtterance !== 'undefined') {
+      this.ttsUtterance = new SpeechSynthesisUtterance(text);
+      this.ttsUtterance.lang = 'es-ES';
+      this.ttsUtterance.rate = 0.92;
+
+      this.ttsUtterance.onstart = () => {
+        this.isPlaying = true;
+        this.currentAudioBook = book;
+      };
+
+      this.ttsUtterance.onend = () => {
+        this.isPlaying = false;
+        this.currentAudioBook = null;
+      };
+
+      this.ttsUtterance.onerror = () => {
+        this.isPlaying = false;
+        this.currentAudioBook = null;
+      };
+
+      if (window.speechSynthesis) {
+        window.speechSynthesis.speak(this.ttsUtterance);
+      }
+    } else {
+      console.warn("SpeechSynthesisUtterance not available in this WebView");
+    }
   }
 
   stopAudio(): void {

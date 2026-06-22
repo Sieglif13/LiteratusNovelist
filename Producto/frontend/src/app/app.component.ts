@@ -4,6 +4,8 @@ import { AuthService } from './core/services/auth.service';
 import { ChatService } from './core/services/chat.service';
 import { filter } from 'rxjs/operators';
 import { routeTransitionAnimations, shakeAnimation } from './core/animations';
+import { App as CapacitorApp } from '@capacitor/app';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-root',
@@ -19,6 +21,12 @@ export class AppComponent implements OnInit {
   
   menuOpen = false;
   isDashboard = false;
+  
+  // DEBUGGING: Global Error Catcher
+  globalError: string | null = null;
+  
+  private lastBackPressTime = 0;
+  private location = inject(Location);
   
   // Profile data
   get userName(): string {
@@ -41,7 +49,8 @@ export class AppComponent implements OnInit {
     this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe((e: any) => {
-        this.isDashboard = (e.urlAfterRedirects as string).startsWith('/dashboard');
+        const url = e.urlAfterRedirects as string;
+        this.isDashboard = url.startsWith('/dashboard') || url.startsWith('/reader');
       });
   }
 
@@ -62,6 +71,34 @@ export class AppComponent implements OnInit {
     // Suscribirse a actualizaciones de perfil
     this.chatService.profileUpdated$.subscribe(() => {
       this.loadUserProfile();
+    });
+
+    // Añadir listener global de errores
+    window.addEventListener('error', (event) => {
+      this.globalError = `Error: ${event.message} en ${event.filename}:${event.lineno}`;
+    });
+    window.addEventListener('unhandledrejection', (event) => {
+      this.globalError = `Promesa rechazada: ${event.reason}`;
+    });
+
+    // Control del botón 'Atrás' en hardware (Android)
+    CapacitorApp.addListener('backButton', ({ canGoBack }) => {
+      const isRootPage = this.router.url === '/dashboard' || this.router.url === '/login' || this.router.url === '/library';
+      
+      if (!canGoBack || isRootPage) {
+        // Doble toque para salir
+        const now = Date.now();
+        if (now - this.lastBackPressTime < 2000) {
+          CapacitorApp.exitApp();
+        } else {
+          this.lastBackPressTime = now;
+          // Opcionalmente, mostrar un toast nativo aquí si tienes el plugin de Toast
+          console.log('Presiona de nuevo para salir');
+        }
+      } else {
+        // Navegar hacia atrás en la historia de Angular
+        this.location.back();
+      }
     });
   }
 

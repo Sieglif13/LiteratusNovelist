@@ -1,4 +1,4 @@
-<div class="workbench-container" [ngClass]="'theme-' + currentTheme">
+<div class="workbench-container" [ngClass]="'theme-' + currentTheme" [class.immersive]="isToolbarHidden">
 
   <!-- ═══════════════════════════════════════════════════════════════ -->
   <!-- TOOLBAR SUPERIOR (FIJO)                                         -->
@@ -364,14 +364,14 @@
         <span class="ink-cost unlocked-badge">Nuevo</span>
       </div>
 
-      <!-- VOZ WASM (PIPER) - OCULTO EN MÓVIL POR RENDIMIENTO -->
-      <div class="voice-option" *ngIf="!isMobile" [class.active]="currentAudioMode === 'wasm'" (click)="setAudioMode('wasm')">
+      <!-- VOZ WASM (PIPER) -->
+      <div class="voice-option" [class.active]="currentAudioMode === 'wasm'" (click)="setAudioMode('wasm')">
         <div class="voice-info">
           <span>Voz Web (MMS)</span>
           <small>Inferencia 100% en Navegador</small>
-          <small style="color: #fbbf24; font-size: 0.7rem; display: block; margin-top: 2px;">⚠️ Requiere Tarjeta Gráfica</small>
+          <small style="color: #fbbf24; font-size: 0.7rem; display: block; margin-top: 2px;">⚠️ Alta carga de CPU</small>
         </div>
-        <span class="ink-cost unlocked-badge" style="background: #2563eb;">Experimental</span>
+        <span class="ink-cost unlocked-badge" style="background: #2563eb;">WASM</span>
       </div>
 
       <!-- VOZ NATIVA ANDROID (CAPACITOR) - OCULTO EN PC -->
@@ -430,8 +430,8 @@
       </div>
     </div>
 
-    <!-- Selector de voz local Wasm/Piper (Solo PC) -->
-    <div class="audio-config" *ngIf="currentAudioMode === 'wasm' && !isMobile">
+    <!-- Selector de voz local Wasm/Piper -->
+    <div class="audio-config" *ngIf="currentAudioMode === 'wasm'">
       <label class="config-label">
         <span class="material-symbols-rounded" style="font-size:1rem;vertical-align:middle;">piano</span>
         Voz Web
@@ -496,7 +496,7 @@
 
       <!-- Estado 2: Detenido / sin iniciar → botón REPRODUCIR (azul) -->
       <button class="audio-btn play"
-              *ngIf="currentAudioMode === 'kokoro' ? !(kokoroVoice.isSpeaking$ | async) : !(audioService.isPlaying$ | async) && !(audioService.isPaused$ | async)"
+              *ngIf="currentAudioMode === 'kokoro' ? !(kokoroVoice.isSpeaking$ | async) : (currentAudioMode === 'native-android' ? !(nativeTts.isSpeaking$ | async) : !(audioService.isPlaying$ | async) && !(audioService.isPaused$ | async))"
               (click)="playAudio()"
               [disabled]="isAudioLoading || isKokoroProcessing">
         <span *ngIf="!isAudioLoading && !isKokoroProcessing">▶</span>
@@ -505,8 +505,8 @@
 
       <!-- Estado 3: Reproduciendo → botón PAUSAR -->
       <button class="audio-btn pause"
-              *ngIf="currentAudioMode === 'kokoro' ? (kokoroVoice.isSpeaking$ | async) : (audioService.isPlaying$ | async)"
-              (click)="currentAudioMode === 'kokoro' ? kokoroVoice.stop() : audioService.pause()"
+              *ngIf="currentAudioMode === 'kokoro' ? (kokoroVoice.isSpeaking$ | async) : (currentAudioMode === 'native-android' ? (nativeTts.isSpeaking$ | async) : (audioService.isPlaying$ | async))"
+              (click)="currentAudioMode === 'kokoro' ? kokoroVoice.stop() : (currentAudioMode === 'native-android' ? stopAudio() : audioService.pause())"
               title="Pausar"
               style="position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
         <span *ngIf="currentAudioMode !== 'kokoro' && currentAudioMode !== 'wasm'">⏸</span>

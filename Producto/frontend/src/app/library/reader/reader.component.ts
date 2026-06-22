@@ -13,6 +13,9 @@ import { SpeechRecognitionService } from '../../core/services/speech-recognition
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { WasmTtsService } from '../../core/services/wasm-tts.service';
 import { NativeTtsService } from '../../core/services/native-tts.service';
+import { StatusBar } from '@capacitor/status-bar';
+import { NavigationBar } from '@hugotomazi/capacitor-navigation-bar';
+import { Capacitor } from '@capacitor/core';
 
 export interface ProgressData {
   percentage: number;
@@ -261,6 +264,9 @@ export class ReaderComponent implements OnInit, OnDestroy {
     this.requestWakeLock();
     document.addEventListener('visibilitychange', this.handleVisibilityChange);
 
+    // Activar modo inmersivo nativo de OS apenas entra al lector
+    this.toggleImmersiveMode(true);
+
     this.saveProgressSubject.pipe(debounceTime(3000)).subscribe(p => this.syncProgressToBackend(p));
 
     this.loadInitialData();
@@ -403,9 +409,21 @@ export class ReaderComponent implements OnInit, OnDestroy {
     });
 
     // Resaltado: escuchar el word index del KokoroVoice
-
     this.kokoroVoice.currentWordIndex$.pipe(takeUntil(this.destroy$)).subscribe(idx => {
       if (this.currentAudioMode === 'kokoro' && !this.isChatOpen) {
+        this.currentWordIndex = idx;
+        if (idx !== -1) {
+          this.lastAudioWordIndex = idx;
+          this.saveAudioPosition();
+        }
+        this.cdr.detectChanges();
+        if (idx !== -1) this.scrollWordIntoView(idx);
+      }
+    });
+
+    // Resaltado: escuchar el word index del NativeTts Capacitor
+    this.nativeTts.currentWordIndex$.pipe(takeUntil(this.destroy$)).subscribe(idx => {
+      if (this.currentAudioMode === 'native-android' && !this.isChatOpen) {
         this.currentWordIndex = idx;
         if (idx !== -1) {
           this.lastAudioWordIndex = idx;
@@ -479,6 +497,9 @@ export class ReaderComponent implements OnInit, OnDestroy {
     this.audioService.stop();
     this.kokoroVoice.stop();
     this.saveAudioPosition();
+
+    // Restaurar las barras del OS al salir del lector
+    this.toggleImmersiveMode(false);
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -506,23 +527,29 @@ export class ReaderComponent implements OnInit, OnDestroy {
 
   onCanvasScroll(event: any) {
     const el = event.target;
-    const scrollTop = el.scrollTop;
+    const currentScrollTop = el.scrollTop;
     
     // Ocultar/mostrar barra superior al hacer scroll
-    if (scrollTop > this.lastScrollTop && scrollTop > 80) {
-      this.isToolbarHidden = true;
+    if (currentScrollTop > this.lastScrollTop && currentScrollTop > 50) {
+      // Scroll hacia abajo
+      if (!this.isToolbarHidden) {
+        this.isToolbarHidden = true;
+      }
     } else {
-      this.isToolbarHidden = false;
+      // Scroll hacia arriba
+      if (this.isToolbarHidden) {
+        this.isToolbarHidden = false;
+      }
     }
-    this.lastScrollTop = scrollTop;
+    this.lastScrollTop = currentScrollTop;
 
     // Calcular porcentaje de scroll del contenedor actual
     const scrollHeight = el.scrollHeight - el.clientHeight;
-    const scrollPercent = scrollHeight > 0 ? scrollTop / scrollHeight : 0;
+    const scrollPercent = scrollHeight > 0 ? currentScrollTop / scrollHeight : 0;
     
     // Actualizar barra de progreso visual y botón "Siguiente"
     this.chapterScrollPercent = Math.min(100, Math.max(0, scrollPercent * 100));
-    this.isNearEnd = scrollPercent >= 0.98 || (scrollHeight - scrollTop) < 50 || scrollHeight <= 50;
+    this.isNearEnd = scrollPercent >= 0.98 || (scrollHeight - currentScrollTop) < 50 || scrollHeight <= 50;
 
     // Calcular página decimal exacta (ej. 1.5 significa mitad de capítulo 1)
     const exactPage = (this.currentPage - 1) + scrollPercent;
@@ -539,13 +566,54 @@ export class ReaderComponent implements OnInit, OnDestroy {
     }
   }
 
-  onCanvasClick(event: MouseEvent) {
-    if (!this.tapToScrollActive) return;
+  // Activa o desactiva el modo inmersivo nativo (Oculta Status Bar en Android)
+  async toggleImmersiveMode(active: boolean) {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        if (active) {
+          await StatusBar.setOverlaysWebView({ overlay: true });
+          await StatusBar.hide();
+          await NavigationBar.hide();
+        } else {
+          await StatusBar.show();
+          await StatusBar.setOverlaysWebView({ overlay: false });
+          await NavigationBar.show();
+        }
+      } catch (err) {
+        console.warn('Plugins not fully supported', err);
+      }
+    }
+    
+    // Intentar Web Fullscreen (oculta también la barra de navegación en Android)
+    try {
+      if (active && !document.fullscreenElement) {
+         await document.documentElement.requestFullscreen();
+      } else if (!active && document.fullscreenElement) {
+         await document.exitFullscreen();
+      }
+    } catch (e) { }
+  }
 
+  onCanvasClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
     // Ignorar si el usuario clickeó en un elemento interactivo (palabra, imagen, botón)
     if (target.closest('.word') || target.closest('img') || target.closest('button')) {
       return; 
+    }
+    
+    // Si la toolbar está oculta, reintentar activar pantalla completa web por si falló
+    if (this.isToolbarHidden && !document.fullscreenElement) {
+       // La parte nativa ya está oculta, esto es solo por si estamos en navegador web
+       if (document.documentElement.requestFullscreen) {
+         document.documentElement.requestFullscreen().catch(() => {});
+       }
+    }
+
+    if (!this.tapToScrollActive) {
+      // Alternar la visibilidad de la interfaz al tocar la pantalla
+      this.isToolbarHidden = !this.isToolbarHidden;
+      this.toggleImmersiveMode(this.isToolbarHidden);
+      return;
     }
     
     // Scrollear hacia abajo 90% de la altura visible, para simular un "pasa página" natural
@@ -705,6 +773,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
           this.chapters = res.chapters;
           this.hasPremiumNarration = res.has_premium_narration;
           this.totalPages = res.chapters.length;
+          if (this.currentPage > this.totalPages) { this.currentPage = this.totalPages; } else if (this.currentPage < 1) { this.currentPage = 1; }
           this.renderCurrentChapter();
           this.loadAvatars(); // Cargar personajes una vez tenemos el inventario
         } else {
@@ -1060,7 +1129,8 @@ export class ReaderComponent implements OnInit, OnDestroy {
       this.kokoroVoice.resume();
     } else if (this.currentAudioMode === 'native-android') {
       // Capacitor plugin doesn't have resume yet, we just speak the rest or re-send text
-      this.nativeTts.speak(this.currentChapterPlainText);
+      const startWord = this.lastAudioWordIndex >= 0 ? this.lastAudioWordIndex : 0;
+      this.nativeTts.speak(this.currentChapterPlainText, startWord);
     } else {
       this.audioService.resume();
     }
@@ -1106,7 +1176,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
       this.kokoroVoice.speak(this.currentChapterPlainText, this.authorAvatar?.id || 1, startWord);
     } else if (this.currentAudioMode === 'native-android') {
       // MODO NATIVO CAPACITOR
-      this.nativeTts.speak(this.currentChapterPlainText);
+      this.nativeTts.speak(this.currentChapterPlainText, startWord);
     } else {
       // MODO GRABADO
       if (!this.hasPremiumNarration) {
@@ -1707,7 +1777,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
 
     const percentage = Math.round((exactPage / this.totalPages) * 100);
     const safePercentage = Math.min(Math.max(percentage, 0), 100); // Evitar > 100%
-    const intPage = Math.floor(exactPage) + 1; // Capítulo actual como entero
+    const intPage = Math.min(Math.floor(exactPage) + 1, this.totalPages); // Capitulo actual como entero
     
     // Calcular el porcentaje de scroll dentro del capítulo (0 a 1)
     const scrollPercent = exactPage - Math.floor(exactPage);
@@ -1779,4 +1849,5 @@ export class ReaderComponent implements OnInit, OnDestroy {
     return base + 'calm.webp'; // Por defecto
   }
 }
+
 

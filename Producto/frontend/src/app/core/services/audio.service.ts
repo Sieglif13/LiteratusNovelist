@@ -59,8 +59,10 @@ export class AudioService {
   private wasmTts = inject(WasmTtsService);
 
   constructor() {
-    this.loadVoices();
-    window.speechSynthesis.onvoiceschanged = () => this.loadVoices();
+    if (window.speechSynthesis) {
+      this.loadVoices();
+      window.speechSynthesis.onvoiceschanged = () => this.loadVoices();
+    }
 
     this.wasmTts.playbackEnded$.subscribe(() => {
       if (this.currentMode === 'wasm') {
@@ -73,6 +75,10 @@ export class AudioService {
 
   // ── Voces ────────────────────────────────────────────────────────
   private loadVoices() {
+    if (!window.speechSynthesis) {
+      this.voices = [];
+      return;
+    }
     const all = window.speechSynthesis.getVoices();
     let spanish = all.filter(v => v.lang.startsWith('es'));
     if (spanish.length === 0) spanish = all; // fallback
@@ -182,7 +188,7 @@ export class AudioService {
   }
 
   private playNativeFrom(fromChar: number) {
-    window.speechSynthesis.cancel();
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
     this.clearNativeInterval();
     this.currentMode = 'native';
 
@@ -220,74 +226,79 @@ export class AudioService {
 
     const baseWordOffset = chunk.wordOffset + (localFromChar > 0 ? chunk.text.substring(0, localFromChar).split(/\s+/).filter(w => w.length > 0).length : 0);
 
-    this.utterance = new SpeechSynthesisUtterance(textToSpeak);
-    this.utterance.lang  = this.selectedVoice?.lang ?? 'es-ES';
-    this.utterance.rate  = this.playbackRate;
-    if (this.selectedVoice) this.utterance.voice = this.selectedVoice;
+    if (typeof SpeechSynthesisUtterance !== 'undefined') {
+      let boundaryFired = false;
+      let simulatedIdx = 0;
 
-    let boundaryFired = false;
-    let simulatedIdx = 0;
+      this.utterance = new SpeechSynthesisUtterance(textToSpeak);
+      this.utterance.lang  = this.selectedVoice?.lang ?? 'es-ES';
+      this.utterance.rate  = this.playbackRate;
+      if (this.selectedVoice) this.utterance.voice = this.selectedVoice;
 
-    this.utterance.onboundary = (event: SpeechSynthesisEvent) => {
-      boundaryFired = true;
-      this.clearNativeInterval();
-      
-      this.lastCharIndex = chunk.startCharIndex + localFromChar + event.charIndex;
+      this.utterance.onboundary = (event: SpeechSynthesisEvent) => {
+        boundaryFired = true;
+        this.clearNativeInterval();
+        
+        this.lastCharIndex = chunk.startCharIndex + localFromChar + event.charIndex;
 
-      const before = textToSpeak.substring(0, event.charIndex);
-      const localIdx = before.split(/\s+/).filter(w => w.length > 0).length;
-      this.wordIndexSubject.next(baseWordOffset + localIdx);
-    };
+        const before = textToSpeak.substring(0, event.charIndex);
+        const localIdx = before.split(/\s+/).filter(w => w.length > 0).length;
+        this.wordIndexSubject.next(baseWordOffset + localIdx);
+      };
 
-    this.utterance.onstart = () => {
-      this.isPlayingSubject.next(true);
-      setTimeout(() => {
-        if (!boundaryFired && !this.nativeFallbackInterval) {
-          const currentWords = textToSpeak.split(/\s+/).filter(w => w.length > 0);
-          const msPerWord = 1000 / (2.5 * this.playbackRate);
-          this.nativeFallbackInterval = setInterval(() => {
-            if (!this.isPausedSubject.getValue()) {
-              if (simulatedIdx < currentWords.length) {
-                this.wordIndexSubject.next(baseWordOffset + simulatedIdx);
-                this.lastCharIndex = chunk.startCharIndex + localFromChar + (simulatedIdx * 5);
-                simulatedIdx++;
+      this.utterance.onstart = () => {
+        this.isPlayingSubject.next(true);
+        setTimeout(() => {
+          if (!boundaryFired && !this.nativeFallbackInterval) {
+            const currentWords = textToSpeak.split(/\s+/).filter(w => w.length > 0);
+            const msPerWord = 1000 / (2.5 * this.playbackRate);
+            this.nativeFallbackInterval = setInterval(() => {
+              if (!this.isPausedSubject.getValue()) {
+                if (simulatedIdx < currentWords.length) {
+                  this.wordIndexSubject.next(baseWordOffset + simulatedIdx);
+                  this.lastCharIndex = chunk.startCharIndex + localFromChar + (simulatedIdx * 5);
+                  simulatedIdx++;
+                }
               }
-            }
-          }, msPerWord);
+            }, msPerWord);
+          }
+        }, 500);
+      };
+
+      this.utterance.onend = () => {
+        this.clearNativeInterval();
+        if (this.isPausedSubject.getValue() || !this.isPlayingSubject.getValue()) {
+           return; 
         }
-      }, 500);
-    };
 
-    this.utterance.onend = () => {
-      this.clearNativeInterval();
-      if (this.isPausedSubject.getValue() || !this.isPlayingSubject.getValue()) {
-         return; 
-      }
-
-      this.currentChunkIndex++;
-      if (this.currentChunkIndex < this.textChunks.length) {
-         this.playCurrentChunk(-1);
-      } else {
-         this.handleChapterEnd();
-      }
-    };
-
-    this.utterance.onerror = (e) => {
-      this.clearNativeInterval();
-      if (e.error !== 'interrupted' && e.error !== 'canceled') {
-        console.warn('Speech synthesis error on chunk:', e);
-        if (this.isPlayingSubject.getValue()) {
-           this.currentChunkIndex++;
+        this.currentChunkIndex++;
+        if (this.currentChunkIndex < this.textChunks.length) {
            this.playCurrentChunk(-1);
+        } else {
+           this.handleChapterEnd();
         }
-      }
-    };
+      };
 
-    window.speechSynthesis.speak(this.utterance);
-    
-    // Fallback Chrome Android bug
-    if (window.speechSynthesis.paused) {
-       window.speechSynthesis.resume();
+      this.utterance.onerror = (e) => {
+        this.clearNativeInterval();
+        if (e.error !== 'interrupted' && e.error !== 'canceled') {
+          console.warn('Speech synthesis error on chunk:', e);
+          if (this.isPlayingSubject.getValue()) {
+             this.currentChunkIndex++;
+             this.playCurrentChunk(-1);
+          }
+        }
+      };
+
+      window.speechSynthesis.speak(this.utterance);
+      
+      // Fallback Chrome Android bug
+      if (window.speechSynthesis.paused) {
+         window.speechSynthesis.resume();
+      }
+    } else {
+      // Fallback for native Android where Web Speech API doesn't exist
+      console.warn("SpeechSynthesisUtterance not available. Please use Native mode.");
     }
   }
 
@@ -407,7 +418,7 @@ export class AudioService {
     if (this.currentMode === 'native') {
       // En navegadores como Chrome/Android, pause() y resume() nativos tienen bugs severos.
       // Es más seguro cancelar la cola por completo y luego reiniciar desde el índice guardado.
-      window.speechSynthesis.cancel();
+      if (window.speechSynthesis) window.speechSynthesis.cancel();
       this.clearNativeInterval();
     } else if (this.currentMode === 'wasm') {
       this.wasmTts.pause();
@@ -437,7 +448,7 @@ export class AudioService {
   }
 
   private cancelAll() {
-    window.speechSynthesis.cancel();
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
     this.clearNativeInterval();
     if (this.proAudio) {
       this.proAudio.pause();

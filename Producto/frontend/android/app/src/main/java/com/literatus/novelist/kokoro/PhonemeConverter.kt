@@ -1,9 +1,6 @@
 package com.literatus.novelist.kokoro
 
 import android.content.Context
-import android.content.res.Resources
-import com.literatus.novelist.R
-import com.github.medavox.ipa_transcribers.Language
 import java.io.IOException
 
 class PhonemeConverter(context: Context) {

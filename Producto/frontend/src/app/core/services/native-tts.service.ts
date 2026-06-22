@@ -20,6 +20,12 @@ export class NativeTtsService {
   public isReady$ = new BehaviorSubject<boolean>(false);
   public isSpeaking$ = new BehaviorSubject<boolean>(false);
   public status$ = new BehaviorSubject<string>('NotLoaded');
+  public currentWordIndex$ = new BehaviorSubject<number>(-1);
+
+  private simulationInterval: any = null;
+  private currentWordsCount: number = 0;
+  private simulatedIdx: number = 0;
+  private baseWordOffset: number = 0;
 
   constructor() {
     this.initListeners();
@@ -35,18 +41,60 @@ export class NativeTtsService {
 
     NativeTts.addListener('speakingChanged', (info) => {
       this.isSpeaking$.next(info.isSpeaking);
+      if (!info.isSpeaking) {
+        this.clearSimulation();
+      }
     });
   }
 
-  async speak(text: string) {
-    await NativeTts.speak({ text });
+  async speak(fullText: string, startWordIndex: number = 0) {
+    this.clearSimulation();
+    const words = fullText.split(/\s+/).filter(w => w.length > 0);
+    
+    // Si queremos empezar desde una palabra en particular:
+    let textToSpeak = fullText;
+    this.baseWordOffset = startWordIndex;
+    this.simulatedIdx = 0;
+    this.currentWordsCount = words.length - startWordIndex;
+    
+    if (startWordIndex > 0 && startWordIndex < words.length) {
+      // Reconstruimos el texto restante
+      const remainingWords = words.slice(startWordIndex);
+      textToSpeak = remainingWords.join(' ');
+    }
+    
+    this.currentWordIndex$.next(startWordIndex);
+    
+    // Iniciar simulación de resaltado (~2.5 palabras por segundo)
+    const msPerWord = 1000 / 2.5; 
+    this.simulationInterval = setInterval(() => {
+      if (this.isSpeaking$.getValue()) {
+        if (this.simulatedIdx < this.currentWordsCount) {
+          this.currentWordIndex$.next(this.baseWordOffset + this.simulatedIdx);
+          this.simulatedIdx++;
+        } else {
+          this.clearSimulation();
+        }
+      }
+    }, msPerWord);
+
+    await NativeTts.speak({ text: textToSpeak });
   }
 
   async stop() {
+    this.clearSimulation();
+    this.currentWordIndex$.next(-1);
     await NativeTts.stop();
   }
 
   async setVoice(voiceId: string) {
     await NativeTts.setVoice({ voiceId });
+  }
+
+  private clearSimulation() {
+    if (this.simulationInterval) {
+      clearInterval(this.simulationInterval);
+      this.simulationInterval = null;
+    }
   }
 }

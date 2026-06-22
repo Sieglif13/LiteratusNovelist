@@ -29,6 +29,13 @@ android {
             pickFirsts += "lib/**/libc++_shared.so"
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
+    }
+    kotlinOptions {
+        jvmTarget = '21'
+    }
 }
 
 repositories {
@@ -49,7 +56,7 @@ dependencies {
     implementation project(':capacitor-cordova-android-plugins')
 
     // Kotlin & Coroutines
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.10"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.24"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
 
     // TTS Dependencies (Kokoro / ONNX / Piper)

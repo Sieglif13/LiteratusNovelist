@@ -138,27 +138,32 @@ export class BookDetailPageComponent implements OnInit, AfterViewInit, OnDestroy
     }
 
     const text = this.book.synopsis.slice(0, 400);
-    this.ttsUtterance = new SpeechSynthesisUtterance(text);
-    this.ttsUtterance.lang = 'es-ES';
-    this.ttsUtterance.rate = 0.95;
-    this.ttsUtterance.pitch = 1.1;
 
-    this.ttsUtterance.onstart = () => {
-      this.isTalking = true;
-      this.liyumi.speak({ text: '🎙️ Leyendo la sinopsis...', duration: 0 });
-    };
+    if (typeof SpeechSynthesisUtterance !== 'undefined') {
+      this.ttsUtterance = new SpeechSynthesisUtterance(text);
+      this.ttsUtterance.lang = 'es-ES';
+      this.ttsUtterance.rate = 0.95;
+      this.ttsUtterance.pitch = 1.1;
 
-    this.ttsUtterance.onend = () => {
-      this.isTalking = false;
-      this.liyumi.speak({ text: '✨ ¿Qué te pareció? ¡Es fascinante!', duration: 3000 });
-    };
+      this.ttsUtterance.onstart = () => {
+        this.isTalking = true;
+        this.liyumi.speak({ text: '🎙️ Leyendo la sinopsis...', duration: 0 });
+      };
 
-    this.ttsUtterance.onerror = () => {
-      this.isTalking = false;
-      this.liyumi.stopSpeaking();
-    };
+      this.ttsUtterance.onend = () => {
+        this.isTalking = false;
+        this.liyumi.speak({ text: '✨ ¿Qué te pareció? ¡Es fascinante!', duration: 3000 });
+      };
 
-    window.speechSynthesis.speak(this.ttsUtterance);
+      this.ttsUtterance.onerror = () => {
+        this.isTalking = false;
+        this.liyumi.stopSpeaking();
+      };
+
+      window.speechSynthesis.speak(this.ttsUtterance);
+    } else {
+      console.warn("SpeechSynthesisUtterance not available in this WebView");
+    }
   }
 
   stopSynopsis(): void {

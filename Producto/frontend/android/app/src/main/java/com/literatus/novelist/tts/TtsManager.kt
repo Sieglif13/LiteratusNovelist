@@ -186,19 +186,53 @@ class TtsManager {
         val cleaned = cleanTextForSpeech(text)
         if (cleaned.isEmpty() || !isInitialized.get()) return
         
+        // Split text into chunks to avoid Android's 4000 char limit and improve response time
+        val chunks = splitTextIntoChunks(cleaned)
+        
         val shouldSpeak = synchronized(queueLock) {
-            if (isSpeaking.get()) {
-                speechQueue.addLast(cleaned)
-                false
-            } else {
+            val wasSpeaking = isSpeaking.get()
+            speechQueue.addAll(chunks)
+            if (!wasSpeaking && speechQueue.isNotEmpty()) {
                 isSpeaking.set(true)
                 true
+            } else {
+                false
             }
         }
         
         if (shouldSpeak) {
-            speakInternal(cleaned)
+            val firstChunk = synchronized(queueLock) { speechQueue.removeFirstOrNull() }
+            if (firstChunk != null) {
+                speakInternal(firstChunk)
+            } else {
+                isSpeaking.set(false)
+            }
         }
+    }
+
+    private fun splitTextIntoChunks(text: String): List<String> {
+        val maxChunkLength = 400
+        val regex = Regex("(?<=[.?!;:])\\s+")
+        val sentences = text.split(regex)
+        
+        val chunks = mutableListOf<String>()
+        var currentChunk = ""
+        
+        for (sentence in sentences) {
+            val trimmed = sentence.trim()
+            if (trimmed.isEmpty()) continue
+            
+            if (currentChunk.length + trimmed.length > maxChunkLength && currentChunk.isNotEmpty()) {
+                chunks.add(currentChunk)
+                currentChunk = trimmed
+            } else {
+                currentChunk = if (currentChunk.isEmpty()) trimmed else "$currentChunk $trimmed"
+            }
+        }
+        if (currentChunk.isNotEmpty()) {
+            chunks.add(currentChunk)
+        }
+        return chunks
     }
 
     private fun speakInternal(text: String) {

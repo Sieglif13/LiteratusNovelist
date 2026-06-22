@@ -59,6 +59,7 @@ export class CheckoutComponent implements OnInit {
     this.api.post<any>('finance/pay/', {
       item_type: this.itemType,
       item_reference: this.itemReference,
+      return_base_url: window.location.origin
     }).subscribe({
       next: (data) => {
         // Si es una compra gratuita, redirigir directamente al éxito

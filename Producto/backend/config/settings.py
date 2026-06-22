@@ -164,8 +164,16 @@ CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[
     'capacitor://localhost',
     'http://localhost',
 ])
-CORS_ALLOW_ALL_ORIGINS = True
+# Desactivado para producción (Seguridad)
+CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
+
+# Flags de seguridad estrictos (activos cuando DEBUG=False en producción)
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
 
 # ---------------------------------------------------------------------------
 # Django REST Framework
