@@ -249,3 +249,67 @@ body:has(.container.dashboard-mode) {
   filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.6));
 }
 
+/* ── LIGHT THEME COMPONENT OVERRIDES ── */
+[data-theme="light-gallery"] .search-input {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(0, 0, 0, 0.2) !important;
+  color: #111 !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
+}
+
+[data-theme="light-gallery"] .search-input::placeholder {
+  color: #64748b !important;
+}
+
+[data-theme="light-gallery"] .search-input:focus {
+  background: #ffffff !important;
+  border-color: #111 !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="light-gallery"] .category-pill {
+  background: #f8fafc !important;
+  color: #334155 !important;
+  border-color: #cbd5e1 !important;
+}
+
+[data-theme="light-gallery"] .category-pill:hover {
+  background: #e2e8f0 !important;
+  border-color: #94a3b8 !important;
+}
+
+[data-theme="light-gallery"] .category-pill.active {
+  background: #0f172a !important;
+  color: #ffffff !important;
+  border-color: #0f172a !important;
+}
+
+[data-theme="light-gallery"] .progress-badge {
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: #0f172a !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  font-weight: 700 !important;
+}
+
+[data-theme="light-gallery"] .title-font {
+  background: linear-gradient(to right, #111, #333) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: none !important;
+}
+
+[data-theme="light-gallery"] .glass-select-mini {
+  background: #ffffff !important;
+  color: #111 !important;
+  border-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+[data-theme="light-gallery"] .filter-box-mini::after {
+  color: #111 !important;
+}
+
+[data-theme="light-gallery"] .search-box .search-icon {
+  color: #475569 !important;
+}
