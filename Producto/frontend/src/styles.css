@@ -563,3 +563,13 @@ body:has(.container.dashboard-mode) {
 [data-theme="light-gallery"] .product-synopsis, [data-theme="light-gallery"] .price-label { color: #555 !important; }
 [data-theme="light-gallery"] .price-value { color: #d32f2f !important; }
 [data-theme="light-gallery"] .security-badge { background: #f8f9fa !important; border-color: #dee2e6 !important; color: #333 !important; }
+
+/* Adicionales faltantes para Book Detail Light Theme */
+[data-theme="light-gallery"] .guest-btn { background: #fff !important; color: #000 !important; border: 1px solid #000 !important; box-shadow: 0 2px 10px rgba(0,0,0,0.05) !important; }
+[data-theme="light-gallery"] .guest-btn:hover { background: #000 !important; color: #fff !important; }
+[data-theme="light-gallery"] .avatars-container h3, [data-theme="light-gallery"] .legal-header h3 { color: #000 !important; }
+[data-theme="light-gallery"] .avatar-name { color: #333 !important; }
+[data-theme="light-gallery"] .legal-text { color: #555 !important; }
+[data-theme="light-gallery"] .tts-btn { color: #000 !important; border-color: #000 !important; }
+[data-theme="light-gallery"] .tts-btn:hover { background: rgba(0,0,0,0.1) !important; }
+

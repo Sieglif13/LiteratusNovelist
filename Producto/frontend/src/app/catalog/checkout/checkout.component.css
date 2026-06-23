@@ -216,3 +216,65 @@
   font-size: 0.85rem;
   color: #666;
 }
+
+@media (max-width: 768px) {
+  .checkout-page {
+    padding: 1rem 0.5rem 2rem;
+    min-height: auto;
+  }
+  .checkout-container {
+    gap: 0.8rem;
+  }
+  .checkout-icon {
+    font-size: 2.2rem;
+    margin-bottom: 0.2rem;
+  }
+  .checkout-header h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0;
+  }
+  .checkout-header p {
+    font-size: 0.85rem;
+    margin-bottom: 0;
+  }
+  .order-summary {
+    padding: 1.2rem;
+  }
+  .summary-product {
+    margin-bottom: 1rem;
+    gap: 1rem;
+  }
+  .product-image {
+    height: 110px;
+    width: 75px;
+  }
+  .product-title {
+    font-size: 1.2rem;
+    margin-bottom: 0.2rem;
+  }
+  .product-synopsis {
+    display: none; /* Oculta sinopsis en móviles para ahorrar espacio vertical */
+  }
+  .price-row {
+    padding-top: 1rem;
+  }
+  .price-value {
+    font-size: 1.4rem;
+  }
+  .security-section {
+    gap: 0.5rem;
+  }
+  .security-badge {
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+  }
+  .btn-pay {
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+  }
+  .btn-cancel {
+    padding: 0.8rem;
+    font-size: 0.9rem;
+  }
+}
+
