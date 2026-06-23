@@ -34,11 +34,11 @@ export class VerifyEmailComponent implements OnInit {
 
   verify(uid: string, token: string) {
     this.authService.verifyEmail(uid, token).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         this.isLoading = false;
         this.successMessage = res.message || 'Tu cuenta ha sido verificada exitosamente.';
       },
-      error: (err) => {
+      error: (err: any) => {
         this.isLoading = false;
         this.errorMessage = err.error?.error || 'El enlace es inválido o ha expirado.';
       }

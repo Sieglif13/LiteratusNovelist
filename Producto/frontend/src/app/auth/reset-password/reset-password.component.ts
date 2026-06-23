@@ -49,11 +49,11 @@ export class ResetPasswordComponent implements OnInit {
     this.error = '';
 
     this.authService.confirmPasswordReset(this.uid, this.token, this.newPassword).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         this.isLoading = false;
         this.message = res.message || 'Contraseña actualizada con éxito.';
       },
-      error: (err) => {
+      error: (err: any) => {
         this.isLoading = false;
         this.error = err.error?.error || 'Ha ocurrido un error al actualizar la contraseña.';
       }

@@ -22,11 +22,11 @@ export class ForgotPasswordComponent {
     this.error = '';
 
     this.authService.requestPasswordReset(this.email).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         this.isLoading = false;
         this.message = res.message || 'Se ha enviado un correo con instrucciones.';
       },
-      error: (err) => {
+      error: (err: any) => {
         this.isLoading = false;
         this.error = err.error?.error || 'Ha ocurrido un error al intentar enviar el correo.';
       }

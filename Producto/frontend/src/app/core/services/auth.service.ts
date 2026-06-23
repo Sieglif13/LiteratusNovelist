@@ -1,5 +1,6 @@
-import { Injectable, signal } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, signal, inject } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { ApiService } from './api.service';
 
 export interface UserProfile {
   id: string;
@@ -25,6 +26,8 @@ export class AuthService {
   private _currentUser = signal<UserProfile | null>(this.loadUserFromStorage());
   public readonly currentUser = this._currentUser.asReadonly();
 
+  private api = inject(ApiService);
+
   constructor() {}
 
   private hasToken(): boolean {
@@ -34,15 +37,15 @@ export class AuthService {
   // --- Recuperación y Verificación de Correo ---
   
   verifyEmail(uid: string, token: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/verify-email/`, { uid, token });
+    return this.api.post(`users/verify-email/`, { uid, token });
   }
 
   requestPasswordReset(email: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/password-reset/`, { email });
+    return this.api.post(`users/password-reset/`, { email });
   }
 
   confirmPasswordReset(uid: string, token: string, new_password: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/password-reset-confirm/`, { uid, token, new_password });
+    return this.api.post(`users/password-reset-confirm/`, { uid, token, new_password });
   }
 
   private loadUserFromStorage(): UserProfile | null {
