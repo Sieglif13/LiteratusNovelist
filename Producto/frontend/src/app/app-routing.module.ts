@@ -3,6 +3,9 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
+import { VerifyEmailComponent } from './auth/verify-email/verify-email.component';
+import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './auth/reset-password/reset-password.component';
 import { BookListComponent } from './catalog/book-list/book-list.component';
 import { BookDetailPageComponent } from './catalog/book-detail-page/book-detail-page.component';
 import { ReaderComponent } from './library/reader/reader.component';
@@ -29,6 +32,9 @@ const routes: Routes = [
   { path: 'tavern', component: TavernComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'verify-email', component: VerifyEmailComponent },
+  { path: 'forgot-password', component: ForgotPasswordComponent },
+  { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
   { path: 'catalog', component: BookListComponent },
   { path: 'authors', component: AuthorListComponent },

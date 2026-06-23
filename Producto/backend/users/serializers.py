@@ -50,6 +50,18 @@ class UserWriteSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
+        # Desactivar usuario hasta que verifique su email
+        validated_data['is_active'] = False
         user = User.objects.create_user(**validated_data) # Hash automático de pass
+        
+        # Enviar correo de verificación
+        from .utils import send_verification_email
+        try:
+            send_verification_email(user)
+        except Exception as e:
+            # En caso de error de correo (ej. credenciales inválidas en dev),
+            # dejamos log para no romper el registro pero poder debuggear.
+            print(f"Error enviando correo de verificación: {e}")
+            
         # Perfil se crea vía señal en users/signals.py para asegurar ink_balance = 150
         return user

@@ -31,6 +31,20 @@ export class AuthService {
     return !!localStorage.getItem(this.TOKEN_KEY);
   }
 
+  // --- Recuperación y Verificación de Correo ---
+  
+  verifyEmail(uid: string, token: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/verify-email/`, { uid, token });
+  }
+
+  requestPasswordReset(email: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/password-reset/`, { email });
+  }
+
+  confirmPasswordReset(uid: string, token: string, new_password: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/password-reset-confirm/`, { uid, token, new_password });
+  }
+
   private loadUserFromStorage(): UserProfile | null {
     try {
       const raw = localStorage.getItem(this.USER_KEY);

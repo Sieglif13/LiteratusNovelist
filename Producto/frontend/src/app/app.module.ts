@@ -39,6 +39,9 @@ import { CategoriesComponent } from './categories/categories.component';
 import { CategoryDetailComponent } from './categories/category-detail/category-detail.component';
 import { DiscoverComponent } from './discover/discover.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { VerifyEmailComponent } from './auth/verify-email/verify-email.component';
+import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './auth/reset-password/reset-password.component';
 
 @NgModule({
   declarations: [
@@ -62,7 +65,10 @@ import { ServiceWorkerModule } from '@angular/service-worker';
     FooterComponent,
     CategoriesComponent,
     CategoryDetailComponent,
-    DiscoverComponent
+    DiscoverComponent,
+    VerifyEmailComponent,
+    ForgotPasswordComponent,
+    ResetPasswordComponent
   ],
   imports: [
     BrowserModule,
