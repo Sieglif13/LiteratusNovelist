@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -11,13 +11,12 @@ export class ApiService {
   private baseUrl = environment.apiUrl;
 
   get<T>(endpoint: string, params?: HttpParams): Observable<T> {
-    // Evitar que el navegador cachee respuestas (ej: Mi Biblioteca desactualizada tras compra)
-    const headers = new HttpHeaders({
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      'Pragma': 'no-cache',
-      'Expires': '0'
-    });
-    return this.http.get<T>(`${this.baseUrl}${endpoint}`, { params, headers });
+    // Usar un parámetro de query (timestamp) para evitar caché agresivo del navegador
+    // Esto es mucho más seguro que inyectar cabeceras Cache-Control, lo cual rompe CORS
+    let safeParams = params || new HttpParams();
+    safeParams = safeParams.set('_t', new Date().getTime().toString());
+    
+    return this.http.get<T>(`${this.baseUrl}${endpoint}`, { params: safeParams });
   }
 
   post<T>(endpoint: string, body: any): Observable<T> {
