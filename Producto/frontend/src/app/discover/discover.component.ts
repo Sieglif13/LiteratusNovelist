@@ -45,14 +45,14 @@ export class DiscoverComponent implements OnInit, OnDestroy {
   activeMood: string | null = null;
   moods: Mood[] = [
     { id: 'all', label: 'Todo', icon: 'apps', filterFn: () => true },
-    { id: 'dark', label: 'Algo oscuro', icon: 'dark_mode', filterFn: (b) => this.hasTag(b, 'terror') || this.hasTag(b, 'policíaca') || this.hasTag(b, 'suspense') },
-    { id: 'brave', label: 'Sentirme valiente', icon: 'swords', filterFn: (b) => this.hasTag(b, 'acción') || this.hasTag(b, 'aventura') || this.hasTag(b, 'mitos') || this.hasTag(b, 'leyendas') },
+    { id: 'dark', label: 'Algo oscuro', icon: 'dark_mode', filterFn: (b) => this.hasCategory(b, 'terror') || this.hasCategory(b, 'misterio') || this.hasCategory(b, 'suspense') },
+    { id: 'brave', label: 'Sentirme valiente', icon: 'swords', filterFn: (b) => this.hasCategory(b, 'aventura') || this.hasCategory(b, 'fantasía') || this.hasCategory(b, 'ciencia ficción') || this.hasCategory(b, 'acción') },
     { id: 'short', label: 'Lectura rápida', icon: 'timer', filterFn: (b) => {
       const time = String(b.estimated_reading_time || '');
-      return time.includes('15') || time.includes('20') || time.includes('30') || this.hasTag(b, 'cuentos') || this.hasTag(b, 'novela corta') || this.hasTag(b, 'antologías');
+      return time.includes('15') || time.includes('20') || time.includes('30') || this.hasCategory(b, 'cuentos') || this.hasCategory(b, 'novela corta');
     } },
-    { id: 'reflect', label: 'Para reflexionar', icon: 'psychology', filterFn: (b) => this.hasTag(b, 'filosofía') || this.hasTag(b, 'ensayos') || this.hasTag(b, 'psicología') || this.hasTag(b, 'sociedad') },
-    { id: 'love', label: 'Un poco de romance', icon: 'favorite', filterFn: (b) => this.hasTag(b, 'romántica') || this.hasTag(b, 'erótica') || this.hasTag(b, 'poesía') },
+    { id: 'reflect', label: 'Para reflexionar', icon: 'psychology', filterFn: (b) => this.hasCategory(b, 'clásica') || this.hasCategory(b, 'contemporánea') || this.hasCategory(b, 'ensayos') },
+    { id: 'love', label: 'Un poco de romance', icon: 'favorite', filterFn: (b) => this.hasCategory(b, 'romance') || this.hasCategory(b, 'romántica') || this.hasCategory(b, 'poesía') },
   ];
 
   /* ── Rows ── */
@@ -310,11 +310,19 @@ export class DiscoverComponent implements OnInit, OnDestroy {
   /* ═══════════════════════════════════════════════════════════════════
      UTILS
      ═══════════════════════════════════════════════════════════════════ */
-  private hasTag(book: any, tagName: string): boolean {
-    if (!book.tags) return false;
-    return book.tags.some((t: any) => {
-      const name = (t.name || '').toLowerCase();
-      return name.includes(tagName.toLowerCase());
-    });
+  private hasCategory(book: any, keyword: string): boolean {
+    const kw = keyword.toLowerCase();
+    
+    // Check tags
+    if (book.tags && book.tags.some((t: any) => (t.name || '').toLowerCase().includes(kw))) {
+      return true;
+    }
+    
+    // Check genres
+    if (book.genres && book.genres.some((g: any) => (g.name || '').toLowerCase().includes(kw))) {
+      return true;
+    }
+    
+    return false;
   }
 }
