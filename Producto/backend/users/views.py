@@ -123,3 +123,90 @@ class SpendInkView(APIView):
             'message': f'✓ {amount} de Tinta descontada por: {concept}.',
             'ink_balance': profile.ink_balance
         }, status=status.HTTP_200_OK)
+
+
+from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_str
+from django.contrib.auth.tokens import default_token_generator
+from .utils import send_password_reset_email
+
+class VerifyEmailView(APIView):
+    """
+    Endpoint POST /api/v1/users/verify-email/
+    Recibe uid y token para activar la cuenta del usuario.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        uidb64 = request.data.get('uid')
+        token = request.data.get('token')
+        
+        if not uidb64 or not token:
+            return Response({'error': 'Faltan parámetros.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+            
+        if user is not None and default_token_generator.check_token(user, token):
+            user.is_active = True
+            user.save()
+            return Response({'message': 'Cuenta verificada exitosamente.'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'El enlace de verificación es inválido o ha expirado.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PasswordResetRequestView(APIView):
+    """
+    Endpoint POST /api/v1/users/password-reset/
+    Recibe un email y, si existe el usuario, le envía un enlace de recuperación.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        if not email:
+            return Response({'error': 'Debes proveer un correo electrónico.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        try:
+            user = User.objects.get(email=email)
+            send_password_reset_email(user)
+        except User.DoesNotExist:
+            # Por seguridad, no revelamos si el correo existe o no, 
+            # simplemente decimos que se envió (evita enumeración de usuarios).
+            pass
+        except Exception as e:
+            print(f"Error enviando correo de reset de password: {e}")
+            
+        return Response({'message': 'Si tu correo está registrado, recibirás un enlace de recuperación pronto.'}, status=status.HTTP_200_OK)
+
+
+class PasswordResetConfirmView(APIView):
+    """
+    Endpoint POST /api/v1/users/password-reset-confirm/
+    Recibe uid, token y nueva contraseña (new_password) para resetearla.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        uidb64 = request.data.get('uid')
+        token = request.data.get('token')
+        new_password = request.data.get('new_password')
+        
+        if not all([uidb64, token, new_password]):
+            return Response({'error': 'Faltan parámetros requeridos.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+            
+        if user is not None and default_token_generator.check_token(user, token):
+            user.set_password(new_password)
+            user.save()
+            return Response({'message': 'Contraseña actualizada exitosamente. Ya puedes iniciar sesión.'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'El enlace de recuperación es inválido o ha expirado.'}, status=status.HTTP_400_BAD_REQUEST)
