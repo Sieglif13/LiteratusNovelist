@@ -1,15 +1,15 @@
 .checkout-page {
-  min-height: 100vh;
+  min-height: calc(100vh - 80px);
   display: flex;
-  align-items: flex-start; /* Subido más arriba */
+  align-items: flex-start;
   justify-content: center;
-  padding: 7rem 1rem 4rem; /* Reducido en móvil, más arriba */
+  padding: 2rem 1rem 4rem;
   color: #fff;
 }
 
 @media (min-width: 768px) {
   .checkout-page {
-    padding: 8rem 2rem 4rem;
+    padding: 3rem 2rem 4rem;
   }
 }
 
