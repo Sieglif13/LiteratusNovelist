@@ -220,6 +220,7 @@
           </div>
           <div class="recommended-info">
             <h4 class="recommended-book-title">{{ book.title }}</h4>
+            <p class="recommended-author" *ngIf="book.author_name">{{ book.author_name }}</p>
             <div class="recommended-tags">
               <span class="rec-tag" *ngFor="let tag of book.tags?.slice(0,1)">#{{ tag.name }}</span>
             </div>

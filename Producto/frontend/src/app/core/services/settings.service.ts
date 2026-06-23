@@ -40,6 +40,7 @@ export class SettingsService {
 
   private setTheme(theme: string) {
     this.currentThemeSubject.next(theme);
+    localStorage.setItem('literatus-theme', theme);
     if (theme === 'default') {
       document.documentElement.removeAttribute('data-theme');
     } else {
