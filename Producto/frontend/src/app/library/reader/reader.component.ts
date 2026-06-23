@@ -1345,7 +1345,15 @@ export class ReaderComponent implements OnInit, OnDestroy {
   private scrollWordIntoView(idx: number, highlightBookmark: boolean = false) {
     const el = document.getElementById(`word-${idx}`);
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+      const rect = el.getBoundingClientRect();
+      const safeTop = window.innerHeight * 0.2;
+      const safeBottom = window.innerHeight * 0.8;
+      
+      // Solo hacer auto-scroll si la palabra sale de los límites seguros
+      // Esto evita el molesto efecto "sube y baja" constante en cada palabra
+      if (rect.top < safeTop || rect.bottom > safeBottom) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+      }
     }
   }
 
