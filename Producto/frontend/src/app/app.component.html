@@ -52,6 +52,13 @@
               <span class="mat-symbol">manage_accounts</span>
               <span>Editar Perfil</span>
             </button>
+            <ng-container *ngIf="isAdmin">
+              <mat-divider></mat-divider>
+              <button mat-menu-item routerLink="/dashboard/overview">
+                <span class="mat-symbol">dashboard</span>
+                <span>Panel de Control</span>
+              </button>
+            </ng-container>
             <mat-divider></mat-divider>
             <button mat-menu-item (click)="logout()" class="logout-btn">
               <!-- logout: icono de puerta con flecha, universalmente reconocible -->

@@ -151,3 +151,38 @@ class TimeStampedModel(models.Model):
         self.is_active = True
         self.deleted_at = None
         self.save(update_fields=['is_active', 'deleted_at', 'updated_at'])
+
+class StoreSettings(TimeStampedModel):
+    """
+    Configuración global de la tienda/sitio.
+    Implementa el patrón Singleton (solo debe existir un registro con pk=1).
+    """
+    class ThemeChoices(models.TextChoices):
+        DEFAULT = 'default', 'Classic Dark'
+        NEON = 'neon', 'Cyber Neon'
+        LIGHT_GALLERY = 'light-gallery', 'Light Gallery'
+
+    theme = models.CharField(
+        max_length=50,
+        choices=ThemeChoices.choices,
+        default=ThemeChoices.DEFAULT,
+        help_text="Tema visual global para la tienda."
+    )
+
+    def save(self, *args, **kwargs):
+        # Aseguramos que siempre sea el mismo registro (Singleton)
+        # Como usamos UUID por defecto en TimeStampedModel, aquí tenemos
+        # que forzar una manera de asegurar unicidad. En vez de pk=1 que falla con UUID,
+        # limpiamos los demás registros si es necesario, o simplemente limitamos en la vista.
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def load(cls):
+        obj = cls.objects.first()
+        if not obj:
+            obj = cls.objects.create()
+        return obj
+
+    class Meta:
+        verbose_name = "Configuración de la Tienda"
+        verbose_name_plural = "Configuraciones de la Tienda"

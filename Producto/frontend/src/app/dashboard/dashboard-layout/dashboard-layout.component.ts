@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AuthService } from '../../core/services/auth.service';
+import { SettingsService } from '../../core/services/settings.service';
 
 @Component({
   selector: 'app-dashboard-layout',
@@ -20,7 +21,10 @@ export class DashboardLayoutComponent implements OnInit {
     '/dashboard/authors': 'Gestión de Autores',
   };
 
-  constructor(private router: Router, private auth: AuthService) {}
+  themes = ['default', 'neon', 'light-gallery'];
+  currentTheme = 'default';
+
+  constructor(private router: Router, private auth: AuthService, private settingsService: SettingsService) {}
 
   ngOnInit(): void {
     this.router.events.pipe(
@@ -28,19 +32,18 @@ export class DashboardLayoutComponent implements OnInit {
     ).subscribe((e: any) => {
       this.pageTitle = this.pageTitles[e.urlAfterRedirects] || 'Dashboard';
     });
+
+    this.settingsService.currentTheme$.subscribe(theme => {
+      this.currentTheme = theme;
+    });
   }
 
   toggleSidebar(): void {
     this.sidebarCollapsed = !this.sidebarCollapsed;
   }
 
-  toggleTheme(): void {
-    const htmlEl = document.documentElement;
-    if (htmlEl.getAttribute('data-theme') === 'neon') {
-      htmlEl.removeAttribute('data-theme');
-    } else {
-      htmlEl.setAttribute('data-theme', 'neon');
-    }
+  setThemeDirect(theme: string): void {
+    this.settingsService.updateSettings({ theme }).subscribe();
   }
 
   logout(): void {

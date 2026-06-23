@@ -49,7 +49,22 @@
   --font-body:       'Plus Jakarta Sans', 'Outfit', system-ui, sans-serif;
 }
 
-
+/* Tema Light Gallery (Minimalista, Estilo Galería de Arte) */
+[data-theme="light-gallery"] {
+  --bg-color:        #FAFAFA;
+  --bg-surface:      #FFFFFF;
+  --text-main:       #111111;
+  --text-muted:      #555555;
+  --text-subtle:     #888888;
+  --glass-bg:        rgba(255, 255, 255, 0.85);
+  --glass-border:    rgba(0, 0, 0, 0.08);
+  --glow-accent:     #000000;
+  --glow-purple:     #333333;
+  --glow-gold:       #000000;
+  
+  --font-body:       'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-display:    'Cormorant Garamond', 'EB Garamond', Georgia, serif;
+}
 
 * {
   box-sizing: border-box;
@@ -91,6 +106,13 @@ body {
     radial-gradient(ellipse 60% 50% at 15% 55%, rgba(59, 130, 246, 0.12), transparent),
     radial-gradient(ellipse 55% 45% at 85% 25%, rgba(139, 92, 246, 0.14), transparent),
     radial-gradient(ellipse 40% 35% at 50% 100%, rgba(245, 158, 11, 0.04), transparent);
+}
+
+[data-theme="light-gallery"] body {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse 60% 50% at 15% 55%, rgba(0, 0, 0, 0.02), transparent),
+    radial-gradient(ellipse 55% 45% at 85% 25%, rgba(0, 0, 0, 0.01), transparent);
 }
 
 /* Base Glass Container */
@@ -161,6 +183,20 @@ body {
   background: linear-gradient(135deg, var(--glow-accent), var(--glow-purple));
   color: white;
   box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+}
+
+[data-theme="light-gallery"] .glass-btn {
+  background: #FFFFFF;
+  color: #000000;
+  border: 1px solid rgba(0,0,0,0.2);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+[data-theme="light-gallery"] .glass-btn:hover {
+  background: #000000;
+  color: #FFFFFF;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
 }
 
 .glass-btn:disabled {

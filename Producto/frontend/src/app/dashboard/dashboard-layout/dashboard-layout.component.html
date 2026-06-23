@@ -81,10 +81,24 @@
           <span class="badge-dot"></span>
           Administrador
         </div>
-        <button class="logout-btn" (click)="toggleTheme()" style="background: var(--glow-purple); margin-right: 10px;">
+        <button class="logout-btn" [matMenuTriggerFor]="themeMenu" style="background: var(--glow-purple); margin-right: 10px;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-          Tema
+          Tema: {{ currentTheme === 'default' ? 'Classic' : (currentTheme === 'neon' ? 'Neon' : 'Light') }}
         </button>
+        <mat-menu #themeMenu="matMenu" class="dark-premium-menu">
+          <button mat-menu-item (click)="setThemeDirect('default')">
+            <span class="mat-symbol" [style.color]="currentTheme === 'default' ? 'var(--glow-accent)' : 'inherit'">dark_mode</span>
+            <span>Classic Dark</span>
+          </button>
+          <button mat-menu-item (click)="setThemeDirect('neon')">
+            <span class="mat-symbol" [style.color]="currentTheme === 'neon' ? 'var(--glow-accent)' : 'inherit'">terminal</span>
+            <span>Cyber Neon</span>
+          </button>
+          <button mat-menu-item (click)="setThemeDirect('light-gallery')">
+            <span class="mat-symbol" [style.color]="currentTheme === 'light-gallery' ? 'var(--glow-accent)' : 'inherit'">light_mode</span>
+            <span>Light Gallery</span>
+          </button>
+        </mat-menu>
         <button class="logout-btn" (click)="logout()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           Salir

@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DashboardBooksService {
-  private apiUrl = 'http://localhost:8000/api/v1/dashboard';
+  private apiUrl = `${environment.apiUrl}dashboard`;
 
   constructor(private http: HttpClient) {}
 
@@ -20,7 +21,7 @@ export class DashboardBooksService {
 
   getGenres(): Observable<any[]> {
     // Usamos el catálogo público o el dashboard si existiera, pero catálogo público sirve
-    return this.http.get<any[]>('http://localhost:8000/api/v1/catalog/genres/');
+    return this.http.get<any[]>(`${environment.apiUrl}catalog/genres/`);
   }
 
   getAuthorDetail(id: string): Observable<any> {

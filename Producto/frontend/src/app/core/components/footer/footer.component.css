@@ -2,10 +2,10 @@
   position: relative;
   margin-top: 4rem;
   padding: 4rem 6vw 2rem;
-  background: rgba(10, 15, 30, 0.95);
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--bg-surface);
+  border-top: 1px solid var(--glass-border);
   overflow: hidden;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-family: var(--font-body);
 }
 
@@ -34,7 +34,7 @@
 .literatus {
   font-family: var(--font-display);
   font-weight: 700;
-  color: #fff;
+  color: var(--text-main);
   letter-spacing: -1px;
 }
 
@@ -66,7 +66,7 @@
 }
 
 .footer-col h4 {
-  color: #f1f5f9;
+  color: var(--text-main);
   font-family: var(--font-display);
   font-size: 1.1rem;
   margin: 0 0 1.2rem;
@@ -83,7 +83,7 @@
 }
 
 .footer-col a, .footer-col span {
-  color: #94a3b8;
+  color: var(--text-muted);
   text-decoration: none;
   font-size: 0.9rem;
   transition: all 0.3s;
@@ -99,7 +99,7 @@
   z-index: 2;
   margin-top: 4rem;
   padding-top: 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--glass-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -114,7 +114,7 @@
 }
 
 .legal-links a, .legal-links span {
-  color: #64748b;
+  color: var(--text-subtle);
   text-decoration: none;
   transition: color 0.3s;
 }

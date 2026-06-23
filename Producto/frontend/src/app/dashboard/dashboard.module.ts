@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatButtonModule } from '@angular/material/button';
 
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { DashboardLayoutComponent } from './dashboard-layout/dashboard-layout.component';
@@ -28,6 +30,8 @@ import { AvatarEditorComponent } from './avatar-editor/avatar-editor.component';
     FormsModule,
     ReactiveFormsModule,
     DashboardRoutingModule,
+    MatMenuModule,
+    MatButtonModule,
   ]
 })
 export class DashboardModule {}

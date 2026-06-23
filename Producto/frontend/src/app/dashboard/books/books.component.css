@@ -4,13 +4,13 @@
 .list-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
 
 .header-text h2 { font-size: 22px; color: #e2e8f0; margin: 0 0 4px; font-weight: 700; letter-spacing: -0.4px; }
-.header-text p  { color: #4a5568; margin: 0; font-size: 13px; }
+.header-text p  { color: #64748b; margin: 0; font-size: 13px; }
 
 .add-btn {
   display: flex;
   align-items: center;
   gap: 7px;
-  background: linear-gradient(135deg, #63d2ff, #3b82f6);
+  background: linear-gradient(135deg, #22C55E, #3b82f6);
   color: white;
   border: none;
   padding: 10px 20px;
@@ -27,9 +27,9 @@
 
 /* CARD BASE */
 .card {
-  background: linear-gradient(135deg, #0d1427, #0f1830);
+  background: linear-gradient(135deg, #0F172A, #1E293B);
   border-radius: 16px;
-  border: 1px solid rgba(99,210,255,0.07);
+  border: 1px solid rgba(34,197,94,0.07);
 }
 
 /* CONTROLS */
@@ -53,14 +53,14 @@
 .search-icon-svg {
   position: absolute;
   left: 12px;
-  color: #4a5568;
+  color: #64748b;
   pointer-events: none;
 }
 
 .search-box input {
   width: 100%;
-  background: rgba(99,210,255,0.04);
-  border: 1px solid rgba(99,210,255,0.1);
+  background: rgba(34,197,94,0.04);
+  border: 1px solid rgba(34,197,94,0.1);
   border-radius: 10px;
   padding: 9px 12px 9px 36px;
   color: #e2e8f0;
@@ -70,8 +70,8 @@
 }
 
 .search-box input:focus {
-  border-color: rgba(99,210,255,0.3);
-  box-shadow: 0 0 0 3px rgba(99,210,255,0.08);
+  border-color: rgba(34,197,94,0.3);
+  box-shadow: 0 0 0 3px rgba(34,197,94,0.08);
 }
 
 .search-box input::placeholder { color: #334155; }
@@ -83,14 +83,14 @@
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
-  color: #4a5568;
-  background: rgba(99,210,255,0.04);
-  border: 1px solid rgba(99,210,255,0.07);
+  color: #64748b;
+  background: rgba(34,197,94,0.04);
+  border: 1px solid rgba(34,197,94,0.07);
   cursor: pointer;
   transition: all 0.2s;
 }
-.badge:hover { color: #63d2ff; border-color: rgba(99,210,255,0.2); }
-.badge.active { background: rgba(99,210,255,0.12); color: #63d2ff; border-color: rgba(99,210,255,0.25); }
+.badge:hover { color: #22C55E; border-color: rgba(34,197,94,0.2); }
+.badge.active { background: rgba(34,197,94,0.12); color: #22C55E; border-color: rgba(34,197,94,0.25); }
 
 /* GRID */
 .books-grid {
@@ -109,8 +109,8 @@
 
 .book-card:hover {
   transform: translateY(-6px);
-  border-color: rgba(99,210,255,0.25);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(99,210,255,0.1);
+  border-color: rgba(34,197,94,0.25);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(34,197,94,0.1);
 }
 
 .book-cover {
@@ -158,7 +158,7 @@
   align-items: center;
   gap: 5px;
   font-size: 12px;
-  color: #4a5568;
+  color: #64748b;
   margin: 0;
 }
 
@@ -166,9 +166,9 @@
   display: flex;
   gap: 12px;
   padding: 10px 12px;
-  background: rgba(99,210,255,0.03);
+  background: rgba(34,197,94,0.03);
   border-radius: 10px;
-  border: 1px solid rgba(99,210,255,0.05);
+  border: 1px solid rgba(34,197,94,0.05);
   margin-top: 2px;
 }
 
@@ -176,10 +176,10 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  color: #4a5568;
+  color: #64748b;
 }
 
-.stat .label { font-size: 10px; color: #4a5568; }
+.stat .label { font-size: 10px; color: #64748b; }
 .stat .value { font-size: 13px; font-weight: 700; color: #94a3b8; }
 
 .edit-hint {
@@ -191,11 +191,11 @@
   margin-top: 2px;
   transition: color 0.2s;
 }
-.book-card:hover .edit-hint { color: #63d2ff; }
+.book-card:hover .edit-hint { color: #22C55E; }
 
 /* LOADING */
-.loading-container { display: flex; flex-direction: column; align-items: center; padding: 80px; color: #63d2ff; gap: 16px; }
-.spinner { width: 36px; height: 36px; border: 3px solid rgba(99,210,255,0.1); border-top-color: #63d2ff; border-radius: 50%; animation: spin 0.9s linear infinite; }
+.loading-container { display: flex; flex-direction: column; align-items: center; padding: 80px; color: #22C55E; gap: 16px; }
+.spinner { width: 36px; height: 36px; border: 3px solid rgba(34,197,94,0.1); border-top-color: #22C55E; border-radius: 50%; animation: spin 0.9s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.empty-state { grid-column: 1/-1; text-align: center; padding: 60px; color: #4a5568; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.empty-state { grid-column: 1/-1; text-align: center; padding: 60px; color: #64748b; display: flex; flex-direction: column; align-items: center; gap: 12px; }

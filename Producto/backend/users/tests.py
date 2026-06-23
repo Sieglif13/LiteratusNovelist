@@ -21,7 +21,7 @@ class UsersAPITests(APITestCase):
         Verifica que un usuario pueda hacer login y recibir un token JWT.
         """
         response = self.client.post('/api/v1/users/login/', {
-            'email': self.user_data['email'],
+            'username': self.user_data['username'],
             'password': self.user_data['password']
         }, format='json')
         
@@ -34,7 +34,7 @@ class UsersAPITests(APITestCase):
         Verifica que credenciales inválidas retornen un error.
         """
         response = self.client.post('/api/v1/users/login/', {
-            'email': self.user_data['email'],
+            'username': self.user_data['username'],
             'password': 'wrongpassword'
         }, format='json')
         
@@ -47,7 +47,7 @@ class UsersAPITests(APITestCase):
         """
         # Obtenemos token
         login_resp = self.client.post('/api/v1/users/login/', {
-            'email': self.user_data['email'],
+            'username': self.user_data['username'],
             'password': self.user_data['password']
         }, format='json')
         token = login_resp.data['access']

@@ -7,6 +7,8 @@ import { routeTransitionAnimations, shakeAnimation } from './core/animations';
 import { App as CapacitorApp } from '@capacitor/app';
 import { Location } from '@angular/common';
 
+import { SettingsService } from './core/services/settings.service';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -17,6 +19,7 @@ export class AppComponent implements OnInit {
   title = 'frontend';
   authService = inject(AuthService);
   chatService = inject(ChatService);
+  settingsService = inject(SettingsService);
   router = inject(Router);
   
   menuOpen = false;
@@ -55,6 +58,9 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
+    // Cargar la configuración global (Tema) apenas inicie
+    this.settingsService.loadSettings().subscribe();
+
     // Escuchar cambios en el estado de login para cargar datos
     this.authService.isLoggedIn$.subscribe(loggedIn => {
       if (loggedIn) {
@@ -114,6 +120,10 @@ export class AppComponent implements OnInit {
 
   get isLoggedIn(): boolean {
     return this.authService.isLoggedIn();
+  }
+
+  get isAdmin(): boolean {
+    return this.authService.isAdmin();
   }
 
   toggleMenu() {
