@@ -527,7 +527,25 @@ body:has(.container.dashboard-mode) {
 [data-theme="light-gallery"] .buy-btn:hover { background: #b71c1c !important; }
 [data-theme="light-gallery"] .badge { background: #f8f9fa !important; border-color: #dee2e6 !important; color: #333 !important; }
 [data-theme="light-gallery"] .synopsis-section h3 { color: #000 !important; border-bottom: 2px solid #d32f2f !important; display: inline-block !important; padding-bottom: 0.5rem !important; margin-bottom: 1rem !important; }
-[data-theme="light-gallery"] .synopsis-text { color: #333 !important; }
+
+/* The Economist Typography for Synopsis */
+[data-theme="light-gallery"] .synopsis-text { 
+  color: #000 !important; 
+  font-family: 'EB Garamond', 'Cormorant Garamond', Georgia, serif !important;
+  font-size: 1.15rem !important;
+  line-height: 1.8 !important;
+  text-align: justify !important;
+}
+[data-theme="light-gallery"] .synopsis-text::first-letter {
+  font-size: 3.5rem !important;
+  float: left !important;
+  line-height: 0.8 !important;
+  padding-right: 0.5rem !important;
+  padding-top: 0.2rem !important;
+  font-weight: 700 !important;
+  color: #000 !important;
+}
+
 [data-theme="light-gallery"] .tag-chip { background: #f1f5f9 !important; color: #334155 !important; border-color: #e2e8f0 !important; }
 [data-theme="light-gallery"] .author-card-container, [data-theme="light-gallery"] .reviews-container { background: #fff !important; border: 1px solid #e5e7eb !important; box-shadow: 0 10px 25px rgba(0,0,0,0.02) !important; }
 [data-theme="light-gallery"] .author-card-info h3, [data-theme="light-gallery"] .reviews-header h3 { color: #000 !important; }
