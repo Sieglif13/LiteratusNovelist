@@ -1,9 +1,51 @@
 import os
-from django.core.mail import send_mail
+import json
+import urllib.request
+from django.core.mail import send_mail as django_send_mail
 from django.conf import settings
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
+
+def send_mail_via_resend_api(subject, message, from_email, recipient_list, html_message=None):
+    """
+    Envía correo usando la API REST de Resend para evitar bloqueos de puertos SMTP (465/587) en Render.
+    Si no es Resend (o falta la API Key), hace fallback al SMTP estándar de Django.
+    """
+    api_key = settings.EMAIL_HOST_PASSWORD
+    if api_key and api_key.startswith('re_'):
+        url = "https://api.resend.com/emails"
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
+        data = {
+            "from": from_email,
+            "to": recipient_list,
+            "subject": subject,
+            "text": message
+        }
+        if html_message:
+            data["html"] = html_message
+            
+        req = urllib.request.Request(url, data=json.dumps(data).encode("utf-8"), headers=headers, method="POST")
+        try:
+            with urllib.request.urlopen(req, timeout=10) as response:
+                return True
+        except Exception as e:
+            print(f"Error en Resend REST API: {e}")
+            # Si falla la API REST, intentamos por SMTP por si acaso
+            pass
+            
+    # Fallback a SMTP clásico
+    django_send_mail(
+        subject=subject,
+        message=message,
+        from_email=from_email,
+        recipient_list=recipient_list,
+        html_message=html_message,
+        fail_silently=False,
+    )
 
 def send_verification_email(user):
     """
@@ -45,16 +87,14 @@ def send_verification_email(user):
     </html>
     """
     
-    # Texto plano alternativo
     plain_message = f"Bienvenido a Literatus Novelist.\nPara verificar tu cuenta, copia y pega el siguiente enlace en tu navegador:\n{verify_url}"
     
-    send_mail(
+    send_mail_via_resend_api(
         subject=subject,
         message=plain_message,
         from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[user.email],
-        html_message=html_message,
-        fail_silently=False,
+        html_message=html_message
     )
 
 def send_password_reset_email(user):
@@ -96,11 +136,10 @@ def send_password_reset_email(user):
     
     plain_message = f"Hola {user.username},\nPara restablecer tu contraseña, usa este enlace:\n{reset_url}"
     
-    send_mail(
+    send_mail_via_resend_api(
         subject=subject,
         message=plain_message,
         from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[user.email],
-        html_message=html_message,
-        fail_silently=False,
+        html_message=html_message
     )
