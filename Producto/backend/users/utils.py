@@ -17,7 +17,8 @@ def send_mail_via_resend_api(subject, message, from_email, recipient_list, html_
         url = "https://api.resend.com/emails"
         headers = {
             "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "User-Agent": "LiteratusNovelist/1.0"
         }
         data = {
             "from": from_email,
@@ -33,11 +34,15 @@ def send_mail_via_resend_api(subject, message, from_email, recipient_list, html_
             with urllib.request.urlopen(req, timeout=10) as response:
                 return True
         except Exception as e:
-            print(f"Error en Resend REST API: {e}")
-            # Si falla la API REST, intentamos por SMTP por si acaso
-            pass
+            error_msg = str(e)
+            if hasattr(e, 'read'):
+                error_msg += f" - {e.read().decode('utf-8', errors='ignore')}"
+            print(f"Error en Resend REST API: {error_msg}")
+            # NO hacemos fallback a SMTP aquí porque Render lo bloqueará y causará un Timeout 504.
+            # Mejor que falle rápido para no colgar el servidor.
+            raise Exception(f"Fallo al enviar correo via Resend API: {error_msg}")
             
-    # Fallback a SMTP clásico
+    # Fallback a SMTP clásico solo si NO estamos usando Resend
     django_send_mail(
         subject=subject,
         message=message,
