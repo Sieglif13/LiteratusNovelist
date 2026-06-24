@@ -21,6 +21,24 @@ from django.core.files.base import ContentFile
 
 from catalog.models import Author, Book, BookAuthor, Edition, Chapter, Tag, Genre
 from django.conf import settings
+import requests
+
+def upload_to_supabase_if_configured(file_data, upload_path, content_type):
+    supabase_url = getattr(settings, 'SUPABASE_URL', os.getenv('SUPABASE_URL'))
+    supabase_key = getattr(settings, 'SUPABASE_KEY', os.getenv('SUPABASE_KEY'))
+    if not supabase_url or not supabase_key:
+        return
+        
+    url = f"{supabase_url}/storage/v1/object/literatus-media/{upload_path}"
+    headers = {
+        "apikey": supabase_key,
+        "Authorization": f"Bearer {supabase_key}",
+        "Content-Type": content_type
+    }
+    try:
+        requests.post(url, headers=headers, data=file_data)
+    except Exception as e:
+        print(f"Error subiendo a Supabase: {e}")
 
 def backup_book_to_media(book):
     book_dir = os.path.join(settings.MEDIA_ROOT, 'books', str(book.pk))
@@ -202,10 +220,13 @@ class BookSaveView(APIView):
                 # PDF Opcional
                 if pdf_file:
                     book.pdf_file.save(f'book_{book.pk}.pdf', pdf_file, save=True)
+                    # upload_to_supabase_if_configured(pdf_file.read(), book.pdf_file.name, pdf_file.content_type)
 
                 # Portada
                 if cover_file:
                     book.cover_image.save(f'cover_{book.pk}.jpg', cover_file, save=True)
+                    cover_file.seek(0)
+                    upload_to_supabase_if_configured(cover_file.read(), book.cover_image.name, cover_file.content_type)
 
                 BookAuthor.objects.get_or_create(book=book, author=author)
 
@@ -365,6 +386,8 @@ class BookDetailAdminView(APIView):
             pdf_file = request.FILES.get('pdf_file')
             if pdf_file:
                 book.pdf_file.save(f'book_{book.pk}.pdf', pdf_file, save=True)
+                pdf_file.seek(0)
+                upload_to_supabase_if_configured(pdf_file.read(), book.pdf_file.name, pdf_file.content_type)
             
             # Actualizar autor
             author_id = data.get('author_id')
@@ -406,6 +429,8 @@ class BookDetailAdminView(APIView):
             cover_file = request.FILES.get('cover')
             if cover_file:
                 book.cover_image.save(f'cover_{book.pk}.jpg', cover_file, save=True)
+                cover_file.seek(0)
+                upload_to_supabase_if_configured(cover_file.read(), book.cover_image.name, cover_file.content_type)
 
             # EPUB
             epub_file = request.FILES.get('epub')
@@ -579,6 +604,8 @@ class AuthorDetailAdminView(APIView):
         photo = request.FILES.get('photo')
         if photo:
             author.photo.save(f'author_{author.pk}.jpg', photo, save=True)
+            photo.seek(0)
+            upload_to_supabase_if_configured(photo.read(), author.photo.name, photo.content_type)
             
         return Response({'success': True})
 
@@ -629,6 +656,8 @@ class AvatarAdminView(APIView):
         img = request.FILES.get('avatar_image')
         if img:
             avatar.avatar_image.save(f'avatar_{avatar.pk}.jpg', img, save=True)
+            img.seek(0)
+            upload_to_supabase_if_configured(img.read(), avatar.avatar_image.name, img.content_type)
 
         return Response({'id': str(avatar.pk), 'name': avatar.name}, status=201)
 
@@ -687,10 +716,14 @@ class AvatarAdminView(APIView):
         img = request.FILES.get('avatar_image')
         if img:
             avatar.avatar_image.save(f'avatar_{avatar.pk}.jpg', img, save=True)
+            img.seek(0)
+            upload_to_supabase_if_configured(img.read(), avatar.avatar_image.name, img.content_type)
 
         video = request.FILES.get('video_avatar')
         if video:
             avatar.video_avatar.save(f'video_{avatar.pk}.mp4', video, save=True)
+            video.seek(0)
+            upload_to_supabase_if_configured(video.read(), avatar.video_avatar.name, video.content_type)
 
         return Response({'success': True})
 
