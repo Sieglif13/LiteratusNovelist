@@ -57,25 +57,21 @@ export class DiscoverComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private applyFilters(): void {
-    const normalize = (s: any) => (s || '').toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-    const qNorm = normalize(this.searchQuery.trim());
+    const q = this.searchQuery.trim().toLowerCase();
     const cat = this.selectedCategory !== 'Explorar' ? this.selectedCategory.toLowerCase() : '';
 
     this.filteredBooks = this.allBooks.filter(b => {
       let matchesQuery = true;
       let matchesCat = true;
 
-      if (qNorm) {
-        matchesQuery = normalize(b.title).includes(qNorm) || 
-                       normalize(b.author_name).includes(qNorm);
+      if (q) {
+        matchesQuery = (b.title || '').toLowerCase().includes(q) || 
+                       (b.author_name?.toLowerCase() || '').includes(q);
       }
 
       if (cat && cat !== 'tendencias') {
-        const normCat = normalize(cat);
-        const normTagsString = normalize(b.tags?.map(t => t.name).join(' '));
-        const normSynopsis = normalize(b.synopsis);
-
-        matchesCat = normTagsString.includes(normCat) || normSynopsis.includes(normCat) || normalize(b.title).includes(normCat);
+        const tagsString = (b.tags?.map(t => t.name).join(' ') || '').toLowerCase();
+        matchesCat = tagsString.includes(cat) || (b.synopsis || '').toLowerCase().includes(cat);
       } else if (cat === 'tendencias') {
         matchesCat = b.is_featured;
       }

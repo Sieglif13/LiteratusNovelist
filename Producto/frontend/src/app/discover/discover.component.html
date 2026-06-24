@@ -4,10 +4,6 @@
   <section class="discover-top-nav">
     <div class="nav-container">
       <div class="category-pills-container">
-        <button class="icon-btn" aria-label="Grid view">
-          <span class="material-symbols-rounded">grid_view</span>
-        </button>
-        <div class="nav-separator"></div>
         <div class="category-pills">
           <button 
             *ngFor="let cat of categories" 
@@ -17,9 +13,6 @@
             {{ cat }}
           </button>
         </div>
-        <button class="icon-btn" aria-label="List view">
-          <span class="material-symbols-rounded">format_list_bulleted</span>
-        </button>
       </div>
 
       <div class="search-container">
@@ -27,7 +20,7 @@
         <input 
           type="text" 
           class="search-input" 
-          placeholder="141"
+          placeholder="Buscar..."
           [(ngModel)]="searchQuery"
           (ngModelChange)="onSearchChange()">
         <button *ngIf="searchQuery" class="clear-search-btn" (click)="clearSearch()">
