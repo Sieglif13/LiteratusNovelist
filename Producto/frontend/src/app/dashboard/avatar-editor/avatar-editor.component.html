@@ -40,7 +40,8 @@
 
       <!-- Imagen Neutral -->
       <div class="avatar-image-wrapper">
-        <label style="text-align: center; display: block; margin-bottom: 8px;">Estado Neutral (Idle)</label>
+        <label style="text-align: center; display: block; margin-bottom: 2px;">Estado Neutral (Idle)</label>
+        <p style="text-align: center; font-size: 11px; color: #64748b; margin-bottom: 8px;">Recomendado: 500x500px (1:1)</p>
         <div class="avatar-img-preview" *ngIf="avatarPreview">
           <img [src]="avatarPreview" alt="Avatar Neutral" onerror="this.onerror=null;this.src='assets/placeholder-avatar.png'">
           <button class="remove-img-btn" (click)="removeImage('avatar')" title="Quitar imagen">
@@ -58,7 +59,8 @@
 
       <!-- Imagen Hablando -->
       <div class="avatar-image-wrapper" style="margin-top: 20px;">
-        <label style="text-align: center; display: block; margin-bottom: 8px;">Estado Hablando</label>
+        <label style="text-align: center; display: block; margin-bottom: 2px;">Estado Hablando</label>
+        <p style="text-align: center; font-size: 11px; color: #64748b; margin-bottom: 8px;">Recomendado: 500x500px (1:1)</p>
         <div class="avatar-img-preview" *ngIf="speakingPreview">
           <img [src]="speakingPreview" alt="Avatar Hablando" onerror="this.onerror=null;this.src='assets/placeholder-avatar.png'">
           <button class="remove-img-btn" (click)="removeImage('speaking')" title="Quitar imagen">
@@ -76,7 +78,8 @@
 
       <!-- Imagen Pensando -->
       <div class="avatar-image-wrapper" style="margin-top: 20px; margin-bottom: 20px;">
-        <label style="text-align: center; display: block; margin-bottom: 8px;">Estado Pensando</label>
+        <label style="text-align: center; display: block; margin-bottom: 2px;">Estado Pensando</label>
+        <p style="text-align: center; font-size: 11px; color: #64748b; margin-bottom: 8px;">Recomendado: 500x500px (1:1)</p>
         <div class="avatar-img-preview" *ngIf="thinkingPreview">
           <img [src]="thinkingPreview" alt="Avatar Pensando" onerror="this.onerror=null;this.src='assets/placeholder-avatar.png'">
           <button class="remove-img-btn" (click)="removeImage('thinking')" title="Quitar imagen">
