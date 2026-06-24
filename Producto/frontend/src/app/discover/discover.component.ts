@@ -62,6 +62,18 @@ export class DiscoverComponent implements OnInit, OnDestroy {
   quoteBooks: any[] = [];
   matchPairs: MatchPair[] = [];
 
+  /* ── Search ── */
+  searchQuery: string = '';
+
+  get searchResults(): any[] {
+    if (!this.searchQuery.trim()) return [];
+    const query = this.searchQuery.toLowerCase().trim();
+    return this.allBooks.filter(book => 
+      (book.title && book.title.toLowerCase().includes(query)) ||
+      (book.author_name && book.author_name.toLowerCase().includes(query))
+    );
+  }
+
   /* ── Saved for later (in-memory + localStorage) ── */
   savedIds: Set<string> = new Set();
 

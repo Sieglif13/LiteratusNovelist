@@ -78,9 +78,48 @@
 
 
   <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- 1.5 BUSCADOR UNIVERSAL (Sodimac Style)                        -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <section class="discover-search-section" *ngIf="!isLoading">
+    <div class="search-container">
+      <span class="material-symbols-rounded search-icon">search</span>
+      <input type="text" [(ngModel)]="searchQuery" placeholder="Buscar libros por título o autor..." class="search-input">
+      <button *ngIf="searchQuery" class="clear-search-btn" (click)="searchQuery = ''">
+        <span class="material-symbols-rounded">close</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- SEARCH RESULTS -->
+  <section class="discover-search-results" *ngIf="searchQuery && !isLoading">
+    <div class="results-header">
+      <h2 class="section-title">Resultados de búsqueda</h2>
+      <p class="section-subtitle">{{ searchResults.length }} libros encontrados</p>
+    </div>
+    
+    <div class="results-grid" *ngIf="searchResults.length > 0">
+      <div class="row-card" *ngFor="let book of searchResults" (click)="goToBook(book)">
+        <div class="row-card-img">
+          <img [src]="book.cover_image || 'assets/default_cover.jpg'" [alt]="book.title" loading="lazy">
+        </div>
+        <div class="row-card-info">
+          <h4 class="row-card-title">{{ book.title }}</h4>
+          <p class="row-card-author">{{ book.book_authors?.[0]?.author?.full_name || 'Autor desconocido' }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="empty-state-content" *ngIf="searchResults.length === 0" style="margin-top: 2rem;">
+      <span class="material-symbols-rounded empty-icon">search_off</span>
+      <h3>No encontramos resultados para "{{ searchQuery }}"</h3>
+      <p>Prueba con otras palabras clave o verifica la ortografía.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
   <!-- 2. MOOD PICKER  —  "¿Qué buscas?" interactivo                  -->
   <!-- ═══════════════════════════════════════════════════════════════ -->
-  <section class="discover-moods" *ngIf="!isLoading">
+  <section class="discover-moods" *ngIf="!isLoading && !searchQuery">
     <div class="moods-header">
       <h2 class="section-title">
         <span class="material-symbols-rounded" style="color: var(--glow-gold); font-size: 1.3rem; vertical-align: middle; margin-right: 8px;">mood</span>
@@ -99,7 +138,7 @@
   </section>
 
   <!-- Empty State if Mood Filter Returns 0 Books -->
-  <section class="discover-empty-state" *ngIf="activeMood && trendingBooks.length === 0 && !isLoading">
+  <section class="discover-empty-state" *ngIf="activeMood && trendingBooks.length === 0 && !isLoading && !searchQuery">
     <div class="empty-state-content">
       <span class="material-symbols-rounded empty-icon">auto_stories</span>
       <h3>Aún no tenemos historias para este ambiente</h3>
@@ -113,7 +152,7 @@
   <!-- ═══════════════════════════════════════════════════════════════ -->
   <!-- 3. TEASERS  —  Vistazos rápidos a las historias                 -->
   <!-- ═══════════════════════════════════════════════════════════════ -->
-  <section class="discover-quotes" *ngIf="quoteBooks.length > 0 && !isLoading">
+  <section class="discover-quotes" *ngIf="quoteBooks.length > 0 && !isLoading && !searchQuery">
     <div class="quotes-header">
       <h2 class="section-title">
         <span class="material-symbols-rounded" style="color: #ef4444; font-size: 1.3rem; vertical-align: middle; margin-right: 8px;">auto_stories</span>
@@ -147,7 +186,7 @@
   <!-- ═══════════════════════════════════════════════════════════════ -->
 
   <!-- Tendencias -->
-  <section class="discover-row" *ngIf="trendingBooks.length > 0 && !isLoading">
+  <section class="discover-row" *ngIf="trendingBooks.length > 0 && !isLoading && !searchQuery">
     <div class="row-header">
       <h3 class="row-title">
         <span class="material-symbols-rounded" style="color: #f97316; font-size: 1.2rem; margin-right: 6px;">local_fire_department</span>
@@ -183,7 +222,7 @@
   </section>
 
   <!-- Con personajes IA -->
-  <section class="discover-row" *ngIf="iaBooks.length > 0 && !isLoading">
+  <section class="discover-row" *ngIf="iaBooks.length > 0 && !isLoading && !searchQuery">
     <div class="row-header">
       <h3 class="row-title">
         <span class="pulse-dot-sm" style="margin-right: 6px;"></span>
@@ -211,7 +250,7 @@
   </section>
 
   <!-- Lecturas rápidas -->
-  <section class="discover-row" *ngIf="quickBooks.length > 0 && !isLoading">
+  <section class="discover-row" *ngIf="quickBooks.length > 0 && !isLoading && !searchQuery">
     <div class="row-header">
       <h3 class="row-title">
         <span class="material-symbols-rounded" style="color: #22c55e; font-size: 1.2rem; margin-right: 6px;">timer</span>
@@ -241,7 +280,7 @@
   <!-- ═══════════════════════════════════════════════════════════════ -->
   <!-- 5. MATCHMAKER  —  "Si te gustó X, lee Y"                       -->
   <!-- ═══════════════════════════════════════════════════════════════ -->
-  <section class="discover-matchmaker" *ngIf="matchPairs.length > 0 && !isLoading">
+  <section class="discover-matchmaker" *ngIf="matchPairs.length > 0 && !isLoading && !searchQuery">
     <div class="matchmaker-header">
       <h2 class="section-title">
         <span class="material-symbols-rounded" style="color: #ec4899; font-size: 1.3rem; vertical-align: middle; margin-right: 8px;">auto_awesome</span>
