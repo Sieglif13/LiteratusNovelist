@@ -59,7 +59,12 @@ class BookListAdminView(APIView):
     permission_classes = [IsAdminUser]
 
     def get(self, request):
-        books = Book.objects.prefetch_related('authors', 'editions').order_by('-created_at')
+        from django.db.models import Count
+        books = Book.objects.annotate(
+            anno_editions_count=Count('editions', distinct=True),
+            anno_chapters_count=Count('chapters', distinct=True)
+        ).prefetch_related('authors').order_by('-created_at')
+        
         data = [
             {
                 'id': str(b.pk),
@@ -69,8 +74,8 @@ class BookListAdminView(APIView):
                 'is_featured': b.is_featured,
                 'authors': [a.full_name for a in b.authors.all()],
                 'cover': request.build_absolute_uri(b.cover_image.url) if b.cover_image else None,
-                'editions_count': b.editions.count(),
-                'chapters_count': b.chapters.count(),
+                'editions_count': b.anno_editions_count,
+                'chapters_count': b.anno_chapters_count,
                 'view_count': b.view_count,
             }
             for b in books
