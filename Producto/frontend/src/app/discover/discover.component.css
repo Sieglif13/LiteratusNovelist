@@ -1369,10 +1369,10 @@
   display: none; /* Safari and Chrome */
 }
 .category-pill {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid transparent;
-  color: rgba(255, 255, 255, 0.7);
-  padding: 0.6rem 1.2rem;
+  background: #111424;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.6);
+  padding: 0.6rem 1.4rem;
   border-radius: 50px;
   font-size: 0.95rem;
   cursor: pointer;
@@ -1381,28 +1381,29 @@
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
 .category-pill:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: #1e2235;
   color: white;
 }
 .category-pill.active {
   background: white;
-  color: var(--bg-main);
+  color: #0b0f1a;
   font-weight: 600;
+  box-shadow: 0 0 15px rgba(255,255,255,0.2);
 }
 
 .search-container {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid transparent;
+  background: #0b0f1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 50px;
   padding: 0.6rem 1.2rem;
-  width: 300px;
+  width: 280px;
   transition: all 0.3s ease;
 }
 .search-container:focus-within {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 10px rgba(255,255,255,0.05);
 }
 .search-icon {
   color: rgba(255, 255, 255, 0.5);

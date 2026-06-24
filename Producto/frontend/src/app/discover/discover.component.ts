@@ -39,7 +39,7 @@ export class DiscoverComponent implements OnInit, OnDestroy, AfterViewInit {
   // Search & Category State
   searchQuery: string = '';
   filteredBooks: Book[] = [];
-  categories: string[] = ['Explorar', 'Tendencias', 'Ficci├│n', 'Romance', 'Cl├ísicos', 'Terror', 'Fantas├¡a', 'Misterio', 'Drama'];
+  categories: string[] = ['Explorar', 'Tendencias', 'Ficción', 'Romance', 'Clásicos', 'Terror', 'Fantasía', 'Misterio', 'Drama'];
   selectedCategory: string = 'Explorar';
 
   onSearchChange(): void {
@@ -70,9 +70,13 @@ export class DiscoverComponent implements OnInit, OnDestroy, AfterViewInit {
       }
 
       if (cat && cat !== 'tendencias') {
-        // Simple search in tags or genre if they exist. Since we might not have genre directly on book, we search tags or synopsis as fallback
-        const tagsString = (b.tags?.map(t => t.name).join(' ') || '').toLowerCase();
-        matchesCat = tagsString.includes(cat) || b.synopsis.toLowerCase().includes(cat);
+        // Remove accents from cat and tags for broader matching
+        const normalize = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        const normCat = normalize(cat);
+        const normTagsString = normalize(b.tags?.map(t => t.name).join(' ') || '');
+        const normSynopsis = normalize(b.synopsis);
+
+        matchesCat = normTagsString.includes(normCat) || normSynopsis.includes(normCat);
       } else if (cat === 'tendencias') {
         matchesCat = b.is_featured;
       }
@@ -81,22 +85,22 @@ export class DiscoverComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  // Libros con personajes IA activos (hardcoded ÔÇö ya tienen AIAvatars configurados)
+  // Libros con personajes IA activos
   featuredWithCharacters = [
     {
       slug: 'el-gato-negro-allan-poe-edgar',
       title: 'El Gato Negro',
       author: 'Edgar Allan Poe',
       cover: 'https://srbmswjsbkpftjabcurg.supabase.co/storage/v1/object/public/literatus-media/book_covers/el-gato-negro-allan-poe-edgar.jpg',
-      genre: 'Terror ┬À G├│tico',
+      genre: 'Terror · Gótico',
       characterCount: 3
     },
     {
       slug: 'el-principe-feliz-y-otros-cuentos-wilde-oscar',
-      title: 'El Pr├¡ncipe Feliz',
+      title: 'El Príncipe Feliz',
       author: 'Oscar Wilde',
       cover: 'https://srbmswjsbkpftjabcurg.supabase.co/storage/v1/object/public/literatus-media/book_covers/el-principe-feliz-y-otros-cuentos-wilde-oscar.jpg',
-      genre: 'Cuento ┬À Cl├ísico',
+      genre: 'Cuento · Clásico',
       characterCount: 4
     },
     {
@@ -104,7 +108,7 @@ export class DiscoverComponent implements OnInit, OnDestroy, AfterViewInit {
       title: 'La Metamorfosis',
       author: 'Franz Kafka',
       cover: 'https://srbmswjsbkpftjabcurg.supabase.co/storage/v1/object/public/literatus-media/book_covers/la-metamorfosis-kafka-franz.jpg',
-      genre: 'Ficci├│n ┬À Absurdismo',
+      genre: 'Ficción · Absurdismo',
       characterCount: 5
     },
     {
@@ -112,7 +116,7 @@ export class DiscoverComponent implements OnInit, OnDestroy, AfterViewInit {
       title: 'Metamorfosis',
       author: 'Ovidio',
       cover: 'https://srbmswjsbkpftjabcurg.supabase.co/storage/v1/object/public/literatus-media/book_covers/las-metamorfosis-ovidio.jpg',
-      genre: 'Mitos ┬À Cl├ísico',
+      genre: 'Mitos · Clásico',
       characterCount: 6
     }
   ];
