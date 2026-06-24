@@ -79,19 +79,7 @@ export class DiscoverComponent implements OnInit, OnDestroy, AfterViewInit {
   activeCharacterIndex = 0;
   private charCarouselInterval: any;
 
-  private _readingContainer?: ElementRef;
-  @ViewChild('readingContainer') set readingContainer(el: ElementRef) {
-    if (el && !this._readingContainer) {
-      this._readingContainer = el;
-      lottie.loadAnimation({
-        container: el.nativeElement,
-        renderer: 'svg',
-        loop: true,
-        autoplay: true,
-        path: 'assets/lottie/magic.json'
-      });
-    }
-  }
+
 
   private _saludoContainer?: ElementRef;
   @ViewChild('saludoContainer') set saludoContainer(el: ElementRef) {
@@ -191,7 +179,7 @@ export class DiscoverComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isLoading = true;
     
     // Carga paralela: Cat├ílogo General y Recomendaciones
-    this.api.get<any>('catalog/books/?ordering=-is_featured,-created_at&page_size=50').subscribe({
+    this.api.get<any>('catalog/books/?ordering=-is_featured,-created_at&page_size=2000').subscribe({
       next: (response) => {
         if (response && response.count) {
           this.totalBooksCount = response.count;
