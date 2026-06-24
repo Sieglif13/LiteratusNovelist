@@ -1,47 +1,69 @@
 <div class="home-wrapper">
 
-  <!-- SEARCH SECTION -->
-  <section class="discover-search-section">
-    <div class="search-container">
-      <span class="material-symbols-rounded search-icon">search</span>
-      <input 
-        type="text" 
-        class="search-input" 
-        placeholder="Busca por título o autor (Ej: Edgar Allan Poe, Metamorfosis...)"
-        [(ngModel)]="searchQuery"
-        (ngModelChange)="onSearchChange()">
-      
-      <button *ngIf="searchQuery" class="clear-search-btn" (click)="clearSearch()">
-        <span class="material-symbols-rounded">close</span>
-      </button>
+  <!-- TOP NAVIGATION BAR (Categories + Search) -->
+  <section class="discover-top-nav">
+    <div class="nav-container">
+      <div class="category-pills">
+        <button 
+          *ngFor="let cat of categories" 
+          class="category-pill" 
+          [class.active]="selectedCategory === cat"
+          (click)="selectCategory(cat)">
+          {{ cat }}
+        </button>
+      </div>
+      <div class="search-container">
+        <span class="material-symbols-rounded search-icon">search</span>
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="Busca por título o autor..."
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearchChange()">
+        <button *ngIf="searchQuery" class="clear-search-btn" (click)="clearSearch()">
+          <span class="material-symbols-rounded">close</span>
+        </button>
+      </div>
     </div>
   </section>
 
-  <!-- SEARCH RESULTS -->
-  <section class="discover-search-results" *ngIf="searchQuery">
+  <!-- SEARCH / FILTER RESULTS -->
+  <section class="discover-search-results" *ngIf="searchQuery || selectedCategory !== 'Explorar'">
     <div class="results-header">
-      <h2 class="section-title">Resultados para "{{ searchQuery }}"</h2>
+      <p class="results-count">Resultado ┬À {{ filteredBooks.length }}</p>
     </div>
-    <div class="results-grid">
-      <div class="book-card" *ngFor="let book of filteredBooks" (click)="goToBook(book.slug)">
-        <div class="card-image-wrap">
-          <img [src]="book.cover_image" [alt]="book.title" loading="lazy" class="book-cover">
-          <div class="card-overlay">
-            <span class="material-symbols-rounded play-icon">auto_stories</span>
+    
+    <div class="results-list">
+      <div class="result-list-item" *ngFor="let book of filteredBooks" (click)="goToCharBook(book.slug)">
+        <img [src]="book.cover_image" [alt]="book.title" class="result-cover" loading="lazy">
+        
+        <div class="result-info">
+          <h3 class="result-title">{{ book.title }}</h3>
+          <p class="result-author">By <span class="author-name">&#64;{{ book.author_name || 'Desconocido' }}</span></p>
+          <p class="result-synopsis">{{ book.synopsis | slice:0:150 }}{{ (book.synopsis?.length || 0) > 150 ? '...' : '' }}</p>
+          
+          <div class="result-tags">
+            <span class="result-tag" *ngFor="let tag of (book.tags || []).slice(0,5)">{{ tag.name }}</span>
+            <span class="result-tag" *ngIf="!book.tags || book.tags.length === 0">{{ selectedCategory !== 'Explorar' ? selectedCategory : 'General' }}</span>
           </div>
         </div>
-        <div class="card-info">
-          <h3 class="book-title">{{ book.title }}</h3>
-          <p class="book-author">{{ book.author_name || 'Desconocido' }}</p>
+
+        <div class="result-action">
+          <button class="chat-count-btn">
+            <span class="material-symbols-rounded">chat</span>
+            <span>+</span>
+          </button>
         </div>
       </div>
+      
       <div *ngIf="filteredBooks.length === 0" class="no-results">
-        <p>No se encontraron resultados para "{{ searchQuery }}".</p>
+        <p>No se encontraron resultados.</p>
       </div>
     </div>
   </section>
 
-  <div *ngIf="!searchQuery">
+  <!-- DEFAULT VIEW (CAROUSELS) -->
+  <div *ngIf="!searchQuery && selectedCategory === 'Explorar'">
 
 
   <!-- ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
@@ -342,6 +364,4 @@
       </div>
     </section>
 
-  </ng-container>
-  </div>
-</div>
+

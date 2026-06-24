@@ -36,9 +36,50 @@ export class DiscoverComponent implements OnInit, OnDestroy, AfterViewInit {
   randomDiscoveryBooks: Book[] = []; // Para el carrusel aleatorio
   totalBooksCount: number = 1854; // Fallback exact count
 
-  // Search State
+  // Search & Category State
   searchQuery: string = '';
   filteredBooks: Book[] = [];
+  categories: string[] = ['Explorar', 'Tendencias', 'Ficci├│n', 'Romance', 'Cl├ísicos', 'Terror', 'Fantas├¡a', 'Misterio', 'Drama'];
+  selectedCategory: string = 'Explorar';
+
+  onSearchChange(): void {
+    this.applyFilters();
+  }
+
+  selectCategory(cat: string): void {
+    this.selectedCategory = cat;
+    this.applyFilters();
+  }
+
+  clearSearch(): void {
+    this.searchQuery = '';
+    this.applyFilters();
+  }
+
+  private applyFilters(): void {
+    const q = this.searchQuery.trim().toLowerCase();
+    const cat = this.selectedCategory !== 'Explorar' ? this.selectedCategory.toLowerCase() : '';
+
+    this.filteredBooks = this.allBooks.filter(b => {
+      let matchesQuery = true;
+      let matchesCat = true;
+
+      if (q) {
+        matchesQuery = b.title.toLowerCase().includes(q) || 
+                       (b.author_name?.toLowerCase() || '').includes(q);
+      }
+
+      if (cat && cat !== 'tendencias') {
+        // Simple search in tags or genre if they exist. Since we might not have genre directly on book, we search tags or synopsis as fallback
+        const tagsString = (b.tags?.map(t => t.name).join(' ') || '').toLowerCase();
+        matchesCat = tagsString.includes(cat) || b.synopsis.toLowerCase().includes(cat);
+      } else if (cat === 'tendencias') {
+        matchesCat = b.is_featured;
+      }
+
+      return matchesQuery && matchesCat;
+    });
+  }
 
   // Libros con personajes IA activos (hardcoded ÔÇö ya tienen AIAvatars configurados)
   featuredWithCharacters = [
@@ -266,20 +307,5 @@ export class DiscoverComponent implements OnInit, OnDestroy, AfterViewInit {
     return book.slug;
   }
 
-  onSearchChange(): void {
-    if (!this.searchQuery.trim()) {
-      this.filteredBooks = [];
-      return;
-    }
-    const query = this.searchQuery.toLowerCase();
-    this.filteredBooks = this.allBooks.filter(book => 
-      book.title.toLowerCase().includes(query) || 
-      (book.author_name && book.author_name.toLowerCase().includes(query))
-    );
-  }
 
-  clearSearch(): void {
-    this.searchQuery = '';
-    this.filteredBooks = [];
-  }
 }
