@@ -218,8 +218,8 @@ export class DiscoverComponent implements OnInit, OnDestroy, AfterViewInit {
   private loadBooks(): void {
     this.isLoading = true;
     
-    // Carga paralela: Cat├ílogo General y Recomendaciones
-    this.api.get<any>('catalog/books/?ordering=-is_featured,-created_at&page_size=2000').subscribe({
+    // Carga paralela: Catálogo General y Recomendaciones
+    this.api.get<any>('catalog/books/?ordering=-is_featured,-created_at&page_size=10').subscribe({
       next: (response) => {
         if (response && response.count) {
           this.totalBooksCount = response.count;
@@ -235,7 +235,7 @@ export class DiscoverComponent implements OnInit, OnDestroy, AfterViewInit {
         }, 150);
       },
       error: () => {
-        this.errorMsg = 'No se pudo cargar el cat├ílogo.';
+        this.errorMsg = 'No se pudo cargar el catálogo.';
         this.isLoading = false;
       }
     });
