@@ -10,11 +10,16 @@ class AIAvatarListSerializer(serializers.ModelSerializer):
     is_unlocked = serializers.SerializerMethodField()
     avatar_image_url = serializers.SerializerMethodField()
     video_avatar_url = serializers.SerializerMethodField()
+    image_speaking_1_url = serializers.SerializerMethodField()
+    image_speaking_2_url = serializers.SerializerMethodField()
+    image_speaking_3_url = serializers.SerializerMethodField()
+    image_thinking_url = serializers.SerializerMethodField()
 
     class Meta:
         model = AIAvatar
         fields = [
             'id', 'name', 'description', 'avatar_image_url', 'video_avatar_url',
+            'image_speaking_1_url', 'image_speaking_2_url', 'image_speaking_3_url', 'image_thinking_url',
             'unlock_at_chapter', 'is_major_character', 'is_author',
             'is_unlocked', 'greeting_message',
         ]
@@ -37,6 +42,30 @@ class AIAvatarListSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if obj.video_avatar and request:
             return request.build_absolute_uri(obj.video_avatar.url)
+        return None
+
+    def get_image_speaking_1_url(self, obj):
+        request = self.context.get('request')
+        if obj.image_speaking_1 and request:
+            return request.build_absolute_uri(obj.image_speaking_1.url)
+        return None
+
+    def get_image_speaking_2_url(self, obj):
+        request = self.context.get('request')
+        if obj.image_speaking_2 and request:
+            return request.build_absolute_uri(obj.image_speaking_2.url)
+        return None
+
+    def get_image_speaking_3_url(self, obj):
+        request = self.context.get('request')
+        if obj.image_speaking_3 and request:
+            return request.build_absolute_uri(obj.image_speaking_3.url)
+        return None
+
+    def get_image_thinking_url(self, obj):
+        request = self.context.get('request')
+        if obj.image_thinking and request:
+            return request.build_absolute_uri(obj.image_thinking.url)
         return None
 
 

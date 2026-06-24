@@ -89,13 +89,19 @@ export class DashboardBooksService {
     return this.http.get<any>(`${this.apiUrl}/avatars/${id}/`);
   }
 
-  saveAvatar(data: any, file?: File, editionId?: string, avatarId?: string, imgSpeaking?: File, imgThinking?: File): Observable<any> {
+  saveAvatar(data: any, file?: File, editionId?: string, avatarId?: string, imgSpeaking1?: File, imgSpeaking2?: File, imgSpeaking3?: File, imgThinking?: File): Observable<any> {
     const formData = new FormData();
     if (file) {
       formData.append('avatar_image', file);
     }
-    if (imgSpeaking) {
-      formData.append('image_speaking', imgSpeaking);
+    if (imgSpeaking1) {
+      formData.append('image_speaking_1', imgSpeaking1);
+    }
+    if (imgSpeaking2) {
+      formData.append('image_speaking_2', imgSpeaking2);
+    }
+    if (imgSpeaking3) {
+      formData.append('image_speaking_3', imgSpeaking3);
     }
     if (imgThinking) {
       formData.append('image_thinking', imgThinking);

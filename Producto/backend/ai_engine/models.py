@@ -68,11 +68,23 @@ class AIAvatar(TimeStampedModel):
         blank=True,
         help_text="Imagen neutral/Idle del avatar mostrada en la interfaz."
     )
-    image_speaking = models.ImageField(
+    image_speaking_1 = models.ImageField(
         upload_to='ai_avatars/states/',
         null=True,
         blank=True,
-        help_text="Imagen mostrada mientras el personaje 'habla' (ej. reproduciendo audio)."
+        help_text="Fotograma 1 de la animación de habla (ej. boca cerrada)."
+    )
+    image_speaking_2 = models.ImageField(
+        upload_to='ai_avatars/states/',
+        null=True,
+        blank=True,
+        help_text="Fotograma 2 de la animación de habla (ej. boca entreabierta)."
+    )
+    image_speaking_3 = models.ImageField(
+        upload_to='ai_avatars/states/',
+        null=True,
+        blank=True,
+        help_text="Fotograma 3 de la animación de habla (ej. boca abierta)."
     )
     image_thinking = models.ImageField(
         upload_to='ai_avatars/states/',

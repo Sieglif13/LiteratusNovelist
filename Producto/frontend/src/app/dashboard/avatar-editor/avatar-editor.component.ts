@@ -24,8 +24,14 @@ export class AvatarEditorComponent implements OnInit {
   avatarFile: File | null = null;
   avatarPreview: string | null = null;
   
-  speakingFile: File | null = null;
-  speakingPreview: string | null = null;
+  speakingFile1: File | null = null;
+  speakingPreview1: string | null = null;
+
+  speakingFile2: File | null = null;
+  speakingPreview2: string | null = null;
+
+  speakingFile3: File | null = null;
+  speakingPreview3: string | null = null;
 
   thinkingFile: File | null = null;
   thinkingPreview: string | null = null;
@@ -95,11 +101,15 @@ export class AvatarEditorComponent implements OnInit {
           is_author: av.is_author ?? false,
           chat_count: av.chat_count || 0,
           avatar_image: av.avatar_image || null,
-          image_speaking: av.image_speaking || null,
+          image_speaking_1: av.image_speaking_1 || null,
+          image_speaking_2: av.image_speaking_2 || null,
+          image_speaking_3: av.image_speaking_3 || null,
           image_thinking: av.image_thinking || null,
         };
         this.avatarPreview = av.avatar_image || null;
-        this.speakingPreview = av.image_speaking || null;
+        this.speakingPreview1 = av.image_speaking_1 || null;
+        this.speakingPreview2 = av.image_speaking_2 || null;
+        this.speakingPreview3 = av.image_speaking_3 || null;
         this.thinkingPreview = av.image_thinking || null;
         this.editionId = av.edition_id || null;
         this.loading = false;
@@ -111,16 +121,22 @@ export class AvatarEditorComponent implements OnInit {
     });
   }
 
-  onImageSelected(event: any, type: 'avatar' | 'speaking' | 'thinking'): void {
+  onImageSelected(event: any, type: 'avatar' | 'speaking1' | 'speaking2' | 'speaking3' | 'thinking'): void {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
       if (type === 'avatar') {
         this.avatarFile = file;
         reader.onload = () => this.avatarPreview = reader.result as string;
-      } else if (type === 'speaking') {
-        this.speakingFile = file;
-        reader.onload = () => this.speakingPreview = reader.result as string;
+      } else if (type === 'speaking1') {
+        this.speakingFile1 = file;
+        reader.onload = () => this.speakingPreview1 = reader.result as string;
+      } else if (type === 'speaking2') {
+        this.speakingFile2 = file;
+        reader.onload = () => this.speakingPreview2 = reader.result as string;
+      } else if (type === 'speaking3') {
+        this.speakingFile3 = file;
+        reader.onload = () => this.speakingPreview3 = reader.result as string;
       } else if (type === 'thinking') {
         this.thinkingFile = file;
         reader.onload = () => this.thinkingPreview = reader.result as string;
@@ -129,13 +145,19 @@ export class AvatarEditorComponent implements OnInit {
     }
   }
 
-  removeImage(type: 'avatar' | 'speaking' | 'thinking'): void {
+  removeImage(type: 'avatar' | 'speaking1' | 'speaking2' | 'speaking3' | 'thinking'): void {
     if (type === 'avatar') {
       this.avatarFile = null;
       this.avatarPreview = null;
-    } else if (type === 'speaking') {
-      this.speakingFile = null;
-      this.speakingPreview = null;
+    } else if (type === 'speaking1') {
+      this.speakingFile1 = null;
+      this.speakingPreview1 = null;
+    } else if (type === 'speaking2') {
+      this.speakingFile2 = null;
+      this.speakingPreview2 = null;
+    } else if (type === 'speaking3') {
+      this.speakingFile3 = null;
+      this.speakingPreview3 = null;
     } else if (type === 'thinking') {
       this.thinkingFile = null;
       this.thinkingPreview = null;
@@ -162,7 +184,9 @@ export class AvatarEditorComponent implements OnInit {
       this.avatarFile || undefined,
       targetEditionId,
       this.isNew ? undefined : this.avatarId!,
-      this.speakingFile || undefined,
+      this.speakingFile1 || undefined,
+      this.speakingFile2 || undefined,
+      this.speakingFile3 || undefined,
       this.thinkingFile || undefined
     ).subscribe({
       next: () => {

@@ -684,7 +684,9 @@ class AvatarAdminView(APIView):
             'is_author': av.is_author,
             'chat_count': av.chat_count,
             'avatar_image': request.build_absolute_uri(av.avatar_image.url) if av.avatar_image else None,
-            'image_speaking': request.build_absolute_uri(av.image_speaking.url) if av.image_speaking else None,
+            'image_speaking_1': request.build_absolute_uri(av.image_speaking_1.url) if av.image_speaking_1 else None,
+            'image_speaking_2': request.build_absolute_uri(av.image_speaking_2.url) if av.image_speaking_2 else None,
+            'image_speaking_3': request.build_absolute_uri(av.image_speaking_3.url) if av.image_speaking_3 else None,
             'image_thinking': request.build_absolute_uri(av.image_thinking.url) if av.image_thinking else None,
         })
 
@@ -720,11 +722,23 @@ class AvatarAdminView(APIView):
             img.seek(0)
             upload_to_supabase_if_configured(img.read(), avatar.avatar_image.name, img.content_type)
 
-        img_speaking = request.FILES.get('image_speaking')
-        if img_speaking:
-            avatar.image_speaking.save(f'avatar_speaking_{avatar.pk}.jpg', img_speaking, save=True)
-            img_speaking.seek(0)
-            upload_to_supabase_if_configured(img_speaking.read(), avatar.image_speaking.name, img_speaking.content_type)
+        img_speaking_1 = request.FILES.get('image_speaking_1')
+        if img_speaking_1:
+            avatar.image_speaking_1.save(f'avatar_speaking_1_{avatar.pk}.jpg', img_speaking_1, save=True)
+            img_speaking_1.seek(0)
+            upload_to_supabase_if_configured(img_speaking_1.read(), avatar.image_speaking_1.name, img_speaking_1.content_type)
+
+        img_speaking_2 = request.FILES.get('image_speaking_2')
+        if img_speaking_2:
+            avatar.image_speaking_2.save(f'avatar_speaking_2_{avatar.pk}.jpg', img_speaking_2, save=True)
+            img_speaking_2.seek(0)
+            upload_to_supabase_if_configured(img_speaking_2.read(), avatar.image_speaking_2.name, img_speaking_2.content_type)
+
+        img_speaking_3 = request.FILES.get('image_speaking_3')
+        if img_speaking_3:
+            avatar.image_speaking_3.save(f'avatar_speaking_3_{avatar.pk}.jpg', img_speaking_3, save=True)
+            img_speaking_3.seek(0)
+            upload_to_supabase_if_configured(img_speaking_3.read(), avatar.image_speaking_3.name, img_speaking_3.content_type)
 
         img_thinking = request.FILES.get('image_thinking')
         if img_thinking:

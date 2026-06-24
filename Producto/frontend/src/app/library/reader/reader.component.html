@@ -247,7 +247,7 @@
       </div>
 
       <!-- PANEL DE MANGA PORTRAIT (Efecto Novela Visual / Manga) -->
-      <div class="chat-manga-panel" *ngIf="selectedAvatar?.avatar_image_url?.includes('manga_assets')" [class.immersive-manga]="isCallMode">
+      <div class="chat-manga-panel" *ngIf="selectedAvatar?.avatar_image_url && !selectedAvatar?.video_avatar_url" [class.immersive-manga]="isCallMode">
         <div class="manga-portrait-container">
           <img [src]="getMangaFrameUrl()" 
                [alt]="selectedAvatar?.name"
