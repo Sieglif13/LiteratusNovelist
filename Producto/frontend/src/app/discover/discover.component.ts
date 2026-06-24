@@ -1,340 +1,297 @@
-import { Component, OnInit, OnDestroy, inject, ViewChild, ElementRef } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit, OnDestroy, inject, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Subject } from 'rxjs';
 import { ApiService } from '../core/services/api.service';
 import { AuthService } from '../core/services/auth.service';
+import { Router } from '@angular/router';
+import lottie from 'lottie-web';
 
-/* ────────────────────────────────────────────────────────────────────
-   Mood definitions: each maps to a filter function used to segment
-   the book pool into thematic rows.
-   ──────────────────────────────────────────────────────────────────── */
-interface Mood {
+export interface Book {
   id: string;
-  label: string;
-  icon: string;
-  filterFn: (b: any) => boolean;
-}
-
-interface MatchPair {
-  from: any;
-  to: any;
+  title: string;
+  slug: string;
+  synopsis: string;
+  is_featured: boolean;
+  cover_image: string | null;
+  tags?: { name: string; slug: string }[];
+  price?: number;
+  author_name?: string;  // Nombre del autor para mostrar en las tarjetas
 }
 
 @Component({
   selector: 'app-discover',
   templateUrl: './discover.component.html',
-  styleUrl: './discover.component.css'
+  styleUrls: ['./discover.component.css']
 })
-export class DiscoverComponent implements OnInit, OnDestroy {
+export class DiscoverComponent implements OnInit, OnDestroy, AfterViewInit {
   private api = inject(ApiService);
+  public auth = inject(AuthService);
   private router = inject(Router);
-  private auth = inject(AuthService);
+  private destroy$ = new Subject<void>();
 
-  allBooks: any[] = [];
-  isLoading = true;
+  // State
+  allBooks: Book[] = [];
+  trendingBooks: Book[] = [];
+  recommendedBooks: Book[] = []; // Nueva lista de recomendados
+  discoveryBooks: Book[] = [];
+  randomDiscoveryBooks: Book[] = []; // Para el carrusel aleatorio
+  totalBooksCount: number = 1854; // Fallback exact count
 
-  /* ── Hero ── */
-  heroBook: any = null;
-  private heroRefreshInterval: any;
+  // Search State
+  searchQuery: string = '';
+  filteredBooks: Book[] = [];
 
-  /* ── TTS ── */
-  private ttsUtterance: SpeechSynthesisUtterance | null = null;
-  isPlaying = false;
-  currentAudioBook: any = null;
-
-  /* ── Mood Picker ── */
-  activeMood: string | null = null;
-  moods: Mood[] = [
-    { id: 'all', label: 'Todo', icon: 'apps', filterFn: () => true },
-    { id: 'dark', label: 'Algo oscuro', icon: 'dark_mode', filterFn: (b) => this.hasCategory(b, 'terror') || this.hasCategory(b, 'misterio') || this.hasCategory(b, 'suspense') },
-    { id: 'brave', label: 'Sentirme valiente', icon: 'swords', filterFn: (b) => this.hasCategory(b, 'aventura') || this.hasCategory(b, 'fantasía') || this.hasCategory(b, 'ciencia ficción') || this.hasCategory(b, 'acción') },
-    { id: 'short', label: 'Lectura rápida', icon: 'timer', filterFn: (b) => {
-      const time = String(b.estimated_reading_time || '');
-      return time.includes('15') || time.includes('20') || time.includes('30') || this.hasCategory(b, 'cuentos') || this.hasCategory(b, 'novela corta');
-    } },
-    { id: 'reflect', label: 'Para reflexionar', icon: 'psychology', filterFn: (b) => this.hasCategory(b, 'clásica') || this.hasCategory(b, 'contemporánea') || this.hasCategory(b, 'ensayos') },
-    { id: 'love', label: 'Un poco de romance', icon: 'favorite', filterFn: (b) => this.hasCategory(b, 'romance') || this.hasCategory(b, 'romántica') || this.hasCategory(b, 'poesía') },
+  // Libros con personajes IA activos (hardcoded ÔÇö ya tienen AIAvatars configurados)
+  featuredWithCharacters = [
+    {
+      slug: 'el-gato-negro-allan-poe-edgar',
+      title: 'El Gato Negro',
+      author: 'Edgar Allan Poe',
+      cover: 'https://srbmswjsbkpftjabcurg.supabase.co/storage/v1/object/public/literatus-media/book_covers/el-gato-negro-allan-poe-edgar.jpg',
+      genre: 'Terror ┬À G├│tico',
+      characterCount: 3
+    },
+    {
+      slug: 'el-principe-feliz-y-otros-cuentos-wilde-oscar',
+      title: 'El Pr├¡ncipe Feliz',
+      author: 'Oscar Wilde',
+      cover: 'https://srbmswjsbkpftjabcurg.supabase.co/storage/v1/object/public/literatus-media/book_covers/el-principe-feliz-y-otros-cuentos-wilde-oscar.jpg',
+      genre: 'Cuento ┬À Cl├ísico',
+      characterCount: 4
+    },
+    {
+      slug: 'la-metamorfosis-kafka-franz',
+      title: 'La Metamorfosis',
+      author: 'Franz Kafka',
+      cover: 'https://srbmswjsbkpftjabcurg.supabase.co/storage/v1/object/public/literatus-media/book_covers/la-metamorfosis-kafka-franz.jpg',
+      genre: 'Ficci├│n ┬À Absurdismo',
+      characterCount: 5
+    },
+    {
+      slug: 'las-metamorfosis-ovidio',
+      title: 'Metamorfosis',
+      author: 'Ovidio',
+      cover: 'https://srbmswjsbkpftjabcurg.supabase.co/storage/v1/object/public/literatus-media/book_covers/las-metamorfosis-ovidio.jpg',
+      genre: 'Mitos ┬À Cl├ísico',
+      characterCount: 6
+    }
   ];
 
-  /* ── Rows ── */
-  trendingBooks: any[] = [];
-  iaBooks: any[] = [];
-  quickBooks: any[] = [];
-  quoteBooks: any[] = [];
-  matchPairs: MatchPair[] = [];
+  activeCharacterIndex = 0;
+  private charCarouselInterval: any;
 
-  /* ── Search ── */
-  searchQuery: string = '';
-
-  get searchResults(): any[] {
-    if (!this.searchQuery.trim()) return [];
-    const query = this.searchQuery.toLowerCase().trim();
-    return this.allBooks.filter(book => 
-      (book.title && book.title.toLowerCase().includes(query)) ||
-      (book.author_name && book.author_name.toLowerCase().includes(query))
-    );
+  private _readingContainer?: ElementRef;
+  @ViewChild('readingContainer') set readingContainer(el: ElementRef) {
+    if (el && !this._readingContainer) {
+      this._readingContainer = el;
+      lottie.loadAnimation({
+        container: el.nativeElement,
+        renderer: 'svg',
+        loop: true,
+        autoplay: true,
+        path: 'assets/lottie/magic.json'
+      });
+    }
   }
 
-  /* ── Saved for later (in-memory + localStorage) ── */
-  savedIds: Set<string> = new Set();
+  private _saludoContainer?: ElementRef;
+  @ViewChild('saludoContainer') set saludoContainer(el: ElementRef) {
+    if (el && !this._saludoContainer) {
+      this._saludoContainer = el;
+      lottie.loadAnimation({
+        container: el.nativeElement,
+        renderer: 'svg',
+        loop: true,
+        autoplay: true,
+        path: 'assets/lottie/saludo.json'
+      });
+    }
+  }
 
-  /* ── Hover state for row cards ── */
-  hoverBook: any = null;
+  isLoading = true;
+  errorMsg = '';
 
-  @ViewChild('trendingTrack') trendingTrack!: ElementRef;
-  @ViewChild('iaTrack') iaTrack!: ElementRef;
-  @ViewChild('quickTrack') quickTrack!: ElementRef;
+  private scrollIntervals: any[] = [];
 
   ngOnInit(): void {
-    this.loadSaved();
     this.loadBooks();
   }
 
-  ngOnDestroy(): void {
-    this.stopAudio();
-    if (this.heroRefreshInterval) clearInterval(this.heroRefreshInterval);
+  ngAfterViewInit(): void {
+    // Observar secciones que ya existen al iniciar (chat demo)
+    this.initRevealObserver();
   }
 
-  /* ═══════════════════════════════════════════════════════════════════
-     DATA LOADING
-     ═══════════════════════════════════════════════════════════════════ */
+  private initRevealObserver(): void {
+    const revealObserver = new IntersectionObserver(
+      (entries) => entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          revealObserver.unobserve(e.target);
+        }
+      }),
+      { threshold: 0.05 }
+    );
+    // Observa TODAS las reveal-section presentes en el DOM en este momento
+    document.querySelectorAll('.reveal-section:not(.visible)').forEach(el => revealObserver.observe(el));
+
+    // Animaci├│n de contadores de stats
+    const statsEl = document.querySelector('.stats-section');
+    if (statsEl) {
+      const statsObserver = new IntersectionObserver(
+        (entries) => entries.forEach(e => {
+          if (e.isIntersecting) {
+            this.animateCounters();
+            statsObserver.unobserve(e.target);
+          }
+        }),
+        { threshold: 0.3 }
+      );
+      statsObserver.observe(statsEl);
+    }
+  }
+
+  private animateCounters(): void {
+    const counters = [
+      { id: 'stat-books', target: this.totalBooksCount },
+      { id: 'stat-chars', target: 25 },
+      { id: 'stat-convs', target: 150 },
+      { id: 'stat-authors', target: 10 }
+    ];
+    counters.forEach(({ id, target }) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const duration = 1800;
+      const start = performance.now();
+      const update = (now: number) => {
+        const progress = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.floor(ease * target).toLocaleString('es-CL');
+        if (progress < 1) requestAnimationFrame(update);
+      };
+      requestAnimationFrame(update);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.scrollIntervals.forEach(interval => clearInterval(interval));
+    if (this.charCarouselInterval) clearInterval(this.charCarouselInterval);
+  }
+
+  goToCharBook(slug: string): void {
+    this.router.navigate(['/book', slug]);
+  }
+
+  setCharacterSlide(index: number): void {
+    this.activeCharacterIndex = index;
+  }
+
   private loadBooks(): void {
     this.isLoading = true;
-    this.api.get<any>('catalog/books/?ordering=-view_count,-created_at&page_size=50').subscribe({
-      next: (res: any) => {
-        const data = Array.isArray(res) ? res : (res.results ?? []);
-        // Filter books with synopsis (needed for quotes & TTS)
-        let validBooks = data.filter((b: any) => b.synopsis && b.synopsis.trim().length > 0);
-
-        // Shuffle
-        validBooks.sort(() => 0.5 - Math.random());
-        this.allBooks = validBooks;
-
-        // Pick hero (first book, refresh every 30s)
-        this.setHeroBook();
-        this.heroRefreshInterval = setInterval(() => this.setHeroBook(), 30000);
-
-        // Build rows
-        this.buildRows();
-
+    
+    // Carga paralela: Cat├ílogo General y Recomendaciones
+    this.api.get<any>('catalog/books/?ordering=-is_featured,-created_at&page_size=50').subscribe({
+      next: (response) => {
+        if (response && response.count) {
+          this.totalBooksCount = response.count;
+        }
+        this.allBooks = response.results || response;
+        this.buildSections();
         this.isLoading = false;
+        // Re-observar las secciones que se acaban de renderizar (dentro de *ngIf)
+        setTimeout(() => {
+          if (this.destroy$.isStopped) return; // FIX: Prevenir memory leaks
+          this.initAutoScroll();
+          this.initRevealObserver();
+        }, 150);
       },
-      error: (err) => {
-        console.error('Error al cargar descubrir:', err);
+      error: () => {
+        this.errorMsg = 'No se pudo cargar el cat├ílogo.';
         this.isLoading = false;
+      }
+    });
+
+    this.api.get<any>('catalog/books/recommendations/').subscribe({
+      next: (response) => {
+        this.recommendedBooks = response.results || response;
+        setTimeout(() => {
+          if (!this.destroy$.isStopped) {
+            this.initRevealObserver();
+            this.initAutoScroll(); // Tambi├®n inicializar auto scroll para los recomendados si es necesario
+          }
+        }, 100);
       }
     });
   }
 
-  private setHeroBook(): void {
-    if (this.allBooks.length === 0) return;
-    const idx = Math.floor(Math.random() * Math.min(12, this.allBooks.length));
-    this.heroBook = this.allBooks[idx];
+  private initAutoScroll(): void {
+    const tracks = document.querySelectorAll('.trending-track:not(.scroll-init), .recommended-track:not(.scroll-init)');
+    tracks.forEach((track: any) => {
+      track.classList.add('scroll-init');
+      let isInteracting = false;
+
+      track.addEventListener('mouseenter', () => isInteracting = true);
+      track.addEventListener('mouseleave', () => isInteracting = false);
+      track.addEventListener('touchstart', () => isInteracting = true, { passive: true });
+      track.addEventListener('touchend', () => { setTimeout(() => isInteracting = false, 2000); }, { passive: true });
+
+      const interval = setInterval(() => {
+        if (!isInteracting) {
+          const cardWidth = track.firstElementChild ? track.firstElementChild.clientWidth + 24 : 250;
+          if (track.scrollLeft + track.clientWidth >= track.scrollWidth - 10) {
+            track.scrollTo({ left: 0, behavior: 'smooth' });
+          } else {
+            track.scrollBy({ left: cardWidth, behavior: 'smooth' });
+          }
+        }
+      }, 4000);
+
+      this.scrollIntervals.push(interval);
+    });
   }
 
-  private buildRows(pool: any[] = this.allBooks): void {
-
-    // Trending: top viewed + featured first
-    this.trendingBooks = [...pool]
-      .sort((a, b) => (b.view_count || 0) - (a.view_count || 0))
-      .slice(0, 15);
-
-    // IA Books: hardcoded slugs that have IA characters
-    const iaSlugs = new Set([
-      'el-gato-negro-allan-poe-edgar',
-      'el-principe-feliz-y-otros-cuentos-wilde-oscar',
-      'la-metamorfosis-kafka-franz',
-      'las-metamorfosis-ovidio',
-      'el-corazon-delator-allan-poe-edgar',
-      'alicia-en-el-pais-de-las-maravillas-carroll-lewis',
-      'el-cuervo-allan-poe-edgar',
-      'la-caida-de-la-casa-usher-allan-poe-edgar'
-    ]);
-    this.iaBooks = pool.filter(b => iaSlugs.has(b.slug));
-
-    // Quick reads: estimated reading time < 30 min or short page count
-    this.quickBooks = pool.filter(b => {
-      const time = String(b.estimated_reading_time || '');
-      return time.includes('15') || time.includes('20') || time.includes('30') || time.includes('min');
-    }).slice(0, 15);
-    if (this.quickBooks.length < 6) {
-      this.quickBooks = [...this.quickBooks, ...pool.slice(0, 15 - this.quickBooks.length)];
+  private buildSections(): void {
+    // Trending: libros destacados primero
+    this.trendingBooks = this.allBooks.filter(b => b.is_featured).slice(0, 6);
+    if (this.trendingBooks.length === 0) {
+      this.trendingBooks = this.allBooks.slice(0, 6);
     }
 
-    // Teaser cards: 3 random books with a snippet from their synopsis
-    this.quoteBooks = pool.slice(0, 3);
-
-    // Matchmaker: "If you liked X, try Y" pairs
-    this.matchPairs = this.buildMatchPairs(pool.slice(0, 20));
+    // Discovery: todos menos los trending
+    const trendingSlugs = new Set(this.trendingBooks.map(b => b.slug));
+    this.discoveryBooks = this.allBooks.filter(b => !trendingSlugs.has(b.slug));
+    
+    // Shuffle array para el carrusel aleatorio
+    this.randomDiscoveryBooks = [...this.allBooks].sort(() => 0.5 - Math.random());
   }
 
-  private buildMatchPairs(pool: any[]): MatchPair[] {
-    const pairs: MatchPair[] = [];
-    if (pool.length < 2) return pairs;
-    // Create 4 pairs by genre similarity
-    for (let i = 0; i < 4 && i < pool.length; i++) {
-      const from = pool[i];
-      // Find a "to" book with similar genre but different author
-      const to = pool.find(b => b.id !== from.id && b.genres?.[0]?.id === from.genres?.[0]?.id) || pool[(i + 5) % pool.length];
-      pairs.push({ from, to });
-    }
-    return pairs;
+  scrollToCatalog(): void {
+    document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' });
   }
 
-  /* ═══════════════════════════════════════════════════════════════════
-     MOOD FILTER
-     ═══════════════════════════════════════════════════════════════════ */
-  setMood(moodId: string): void {
-    if (this.activeMood === moodId) {
-      this.activeMood = null; // toggle off
-    } else {
-      this.activeMood = moodId;
-    }
-
-    const mood = this.moods.find(m => m.id === this.activeMood);
-    const filter = mood ? mood.filterFn : () => true;
-
-    const filtered = this.activeMood ? this.allBooks.filter(filter) : this.allBooks;
-
-    // Rebuild all rows from filtered pool so nothing stays unfiltered
-    this.buildRows(filtered);
+  goToBook(slug: string): void {
+    this.router.navigate(['/book', slug]);
   }
 
-  /* ═══════════════════════════════════════════════════════════════════
-     HERO TEASER — Extract a snippet from synopsis
-     ═══════════════════════════════════════════════════════════════════ */
-  getSynopsisSnippet(book: any): string {
-    if (!book?.synopsis) return '';
-    const text = book.synopsis.trim();
-    // Try to extract an impactful sentence (first or second sentence)
-    const sentences = text.split(/[.!?]/).map((s: string) => s.trim()).filter((s: string) => s.length > 20 && s.length < 200);
-    if (sentences.length === 0) return text.slice(0, 180) + '...';
-    // Pick the second sentence if it exists and is good, otherwise first
-    const pick = sentences.length > 1 ? sentences[1] : sentences[0];
-    return pick + '.';
+  trackBySlug(_: number, book: Book): string {
+    return book.slug;
   }
 
-  /* ═══════════════════════════════════════════════════════════════════
-     FOMO / SOCIAL PROOF — Simulated "now reading" count
-     ═══════════════════════════════════════════════════════════════════ */
-  getNowReadingCount(book: any): number {
-    // Deterministic hash-based pseudo-random count so it stays stable
-    const hash = this.hashString(book.id || book.slug || '0');
-    return 12 + (hash % 487); // 12 to 499
-  }
-
-  private hashString(str: string): number {
-    let h = 0;
-    for (let i = 0; i < str.length; i++) {
-      h = ((h << 5) - h) + str.charCodeAt(i);
-      h |= 0;
-    }
-    return Math.abs(h);
-  }
-
-  /* ═══════════════════════════════════════════════════════════════════
-     SAVE FOR LATER
-     ═══════════════════════════════════════════════════════════════════ */
-  saveForLater(book: any): void {
-    const id = book.id || book.slug;
-    if (this.savedIds.has(id)) {
-      this.savedIds.delete(id);
-    } else {
-      this.savedIds.add(id);
-    }
-    this.persistSaved();
-  }
-
-  isSaved(book: any): boolean {
-    return this.savedIds.has(book.id || book.slug);
-  }
-
-  private loadSaved(): void {
-    try {
-      const raw = localStorage.getItem('discover_saved');
-      if (raw) {
-        const ids = JSON.parse(raw);
-        this.savedIds = new Set(ids);
-      }
-    } catch {
-      this.savedIds = new Set();
-    }
-  }
-
-  private persistSaved(): void {
-    localStorage.setItem('discover_saved', JSON.stringify([...this.savedIds]));
-  }
-
-  /* ═══════════════════════════════════════════════════════════════════
-     TTS / AUDIO
-     ═══════════════════════════════════════════════════════════════════ */
-  toggleAudio(book: any): void {
-    if (this.isPlaying && this.currentAudioBook === book) {
-      this.stopAudio();
+  onSearchChange(): void {
+    if (!this.searchQuery.trim()) {
+      this.filteredBooks = [];
       return;
     }
-    const text = book?.synopsis?.slice(0, 350);
-    if (!text) return;
-    this.stopAudio();
-    if (typeof SpeechSynthesisUtterance !== 'undefined') {
-      this.ttsUtterance = new SpeechSynthesisUtterance(text);
-      this.ttsUtterance.lang = 'es-ES';
-      this.ttsUtterance.rate = 0.92;
-
-      this.ttsUtterance.onstart = () => {
-        this.isPlaying = true;
-        this.currentAudioBook = book;
-      };
-
-      this.ttsUtterance.onend = () => {
-        this.isPlaying = false;
-        this.currentAudioBook = null;
-      };
-
-      this.ttsUtterance.onerror = () => {
-        this.isPlaying = false;
-        this.currentAudioBook = null;
-      };
-
-      if (window.speechSynthesis) {
-        window.speechSynthesis.speak(this.ttsUtterance);
-      }
-    } else {
-      console.warn("SpeechSynthesisUtterance not available in this WebView");
-    }
+    const query = this.searchQuery.toLowerCase();
+    this.filteredBooks = this.allBooks.filter(book => 
+      book.title.toLowerCase().includes(query) || 
+      (book.author_name && book.author_name.toLowerCase().includes(query))
+    );
   }
 
-  stopAudio(): void {
-    window.speechSynthesis.cancel();
-    this.isPlaying = false;
-    this.currentAudioBook = null;
-    this.ttsUtterance = null;
-  }
-
-  /* ═══════════════════════════════════════════════════════════════════
-     NAVIGATION
-     ═══════════════════════════════════════════════════════════════════ */
-  goToBook(book: any): void {
-    if (book?.slug) {
-      this.router.navigate(['/book', book.slug]);
-    }
-  }
-
-  /* ═══════════════════════════════════════════════════════════════════
-     UTILS
-     ═══════════════════════════════════════════════════════════════════ */
-  private hasCategory(book: any, keyword: string): boolean {
-    const kw = keyword.toLowerCase();
-    
-    // Check tags
-    if (book.tags && book.tags.some((t: any) => (t.name || '').toLowerCase().includes(kw))) {
-      return true;
-    }
-    
-    // Check genres
-    if (book.genres && book.genres.some((g: any) => (g.name || '').toLowerCase().includes(kw))) {
-      return true;
-    }
-    
-    return false;
+  clearSearch(): void {
+    this.searchQuery = '';
+    this.filteredBooks = [];
   }
 }
