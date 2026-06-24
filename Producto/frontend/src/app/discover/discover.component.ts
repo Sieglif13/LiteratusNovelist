@@ -57,26 +57,25 @@ export class DiscoverComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private applyFilters(): void {
-    const q = this.searchQuery.trim().toLowerCase();
+    const normalize = (s: any) => (s || '').toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    const qNorm = normalize(this.searchQuery.trim());
     const cat = this.selectedCategory !== 'Explorar' ? this.selectedCategory.toLowerCase() : '';
 
     this.filteredBooks = this.allBooks.filter(b => {
       let matchesQuery = true;
       let matchesCat = true;
 
-      if (q) {
-        matchesQuery = b.title.toLowerCase().includes(q) || 
-                       (b.author_name?.toLowerCase() || '').includes(q);
+      if (qNorm) {
+        matchesQuery = normalize(b.title).includes(qNorm) || 
+                       normalize(b.author_name).includes(qNorm);
       }
 
       if (cat && cat !== 'tendencias') {
-        // Remove accents from cat and tags for broader matching
-        const normalize = (s: string) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
         const normCat = normalize(cat);
-        const normTagsString = normalize(b.tags?.map(t => t.name).join(' ') || '');
+        const normTagsString = normalize(b.tags?.map(t => t.name).join(' '));
         const normSynopsis = normalize(b.synopsis);
 
-        matchesCat = normTagsString.includes(normCat) || normSynopsis.includes(normCat);
+        matchesCat = normTagsString.includes(normCat) || normSynopsis.includes(normCat) || normalize(b.title).includes(normCat);
       } else if (cat === 'tendencias') {
         matchesCat = b.is_featured;
       }
