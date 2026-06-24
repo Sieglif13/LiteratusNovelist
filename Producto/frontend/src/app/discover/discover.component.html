@@ -40,7 +40,7 @@
         <div class="result-info">
           <h3 class="result-title">{{ book.title }}</h3>
           <p class="result-author">By <span class="author-name">&#64;{{ book.author_name || 'Desconocido' }}</span></p>
-          <p class="result-synopsis">{{ book.synopsis | slice:0:150 }}{{ (book.synopsis?.length || 0) > 150 ? '...' : '' }}</p>
+          <p class="result-synopsis">{{ book.synopsis | slice:0:150 }}{{ book.synopsis && book.synopsis.length > 150 ? '...' : '' }}</p>
           
           <div class="result-tags">
             <span class="result-tag" *ngFor="let tag of (book.tags || []).slice(0,5)">{{ tag.name }}</span>
