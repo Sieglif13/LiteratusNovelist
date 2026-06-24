@@ -69,8 +69,14 @@
     <!-- LISTADO DE AUTORES -->
     <div class="authors-list card">
       <h3 class="section-title">Autores Registrados</h3>
+      
+      <div class="search-box" style="margin-bottom: 15px; background: rgba(0,0,0,0.2); border: 1px solid var(--nexus-border); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+        <svg class="search-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" placeholder="Buscar autor por nombre..." (input)="filterAuthors($event)" style="background: transparent; border: none; outline: none; color: white; width: 100%;">
+      </div>
+
       <div class="list-scroll">
-        <div class="author-item" *ngFor="let author of authors">
+        <div class="author-item" *ngFor="let author of filteredAuthors">
           <div class="author-info" (click)="openPreview(author.id)">
             <img *ngIf="author.photo" [src]="author.photo" class="author-avatar-img">
             <span *ngIf="!author.photo" class="author-avatar">{{ author.full_name[0] }}</span>

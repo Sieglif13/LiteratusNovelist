@@ -9,6 +9,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class AuthorsComponent implements OnInit {
   authors: any[] = [];
+  filteredAuthors: any[] = [];
   newAuthor: any = { 
     full_name: '', 
     bio: '',
@@ -39,6 +40,7 @@ export class AuthorsComponent implements OnInit {
     this.bookService.getAuthors().subscribe({
       next: (data) => {
         this.authors = data;
+        this.filteredAuthors = data;
         this.loading = false;
       },
       error: () => this.loading = false
@@ -99,6 +101,7 @@ export class AuthorsComponent implements OnInit {
       themes: author.themes || ''
     };
     this.photoPreview = author.photo;
+    this.authorPhoto = null; // Fix: reset photo when editing another author
   }
 
   deleteAuthor(id: string): void {
@@ -122,4 +125,11 @@ export class AuthorsComponent implements OnInit {
     this.photoPreview = null;
   }
     
+  filterAuthors(event: Event): void {
+    const query = (event.target as HTMLInputElement).value.toLowerCase();
+    this.filteredAuthors = this.authors.filter(a => 
+      a.full_name.toLowerCase().includes(query) || 
+      (a.nationality && a.nationality.toLowerCase().includes(query))
+    );
+  }
 }
