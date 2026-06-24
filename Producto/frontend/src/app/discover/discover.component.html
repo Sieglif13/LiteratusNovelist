@@ -3,21 +3,31 @@
   <!-- TOP NAVIGATION BAR (Categories + Search) -->
   <section class="discover-top-nav">
     <div class="nav-container">
-      <div class="category-pills">
-        <button 
-          *ngFor="let cat of categories" 
-          class="category-pill" 
-          [class.active]="selectedCategory === cat"
-          (click)="selectCategory(cat)">
-          {{ cat }}
+      <div class="category-pills-container">
+        <button class="icon-btn" aria-label="Grid view">
+          <span class="material-symbols-rounded">grid_view</span>
+        </button>
+        <div class="nav-separator"></div>
+        <div class="category-pills">
+          <button 
+            *ngFor="let cat of categories" 
+            class="category-pill" 
+            [class.active]="selectedCategory === cat"
+            (click)="selectCategory(cat)">
+            {{ cat }}
+          </button>
+        </div>
+        <button class="icon-btn" aria-label="List view">
+          <span class="material-symbols-rounded">format_list_bulleted</span>
         </button>
       </div>
+
       <div class="search-container">
         <span class="material-symbols-rounded search-icon">search</span>
         <input 
           type="text" 
           class="search-input" 
-          placeholder="Busca por título o autor..."
+          placeholder="141"
           [(ngModel)]="searchQuery"
           (ngModelChange)="onSearchChange()">
         <button *ngIf="searchQuery" class="clear-search-btn" (click)="clearSearch()">
