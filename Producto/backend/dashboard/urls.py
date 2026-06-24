@@ -8,7 +8,9 @@ from .views_content import (
     AuthorListAdminView,
     AuthorDetailAdminView,
     AvatarAdminView,
+    AvatarListGlobalAdminView,
 )
+from .views_users import UserListAdminView
 
 urlpatterns = [
     # --- Analíticas ---
@@ -26,6 +28,10 @@ urlpatterns = [
     path('authors/<uuid:pk>/', AuthorDetailAdminView.as_view(), name='dashboard-author-detail'),
 
     # --- Avatares / Personajes ---
+    path('avatars/all/', AvatarListGlobalAdminView.as_view(), name='dashboard-avatars-all'),
     path('avatars/', AvatarAdminView.as_view(), name='dashboard-avatars-create'),
     path('avatars/<uuid:pk>/', AvatarAdminView.as_view(), name='dashboard-avatars-detail'),
+
+    # --- Usuarios ---
+    path('users/', UserListAdminView.as_view(), name='dashboard-users'),
 ]

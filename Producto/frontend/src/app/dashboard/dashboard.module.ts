@@ -13,6 +13,8 @@ import { BooksComponent } from './books/books.component';
 import { BookEditorComponent } from './book-editor/book-editor.component';
 import { AuthorsComponent } from './authors/authors.component';
 import { AvatarEditorComponent } from './avatar-editor/avatar-editor.component';
+import { AvatarsComponent } from './avatars/avatars.component';
+import { UsersComponent } from './users/users.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +24,8 @@ import { AvatarEditorComponent } from './avatar-editor/avatar-editor.component';
     BookEditorComponent,
     AuthorsComponent,
     AvatarEditorComponent,
+    AvatarsComponent,
+    UsersComponent,
   ],
   imports: [
     CommonModule,

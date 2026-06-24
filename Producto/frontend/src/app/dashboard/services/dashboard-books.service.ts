@@ -143,5 +143,13 @@ export class DashboardBooksService {
   deleteAuthor(id: string): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/authors/${id}/`);
   }
+
+  getAllAvatars(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/avatars/all/`);
+  }
+
+  getUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/users/`);
+  }
     
 }

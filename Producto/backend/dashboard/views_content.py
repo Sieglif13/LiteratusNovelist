@@ -700,3 +700,26 @@ class AvatarAdminView(APIView):
 
 # Importar Count que faltaba arriba
 from django.db.models import Count
+
+class AvatarListGlobalAdminView(APIView):
+    """
+    GET /api/dashboard/avatars/all/
+    Lista todos los personajes independientemente del libro o edición.
+    """
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        from ai_engine.models import AIAvatar
+        avatars = AIAvatar.objects.select_related('edition__book').order_by('-created_at')
+        return Response([
+            {
+                'id': str(av.pk),
+                'name': av.name,
+                'book_title': av.edition.book.title if av.edition and av.edition.book else 'Sin Libro',
+                'book_id': str(av.edition.book.pk) if av.edition and av.edition.book else None,
+                'is_major_character': av.is_major_character,
+                'chat_count': av.chat_count,
+                'avatar_image': request.build_absolute_uri(av.avatar_image.url) if av.avatar_image else None,
+            }
+            for av in avatars
+        ])

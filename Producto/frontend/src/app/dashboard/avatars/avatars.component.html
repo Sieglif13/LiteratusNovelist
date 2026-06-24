@@ -1,0 +1,65 @@
+<div class="books-list-container">
+  <header class="list-header">
+    <div class="header-text">
+      <h2>Administración de Personajes</h2>
+      <p>Vista global de todos los avatares e IAs interactivos.</p>
+    </div>
+  </header>
+
+  <div class="list-controls card">
+    <div class="search-box">
+      <svg class="search-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" placeholder="Buscar personaje o libro..." (input)="filterAvatars($event)">
+    </div>
+    <div class="filter-badges">
+      <span class="badge active">Todos ({{ avatars.length }})</span>
+    </div>
+  </div>
+
+  <div class="books-grid" *ngIf="!loading; else loadingState">
+    <!-- Re-using book card styles for avatars -->
+    <div class="book-card card clickable" *ngFor="let avatar of filteredAvatars" 
+         [routerLink]="avatar.book_id ? ['../books', avatar.book_id, 'avatars', avatar.id] : null">
+      <div class="book-cover">
+        <img [src]="avatar.avatar_image || 'assets/no-cover.jpg'" alt="Avatar" style="object-fit: cover;" onerror="this.onerror=null;this.src='assets/no-cover.jpg'">
+        <div class="status-badge" [class.published]="avatar.is_major_character">
+          <span class="status-dot"></span>
+          {{ avatar.is_major_character ? 'Principal' : 'Secundario' }}
+        </div>
+      </div>
+      <div class="book-info">
+        <h3 class="book-title">{{ avatar.name }}</h3>
+        <p class="book-author" style="margin-bottom: 8px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          {{ avatar.book_title }}
+        </p>
+        <div class="book-stats">
+          <div class="stat">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            <span class="label">Chats</span>
+            <span class="value">{{ avatar.chat_count }}</span>
+          </div>
+        </div>
+        <div class="edit-hint" *ngIf="avatar.book_id">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Click para editar
+        </div>
+        <div class="edit-hint" *ngIf="!avatar.book_id" style="color: #ffaa00">
+          Sin libro asignado
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="filteredAvatars.length === 0">
+      <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="opacity:0.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      <p>No se encontraron personajes.</p>
+    </div>
+  </div>
+
+  <ng-template #loadingState>
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Consultando personajes...</p>
+    </div>
+  </ng-template>
+</div>
