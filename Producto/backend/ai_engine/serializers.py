@@ -38,6 +38,14 @@ class AIAvatarListSerializer(serializers.ModelSerializer):
             return request.build_absolute_uri(obj.avatar_image.url)
         return None
 
+    def _get_manga_asset_fallback(self, obj, request, filename):
+        if obj.avatar_image and obj.avatar_image.name and request:
+            url = request.build_absolute_uri(obj.avatar_image.url)
+            if 'manga_assets' in url:
+                base_url = url.rsplit('/', 1)[0] + '/'
+                return base_url + filename
+        return None
+
     def get_video_avatar_url(self, obj):
         request = self.context.get('request')
         if obj.video_avatar and obj.video_avatar.name and request:
@@ -48,25 +56,25 @@ class AIAvatarListSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if obj.image_speaking_1 and obj.image_speaking_1.name and request:
             return request.build_absolute_uri(obj.image_speaking_1.url)
-        return None
+        return self._get_manga_asset_fallback(obj, request, 'talking_1.webp')
 
     def get_image_speaking_2_url(self, obj):
         request = self.context.get('request')
         if obj.image_speaking_2 and obj.image_speaking_2.name and request:
             return request.build_absolute_uri(obj.image_speaking_2.url)
-        return None
+        return self._get_manga_asset_fallback(obj, request, 'talking_2.webp')
 
     def get_image_speaking_3_url(self, obj):
         request = self.context.get('request')
         if obj.image_speaking_3 and obj.image_speaking_3.name and request:
             return request.build_absolute_uri(obj.image_speaking_3.url)
-        return None
+        return self._get_manga_asset_fallback(obj, request, 'talking_3.webp')
 
     def get_image_thinking_url(self, obj):
         request = self.context.get('request')
         if obj.image_thinking and obj.image_thinking.name and request:
             return request.build_absolute_uri(obj.image_thinking.url)
-        return None
+        return self._get_manga_asset_fallback(obj, request, 'thinking.webp')
 
 
 class ChatSessionSerializer(serializers.ModelSerializer):

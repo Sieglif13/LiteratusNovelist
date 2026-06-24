@@ -668,6 +668,19 @@ class AvatarAdminView(APIView):
         except AIAvatar.DoesNotExist:
             return Response({'error': 'Personaje no encontrado.'}, status=404)
 
+        avatar_url = request.build_absolute_uri(av.avatar_image.url) if av.avatar_image and av.avatar_image.name else None
+        sp1 = request.build_absolute_uri(av.image_speaking_1.url) if av.image_speaking_1 and av.image_speaking_1.name else None
+        sp2 = request.build_absolute_uri(av.image_speaking_2.url) if av.image_speaking_2 and av.image_speaking_2.name else None
+        sp3 = request.build_absolute_uri(av.image_speaking_3.url) if av.image_speaking_3 and av.image_speaking_3.name else None
+        thk = request.build_absolute_uri(av.image_thinking.url) if av.image_thinking and av.image_thinking.name else None
+
+        if avatar_url and 'manga_assets' in avatar_url:
+            base_url = avatar_url.rsplit('/', 1)[0] + '/'
+            if not sp1: sp1 = base_url + 'talking_1.webp'
+            if not sp2: sp2 = base_url + 'talking_2.webp'
+            if not sp3: sp3 = base_url + 'talking_3.webp'
+            if not thk: thk = base_url + 'thinking.webp'
+
         return Response({
             'id': str(av.pk),
             'edition_id': str(av.edition.pk),
@@ -683,11 +696,11 @@ class AvatarAdminView(APIView):
             'is_major_character': av.is_major_character,
             'is_author': av.is_author,
             'chat_count': av.chat_count,
-            'avatar_image': request.build_absolute_uri(av.avatar_image.url) if av.avatar_image and av.avatar_image.name else None,
-            'image_speaking_1': request.build_absolute_uri(av.image_speaking_1.url) if av.image_speaking_1 and av.image_speaking_1.name else None,
-            'image_speaking_2': request.build_absolute_uri(av.image_speaking_2.url) if av.image_speaking_2 and av.image_speaking_2.name else None,
-            'image_speaking_3': request.build_absolute_uri(av.image_speaking_3.url) if av.image_speaking_3 and av.image_speaking_3.name else None,
-            'image_thinking': request.build_absolute_uri(av.image_thinking.url) if av.image_thinking and av.image_thinking.name else None,
+            'avatar_image': avatar_url,
+            'image_speaking_1': sp1,
+            'image_speaking_2': sp2,
+            'image_speaking_3': sp3,
+            'image_thinking': thk,
         })
 
     def put(self, request, pk):
