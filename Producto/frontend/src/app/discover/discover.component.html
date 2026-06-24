@@ -1,98 +1,370 @@
-<div class="white-landing-wrapper">
-  <!-- Top Nav -->
-  <nav class="white-nav">
-    <div class="nav-logo">
-      <div class="logo-icon">
-        <span class="material-symbols-rounded">menu_book</span>
-      </div>
-      <div class="logo-text">
-        <span class="logo-title">Literatus</span>
-        <span class="logo-subtitle">NOVELIST</span>
-      </div>
-    </div>
-    <div class="nav-links">
-      <a class="nav-link active">Explorar</a>
-      <a class="nav-link">Personajes IA</a>
-      <a class="nav-link">Mi Biblioteca</a>
-      <button class="nav-btn-login">Iniciar Sesión</button>
-    </div>
-  </nav>
+<div class="home-wrapper">
 
-  <!-- Hero Section -->
-  <section class="hero-section">
-    <h1 class="hero-title">No solo leas la historia: <span class="italic">¡Vivela!</span></h1>
-    <p class="hero-subtitle">Habla con los personajes más grandes de la literatura clásica.</p>
+  <!-- TOP NAVIGATION BAR (Categories + Search) -->
+  <section class="discover-top-nav">
+    <div class="nav-container">
+      <div class="category-pills-container">
+        <div class="category-pills">
+          <button 
+            *ngFor="let cat of categories" 
+            class="category-pill" 
+            [class.active]="selectedCategory === cat"
+            (click)="selectCategory(cat)">
+            {{ cat }}
+          </button>
+        </div>
+      </div>
+
+      <div class="search-container">
+        <span class="material-symbols-rounded search-icon">search</span>
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="Buscar..."
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearchChange()">
+        <button *ngIf="searchQuery" class="clear-search-btn" (click)="clearSearch()">
+          <span class="material-symbols-rounded">close</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEARCH / FILTER RESULTS -->
+  <section class="discover-search-results" *ngIf="searchQuery || selectedCategory !== 'Explorar'">
+    <div class="results-header">
+      <p class="results-count">Resultado ┬À {{ filteredBooks.length }}</p>
+    </div>
     
-    <div class="hero-image-container">
-      <button class="habla-ahora-btn">Habla Ahora</button>
-      <div class="hero-characters-placeholder">
-        <img src="https://images.unsplash.com/photo-1550106208-410a56619a9d?q=80&w=1000&auto=format&fit=crop" alt="Personajes Clásicos" class="hero-characters-img" />
-        <div class="hero-characters-gradient"></div>
+    <div class="results-list">
+      <div class="result-list-item" *ngFor="let book of filteredBooks" (click)="goToCharBook(book.slug)">
+        <img [src]="book.cover_image" [alt]="book.title" class="result-cover" loading="lazy">
+        
+        <div class="result-info">
+          <h3 class="result-title">{{ book.title }}</h3>
+          <p class="result-author">By <span class="author-name">&#64;{{ book.author_name || 'Desconocido' }}</span></p>
+          <p class="result-synopsis">{{ book.synopsis | slice:0:150 }}{{ book.synopsis && book.synopsis.length > 150 ? '...' : '' }}</p>
+          
+          <div class="result-tags">
+            <span class="result-tag" *ngFor="let tag of (book.tags || []).slice(0,5)">{{ tag.name }}</span>
+            <span class="result-tag" *ngIf="!book.tags || book.tags.length === 0">{{ selectedCategory !== 'Explorar' ? selectedCategory : 'General' }}</span>
+          </div>
+        </div>
+
+        <div class="result-action">
+          <button class="chat-count-btn">
+            <span class="material-symbols-rounded">chat</span>
+            <span>+</span>
+          </button>
+        </div>
+      </div>
+      
+      <div *ngIf="filteredBooks.length === 0" class="no-results">
+        <p>No se encontraron resultados.</p>
       </div>
     </div>
   </section>
 
-  <!-- Chat Section -->
-  <section class="chat-section">
-    <h2 class="section-title italic">¿Qué te gustaria preguntar?</h2>
-    
-    <div class="question-pills">
-      <button class="q-pill">¿Qué opinás del amor?</button>
-      <button class="q-pill">¿Cómo resolverías un misterio?</button>
-      <button class="q-pill">¿Qué es el poder?</button>
-    </div>
+  <!-- DEFAULT VIEW (CAROUSELS) -->
+  <div *ngIf="!searchQuery && selectedCategory === 'Explorar'">
 
-    <div class="chat-input-wrapper">
-      <input type="text" class="chat-input" placeholder="Escribe tu pregunta aqui..." />
-      <button class="chat-submit-btn">Preguntar</button>
-    </div>
-  </section>
 
-  <hr class="section-divider">
-
-  <!-- Characters Section -->
-  <section class="characters-section">
-    <h2 class="section-title italic">Conoce a los personajes</h2>
-    <div class="characters-grid">
-      <!-- Sherlock Holmes -->
-      <div class="char-card">
-        <img src="https://images.unsplash.com/photo-1620862089408-7264a23de4f5?q=80&w=400&auto=format&fit=crop" alt="Sherlock Holmes" class="char-img" />
-        <div class="char-card-overlay"></div>
-        <div class="char-name-text">Sherlock Holmes</div>
+  <!-- ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+       2. DEMO DE CHAT IA (diferencial inmediato)
+  ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ -->
+  <section class="chat-demo-section reveal-section" aria-label="Demostraci├│n de chat con personajes">
+    <div class="chat-demo-inner">
+      <div class="chat-demo-label">
+        <span class="pulse-dot-sm"></span>
+        <span>IA en tiempo real</span>
       </div>
-      <!-- El Alcalde -->
-      <div class="char-card">
-        <img src="https://images.unsplash.com/photo-1555597950-482a5d7c5709?q=80&w=400&auto=format&fit=crop" alt="El Alcalde" class="char-img" />
-        <div class="char-card-overlay"></div>
-        <div class="char-name-text">El Alcalde</div>
-      </div>
-      <!-- La Princesa -->
-      <div class="char-card">
-        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop" alt="La Princesa" class="char-img" />
-        <div class="char-card-overlay"></div>
-        <div class="char-name-text">La Princesa</div>
-      </div>
-      <!-- Dracula -->
-      <div class="char-card">
-        <img src="https://images.unsplash.com/photo-1615592389070-bcc97e05ad01?q=80&w=400&auto=format&fit=crop" alt="Drácula" class="char-img" />
-        <div class="char-card-overlay"></div>
-        <div class="char-name-text">Drácula</div>
-      </div>
-    </div>
-  </section>
+      <h2 class="chat-demo-title">Conversa con los grandes personajes</h2>
+      <p class="chat-demo-sub">As├¡ es como se siente leer en Literatus.</p>
 
-  <hr class="section-divider">
-
-  <!-- Books Section -->
-  <section class="books-section">
-    <h2 class="section-title italic">Explora más historias</h2>
-    <div class="books-grid">
-       <div class="book-card" *ngFor="let book of trendingBooks.slice(0,3)" (click)="goToBook(book.slug)">
-          <img [src]="book.cover_image" [alt]="book.title" class="book-img" />
-          <div class="book-title-text">{{ book.title }}</div>
-       </div>
+      <div class="chat-demo-window">
+        <!-- Conversaci├│n 1: Don Quijote -->
+        <div class="chat-conv chat-conv-1">
+          <div class="chat-bubble chat-bubble--user">┬┐Por qu├® luchas contra molinos?</div>
+          <div class="chat-bubble chat-bubble--char">
+            <span class="char-avatar material-symbols-rounded" style="color: var(--glow-gold);">swords</span>
+            <div class="char-bubble-body">
+              <span class="char-name">Don Quijote</span>
+              Porque donde otros ven molinos, yo veo gigantes. El valor no reside en la victoria, sino en no bajar la espada.
+            </div>
+          </div>
+        </div>
+        <!-- Conversaci├│n 2: Dr├ícula -->
+        <div class="chat-conv chat-conv-2">
+          <div class="chat-bubble chat-bubble--user">┬┐Temes a la eternidad?</div>
+          <div class="chat-bubble chat-bubble--char">
+            <span class="char-avatar material-symbols-rounded" style="color: #ef4444;">bloodtype</span>
+            <div class="char-bubble-body">
+              <span class="char-name">Dr├ícula</span>
+              La eternidad es un castigo m├ís cruel que la muerte. Cuando conoces a todos los seres que han existido, la soledad se vuelve infinita.
+            </div>
+          </div>
+        </div>
+        <!-- Conversaci├│n 3: Sherlock Holmes -->
+        <div class="chat-conv chat-conv-3">
+          <div class="chat-bubble chat-bubble--user">┬┐C├│mo resuelves un misterio?</div>
+          <div class="chat-bubble chat-bubble--char">
+            <span class="char-avatar material-symbols-rounded" style="color: #3b82f6;">search</span>
+            <div class="char-bubble-body">
+              <span class="char-name">Sherlock Holmes</span>
+              Eliminadas todas las imposibilidades, lo que queda, por improbable que sea, debe ser la verdad. La l├│gica no falla jam├ís.
+            </div>
+          </div>
+        </div>
+        <!-- Dots indicadores -->
+        <div class="chat-dots">
+          <span class="ch-dot ch-dot-1"></span>
+          <span class="ch-dot ch-dot-2"></span>
+          <span class="ch-dot ch-dot-3"></span>
+        </div>
+      </div>
     </div>
   </section>
-  
-  <div style="height: 100px;"></div> <!-- Spacer -->
-</div>
+
+  <!-- Loading State -->
+  <div class="loading-skeleton" *ngIf="isLoading">
+    <div class="skeleton-trending">
+      <div class="skeleton-card" *ngFor="let i of [1,2,3,4]"></div>
+    </div>
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+
+    <!-- ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+         3. SECCI├ôN IA ÔÇô PERSONAJES (movida al tope)
+    ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ -->
+    <section class="characters-feature-section reveal-section">
+      <div class="section-header characters-header">
+        <div class="char-header-left">
+          <div class="char-label-pill">
+            <span class="pulse-dot"></span>
+            IA Activa
+          </div>
+          <h2 class="section-title">Libros integrados con IA</h2>
+          <p class="char-subtitle">Explora las historias que tienen inteligencia artificial activa. Lee y chatea con sus personajes en tiempo real.</p>
+        </div>
+        <a routerLink="/characters" class="char-see-all">Ver todos los personajes ÔåÆ</a>
+      </div>
+
+      <div class="char-carousel-track">
+        <div class="char-book-card" *ngFor="let book of featuredWithCharacters; let i = index"
+             (click)="goToCharBook(book.slug)">
+          <div class="char-cover-wrap">
+            <img [src]="book.cover" [alt]="book.title" class="char-cover-img" loading="lazy"
+                 onerror="this.src='assets/default_cover.jpg'">
+            <div class="char-cover-overlay">
+              <button class="char-cta-btn">Abrir libro ÔåÆ</button>
+            </div>
+            <div class="ia-badge">
+              <span class="ia-dot"></span>
+              <span>IA Activa</span>
+            </div>
+          </div>
+          <div class="char-book-meta">
+            <h3 class="char-book-title">{{ book.title }}</h3>
+            <p class="char-book-author">{{ book.author }}</p>
+            <span class="char-genre-tag">{{ book.genre }}</span>
+            <div class="char-count-chip">
+              <span class="material-symbols-rounded" style="font-size:14px;">person</span>
+              {{ book.characterCount }} personajes IA
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+         4. ┬┐C├ôMO FUNCIONA?
+    ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ -->
+    <section class="how-it-works-section reveal-section" aria-label="┬┐C├│mo funciona Literatus?">
+      <div class="section-header" style="text-align:center; justify-content:center;">
+        <h2 class="section-title">┬┐C├│mo funciona?</h2>
+      </div>
+      <div class="how-steps">
+        <div class="how-step" id="step-1">
+          <div class="how-step-num">01</div>
+          <div class="how-step-icon"><span class="material-symbols-rounded" style="font-size: 36px; color: var(--glow-gold);">menu_book</span></div>
+          <h3 class="how-step-title">Escoge un libro</h3>
+          <p class="how-step-desc">Explora nuestra biblioteca de cl├ísicos universales y elige tu pr├│xima aventura.</p>
+        </div>
+        <div class="how-connector" aria-hidden="true"></div>
+        <div class="how-step" id="step-2">
+          <div class="how-step-num">02</div>
+          <div class="how-step-icon"><span class="material-symbols-rounded" style="font-size: 36px; color: var(--glow-gold);">auto_awesome</span></div>
+          <h3 class="how-step-title">Comienza a leer</h3>
+          <p class="how-step-desc">Sum├®rgete en la historia con una experiencia de lectura inmersiva y fluida.</p>
+        </div>
+        <div class="how-connector" aria-hidden="true"></div>
+        <div class="how-step" id="step-3">
+          <div class="how-step-num">03</div>
+          <div class="how-step-icon"><span class="material-symbols-rounded" style="font-size: 36px; color: var(--glow-gold);">chat</span></div>
+          <h3 class="how-step-title">Habla con los personajes</h3>
+          <p class="how-step-desc">Activa la IA y conversa directamente con los protagonistas de la historia.</p>
+        </div>
+        <div class="how-connector" aria-hidden="true"></div>
+        <div class="how-step" id="step-4">
+          <div class="how-step-num">04</div>
+          <div class="how-step-icon"><span class="material-symbols-rounded" style="font-size: 36px; color: var(--glow-gold);">tips_and_updates</span></div>
+          <h3 class="how-step-title">Descubre perspectivas</h3>
+          <p class="how-step-desc">Cada conversaci├│n revela secretos, rutas alternativas y finales inesperados.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+         5. TENDENCIAS
+    ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ -->
+    <section class="trending-section reveal-section" *ngIf="trendingBooks.length > 0">
+      <div class="section-header">
+        <h2 class="section-title"><span class="material-symbols-rounded" style="color: #f97316; font-size: 28px; margin-right: 8px; vertical-align: middle;">local_fire_department</span> Tendencias</h2>
+      </div>
+      <div class="trending-track">
+        <div class="trending-card" *ngFor="let book of trendingBooks; trackBy: trackBySlug"
+          (click)="goToBook(book.slug)">
+          <div class="trending-cover-wrap">
+            <img [src]="book.cover_image || 'assets/default_cover.jpg'" [alt]="book.title" class="trending-cover">
+            <div class="trending-overlay">
+              <button class="overlay-cta">Ver Libro ÔåÆ</button>
+            </div>
+            <div class="neon-border"></div>
+          </div>
+          <div class="trending-info">
+            <h3 class="trending-title">{{ book.title }}</h3>
+            <p class="trending-author" *ngIf="book.author_name">{{ book.author_name }}</p>
+            <div class="trending-tags" *ngIf="book.tags && book.tags.length">
+              <span class="mini-tag" *ngFor="let tag of book.tags.slice(0,2)">{{ tag.name }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+         6. RECOMENDADOS
+    ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ -->
+    <section class="recommended-section reveal-section" *ngIf="recommendedBooks.length > 0">
+      <div class="section-header">
+        <h2 class="section-title"><span class="material-symbols-rounded" style="color: #eab308; font-size: 28px; margin-right: 8px; vertical-align: middle;">star</span> Recomendados</h2>
+      </div>
+      <div class="recommended-track">
+        <div class="recommended-card" *ngFor="let book of recommendedBooks; trackBy: trackBySlug"
+          (click)="goToBook(book.slug)">
+          <div class="recommended-cover-box">
+            <img [src]="book.cover_image || 'assets/default_cover.jpg'" [alt]="book.title">
+          </div>
+          <div class="recommended-info">
+            <h4 class="recommended-book-title">{{ book.title }}</h4>
+            <p class="recommended-author" *ngIf="book.author_name">{{ book.author_name }}</p>
+            <div class="recommended-tags">
+              <span class="rec-tag" *ngFor="let tag of book.tags?.slice(0,1)">#{{ tag.name }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+         7. ESTAD├ìSTICAS / PRUEBA SOCIAL
+    ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ -->
+    <section class="stats-section reveal-section" aria-label="Estad├¡sticas de la plataforma">
+      <div class="stats-grid">
+        <div class="stat-item" data-target="20">
+          <span class="stat-number" id="stat-books">0</span>
+          <span class="stat-plus">+</span>
+          <span class="stat-label">Libros</span>
+        </div>
+        <div class="stat-item" data-target="25">
+          <span class="stat-number" id="stat-chars">0</span>
+          <span class="stat-plus">+</span>
+          <span class="stat-label">Personajes</span>
+        </div>
+        <div class="stat-item" data-target="150">
+          <span class="stat-number" id="stat-convs">0</span>
+          <span class="stat-plus">+</span>
+          <span class="stat-label">Conversaciones</span>
+        </div>
+        <div class="stat-item" data-target="10">
+          <span class="stat-number" id="stat-authors">0</span>
+          <span class="stat-plus">+</span>
+          <span class="stat-label">Autores</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+         8. HISTORIAS QUE COBRAN VIDA (banner inspiracional)
+    ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ -->
+    <section class="inspirational-banner reveal-section">
+      <div class="saludo-container" #saludoContainer></div>
+      <div class="banner-text">
+        <blockquote class="banner-quote">
+          "No solo leas lo que ocurri├│.<br>
+          <span class="quote-sub">Pregunta a los protagonistas por qu├® ocurri├│."</span>
+        </blockquote>
+        <p class="banner-desc">
+          En <strong>Literatus Novelist</strong> cada libro es un portal. Lee, escucha y conversa
+          con los personajes que dieron forma a la literatura universal.
+        </p>
+      </div>
+    </section>
+
+    <!-- ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+         9. DESCUBRIMIENTO
+    ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ -->
+    <section class="discovery-section reveal-section">
+      <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 2rem;">
+        <div style="display: flex; flex-direction: column;">
+          <h2 class="section-title" style="margin-bottom: 5px;"><span class="material-symbols-rounded" style="color: #3b82f6; font-size: 32px; margin-right: 8px; vertical-align: middle;">explore</span> Descubrimiento</h2>
+          <span class="explore-hint" style="color: var(--text-muted); font-size: 0.95rem; font-style: italic; margin-left: 40px;">Explora todo aqu├¡ Ô×ö</span>
+        </div>
+        <div class="explore-action-container">
+          <a routerLink="/catalog" class="cta-primary" style="margin: 0;">Explorar Tienda</a>
+        </div>
+      </div>
+      <div class="trending-track" *ngIf="randomDiscoveryBooks.length > 0">
+        <div class="trending-card" *ngFor="let book of randomDiscoveryBooks; trackBy: trackBySlug"
+          (click)="goToBook(book.slug)">
+          <div class="trending-cover-wrap">
+            <img [src]="book.cover_image || 'assets/default_cover.jpg'" [alt]="book.title" class="trending-cover" loading="lazy">
+            <div class="trending-overlay">
+              <button class="overlay-cta">Ver Libro ÔåÆ</button>
+            </div>
+            <div class="neon-border"></div>
+          </div>
+          <div class="trending-info">
+            <h3 class="trending-title">{{ book.title }}</h3>
+            <p class="trending-author" *ngIf="book.author_name">{{ book.author_name }}</p>
+            <div class="trending-tags" *ngIf="book.tags && book.tags.length">
+              <span class="mini-tag" *ngFor="let tag of book.tags.slice(0,2)">{{ tag.name }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         10. CTA TABERNA - Puente hacia compra de tinta
+    ====================================================================== -->
+    <section class="ink-cta-section reveal-section" aria-label="Consigue más tinta">
+      <div class="ink-cta-inner">
+        <div class="ink-cta-glow" aria-hidden="true"></div>
+        <p class="ink-cta-eyebrow">
+          <span class="ink-cta-dot"></span>
+          Taberna de Tinta
+        </p>
+        <h2 class="ink-cta-title">¿Necesitas más Tinta?</h2>
+        <p class="ink-cta-sub">
+          Obtén recursos para seguir conversando con tus personajes favoritos<br>y continuar tu aventura literaria.
+        </p>
+        <a routerLink="/tavern" class="cta-primary ink-cta-btn" id="home-tavern-cta">
+          Visitar la Taberna
+          <span class="material-symbols-rounded" style="font-size:18px;">arrow_forward</span>
+        </a>
+      </div>
+    </section>
+
+
