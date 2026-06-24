@@ -15,6 +15,7 @@ import { AuthorsComponent } from './authors/authors.component';
 import { AvatarEditorComponent } from './avatar-editor/avatar-editor.component';
 import { AvatarsComponent } from './avatars/avatars.component';
 import { UsersComponent } from './users/users.component';
+import { AuthorEditorComponent } from './author-editor/author-editor.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { UsersComponent } from './users/users.component';
     AvatarEditorComponent,
     AvatarsComponent,
     UsersComponent,
+    AuthorEditorComponent,
   ],
   imports: [
     CommonModule,

@@ -16,11 +16,11 @@
       </div>
       <div class="header-actions" style="display: flex; gap: 1rem;">
         <button (click)="exportPdf()" class="secondary-action-btn" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #e2e8f0; padding: 0.75rem 1.25rem; border-radius: 12px; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; transition: background 0.2s;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span class="material-symbols-outlined" style="font-size: 18px;">picture_as_pdf</span>
           Exportar a PDF
         </button>
-        <a routerLink="/dashboard/books/new" class="primary-action-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <a routerLink="/dashboard/books/new" class="primary-action-btn" style="display: flex; align-items: center; gap: 0.5rem;">
+          <span class="material-symbols-outlined" style="font-size: 18px;">add</span>
           Nuevo Libro
         </a>
       </div>
@@ -32,13 +32,13 @@
       <div class="stat-card revenue">
         <div class="stat-card-inner">
           <div class="stat-icon-wrap revenue-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            <span class="material-symbols-outlined" style="font-size: 24px;">attach_money</span>
           </div>
           <div class="stat-data">
             <span class="stat-label">Ingresos Totales</span>
             <span class="stat-value">${{ stats.revenue.total | number:'1.0-0' }}</span>
-            <div class="stat-trend up">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+            <div class="stat-trend up" style="display: flex; align-items: center; gap: 4px;">
+              <span class="material-symbols-outlined" style="font-size: 14px;">trending_up</span>
               ${{ stats.revenue.last_30_days | number:'1.0-0' }} últimos 30 días
             </div>
           </div>
@@ -49,13 +49,13 @@
       <div class="stat-card users">
         <div class="stat-card-inner">
           <div class="stat-icon-wrap users-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span class="material-symbols-outlined" style="font-size: 24px;">group</span>
           </div>
           <div class="stat-data">
             <span class="stat-label">Usuarios Activos</span>
             <span class="stat-value">{{ stats.users.total | number }}</span>
-            <div class="stat-trend up">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+            <div class="stat-trend up" style="display: flex; align-items: center; gap: 4px;">
+              <span class="material-symbols-outlined" style="font-size: 14px;">trending_up</span>
               +{{ stats.users.new_last_30_days }} nuevos este mes
             </div>
           </div>
@@ -66,13 +66,13 @@
       <div class="stat-card books">
         <div class="stat-card-inner">
           <div class="stat-icon-wrap books-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <span class="material-symbols-outlined" style="font-size: 24px;">library_books</span>
           </div>
           <div class="stat-data">
             <span class="stat-label">Libros Publicados</span>
             <span class="stat-value">{{ stats.content.total_books }}</span>
-            <div class="stat-trend neutral">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <div class="stat-trend neutral" style="display: flex; align-items: center; gap: 4px;">
+              <span class="material-symbols-outlined" style="font-size: 14px;">shopping_cart</span>
               {{ stats.content.total_purchases }} compras totales
             </div>
           </div>
@@ -83,13 +83,13 @@
       <div class="stat-card revenue-7d">
         <div class="stat-card-inner">
           <div class="stat-icon-wrap revenue7d-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <span class="material-symbols-outlined" style="font-size: 24px;">bar_chart</span>
           </div>
           <div class="stat-data">
             <span class="stat-label">Ingresos (7 días)</span>
             <span class="stat-value">${{ stats.revenue.last_7_days | number:'1.0-0' }}</span>
-            <div class="stat-trend neutral">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <div class="stat-trend neutral" style="display: flex; align-items: center; gap: 4px;">
+              <span class="material-symbols-outlined" style="font-size: 14px;">calendar_month</span>
               última semana
             </div>
           </div>
@@ -138,13 +138,13 @@
             <div class="book-item-info">
               <span class="book-title">{{ book['edition__book__title'] }}</span>
             </div>
-            <div class="book-count-pill">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            <div class="book-count-pill" style="display: flex; align-items: center; gap: 4px;">
+              <span class="material-symbols-outlined" style="font-size: 14px;">shopping_cart</span>
               {{ book.purchases }}
             </div>
           </div>
           <div class="empty-state" *ngIf="!stats.top_books?.length">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <span class="material-symbols-outlined" style="font-size: 32px; opacity: 0.2;">library_books</span>
             <p>Sin datos de ventas aún</p>
           </div>
         </div>
@@ -158,7 +158,7 @@
       <div class="actions-grid">
         <a routerLink="/dashboard/books/new" class="action-card action-upload">
           <div class="action-icon-wrap">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span class="material-symbols-outlined" style="font-size: 24px;">add_box</span>
           </div>
           <div class="action-text">
             <span class="action-label">Subir Libro</span>
@@ -167,7 +167,7 @@
         </a>
         <a routerLink="/dashboard/authors" class="action-card action-authors">
           <div class="action-icon-wrap">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span class="material-symbols-outlined" style="font-size: 24px;">group</span>
           </div>
           <div class="action-text">
             <span class="action-label">Gestionar Autores</span>
@@ -176,7 +176,7 @@
         </a>
         <a routerLink="/dashboard/books" class="action-card action-edit">
           <div class="action-icon-wrap">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            <span class="material-symbols-outlined" style="font-size: 24px;">library_books</span>
           </div>
           <div class="action-text">
             <span class="action-label">Editar Biblioteca</span>

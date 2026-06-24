@@ -684,7 +684,8 @@ class AvatarAdminView(APIView):
             'is_author': av.is_author,
             'chat_count': av.chat_count,
             'avatar_image': request.build_absolute_uri(av.avatar_image.url) if av.avatar_image else None,
-            'video_avatar': request.build_absolute_uri(av.video_avatar.url) if av.video_avatar else None,
+            'image_speaking': request.build_absolute_uri(av.image_speaking.url) if av.image_speaking else None,
+            'image_thinking': request.build_absolute_uri(av.image_thinking.url) if av.image_thinking else None,
         })
 
     def put(self, request, pk):
@@ -719,11 +720,17 @@ class AvatarAdminView(APIView):
             img.seek(0)
             upload_to_supabase_if_configured(img.read(), avatar.avatar_image.name, img.content_type)
 
-        video = request.FILES.get('video_avatar')
-        if video:
-            avatar.video_avatar.save(f'video_{avatar.pk}.mp4', video, save=True)
-            video.seek(0)
-            upload_to_supabase_if_configured(video.read(), avatar.video_avatar.name, video.content_type)
+        img_speaking = request.FILES.get('image_speaking')
+        if img_speaking:
+            avatar.image_speaking.save(f'avatar_speaking_{avatar.pk}.jpg', img_speaking, save=True)
+            img_speaking.seek(0)
+            upload_to_supabase_if_configured(img_speaking.read(), avatar.image_speaking.name, img_speaking.content_type)
+
+        img_thinking = request.FILES.get('image_thinking')
+        if img_thinking:
+            avatar.image_thinking.save(f'avatar_thinking_{avatar.pk}.jpg', img_thinking, save=True)
+            img_thinking.seek(0)
+            upload_to_supabase_if_configured(img_thinking.read(), avatar.image_thinking.name, img_thinking.content_type)
 
         return Response({'success': True})
 

@@ -65,14 +65,21 @@ class AIAvatar(TimeStampedModel):
     avatar_image = models.ImageField(
         upload_to='ai_avatars/',
         null=True,
-        blank=True
-    ) # Imagen visual del avatar mostrada en la interfaz.
-    video_avatar = models.FileField(
-        upload_to='ai_avatars/videos/',
+        blank=True,
+        help_text="Imagen neutral/Idle del avatar mostrada en la interfaz."
+    )
+    image_speaking = models.ImageField(
+        upload_to='ai_avatars/states/',
         null=True,
         blank=True,
-        help_text="Video en bucle para simular habla (MP4)."
-    ) # Video corto para animación de habla.
+        help_text="Imagen mostrada mientras el personaje 'habla' (ej. reproduciendo audio)."
+    )
+    image_thinking = models.ImageField(
+        upload_to='ai_avatars/states/',
+        null=True,
+        blank=True,
+        help_text="Imagen mostrada mientras la IA genera una respuesta."
+    )
     # SISTEMA DE DESBLOQUEO POR PROGRESO
     # El avatar se activa cuando el usuario llega a este capítulo (índice base-0).
     # unlock_at_chapter=0 significa disponible desde el inicio.

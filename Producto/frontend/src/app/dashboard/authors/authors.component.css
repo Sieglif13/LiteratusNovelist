@@ -251,6 +251,13 @@ input:focus, textarea:focus {
   min-height: 100%;
 }
 
+@media (max-width: 768px) {
+  .form-row { flex-direction: column; }
+  .elejandria-profile { grid-template-columns: 1fr; }
+  .profile-sidebar { padding: 20px; border-right: none; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+  .profile-main { padding: 20px; }
+}
+
 .profile-sidebar {
   padding: 40px;
   background: rgba(255, 255, 255, 0.02);

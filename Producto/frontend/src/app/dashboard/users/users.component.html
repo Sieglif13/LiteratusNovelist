@@ -7,9 +7,9 @@
   </header>
 
   <div class="list-controls card">
-    <div class="search-box">
-      <svg class="search-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <input type="text" placeholder="Buscar por email o usuario..." (input)="filterUsers($event)">
+    <div class="search-box" style="display: flex; align-items: center; gap: 8px;">
+      <span class="material-symbols-outlined" style="color: #64748b; font-size: 20px;">search</span>
+      <input type="text" placeholder="Buscar por email o usuario..." (input)="filterUsers($event)" style="border: none; background: transparent; outline: none; color: white; width: 100%;">
     </div>
     <div class="filter-badges">
       <span class="badge active">Total: {{ users.length }}</span>
@@ -40,7 +40,7 @@
           </td>
           <td>
             <div style="display: flex; align-items: center; gap: 5px;">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--glow-secondary)"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>
+              <span class="material-symbols-outlined" style="font-size: 16px; color: var(--glow-secondary);">water_drop</span>
               {{ user.ink_balance }}
             </div>
           </td>

@@ -23,11 +23,14 @@ export class AvatarEditorComponent implements OnInit {
   // Archivos multimedia
   avatarFile: File | null = null;
   avatarPreview: string | null = null;
-  videoFile: File | null = null;
-  videoPreview: string | null = null;
-  isMuted = true;
+  
+  speakingFile: File | null = null;
+  speakingPreview: string | null = null;
 
-  // Modelo completo del personaje — todos los campos del modelo AIAvatar
+  thinkingFile: File | null = null;
+  thinkingPreview: string | null = null;
+
+  // Modelo completo del personaje
   avatar: any = {
     name: '',
     description: '',
@@ -40,9 +43,7 @@ export class AvatarEditorComponent implements OnInit {
     unlock_at_chapter: 0,
     is_major_character: true,
     is_author: false,
-    // Estadísticas (solo lectura)
     chat_count: 0,
-    video_avatar: null,
   };
 
   constructor(
@@ -61,12 +62,10 @@ export class AvatarEditorComponent implements OnInit {
     } else {
       this.isNew = true;
       this.loading = false;
-      // Para personajes nuevos, necesitamos la editionId del libro padre
       this.loadEditionId();
     }
   }
 
-  /** Carga la edición del libro para poder crear personajes nuevos. */
   loadEditionId(): void {
     if (!this.bookId) return;
     this.bookService.getBookDetail(this.bookId).subscribe({
@@ -76,14 +75,10 @@ export class AvatarEditorComponent implements OnInit {
     });
   }
 
-  /** Carga los datos de un personaje existente directamente desde la API. */
   loadAvatarData(): void {
     this.loading = true;
-    console.log('[AvatarEditor] Cargando avatarId:', this.avatarId);
     this.bookService.getAvatarDetail(this.avatarId!).subscribe({
       next: (av) => {
-        console.log('[AvatarEditor] Respuesta de la API:', av);
-        console.log('[AvatarEditor] system_prompt recibido:', av.system_prompt);
         this.avatar = {
           id: av.id,
           edition_id: av.edition_id,
@@ -100,48 +95,51 @@ export class AvatarEditorComponent implements OnInit {
           is_author: av.is_author ?? false,
           chat_count: av.chat_count || 0,
           avatar_image: av.avatar_image || null,
-          video_avatar: av.video_avatar || null,
+          image_speaking: av.image_speaking || null,
+          image_thinking: av.image_thinking || null,
         };
-        console.log('[AvatarEditor] avatar.system_prompt mapeado:', this.avatar.system_prompt);
         this.avatarPreview = av.avatar_image || null;
-        this.videoPreview = av.video_avatar || null;
+        this.speakingPreview = av.image_speaking || null;
+        this.thinkingPreview = av.image_thinking || null;
         this.editionId = av.edition_id || null;
         this.loading = false;
       },
       error: (err) => {
-        console.error('[AvatarEditor] Error al cargar:', err);
         this.errorMsg = 'No se pudo cargar el personaje. Error: ' + (err.status || 'desconocido');
         this.loading = false;
       }
     });
   }
 
-  onImageSelected(event: any): void {
+  onImageSelected(event: any, type: 'avatar' | 'speaking' | 'thinking'): void {
     const file = event.target.files[0];
     if (file) {
-      this.avatarFile = file;
       const reader = new FileReader();
-      reader.onload = () => this.avatarPreview = reader.result as string;
+      if (type === 'avatar') {
+        this.avatarFile = file;
+        reader.onload = () => this.avatarPreview = reader.result as string;
+      } else if (type === 'speaking') {
+        this.speakingFile = file;
+        reader.onload = () => this.speakingPreview = reader.result as string;
+      } else if (type === 'thinking') {
+        this.thinkingFile = file;
+        reader.onload = () => this.thinkingPreview = reader.result as string;
+      }
       reader.readAsDataURL(file);
     }
   }
 
-  onVideoSelected(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      this.videoFile = file;
-      this.videoPreview = URL.createObjectURL(file);
+  removeImage(type: 'avatar' | 'speaking' | 'thinking'): void {
+    if (type === 'avatar') {
+      this.avatarFile = null;
+      this.avatarPreview = null;
+    } else if (type === 'speaking') {
+      this.speakingFile = null;
+      this.speakingPreview = null;
+    } else if (type === 'thinking') {
+      this.thinkingFile = null;
+      this.thinkingPreview = null;
     }
-  }
-
-  removeVideo(): void {
-    this.videoFile = null;
-    this.videoPreview = null;
-  }
-
-  removeImage(): void {
-    this.avatarFile = null;
-    this.avatarPreview = null;
   }
 
   save(): void {
@@ -164,7 +162,8 @@ export class AvatarEditorComponent implements OnInit {
       this.avatarFile || undefined,
       targetEditionId,
       this.isNew ? undefined : this.avatarId!,
-      this.videoFile || undefined
+      this.speakingFile || undefined,
+      this.thinkingFile || undefined
     ).subscribe({
       next: () => {
         this.saving = false;

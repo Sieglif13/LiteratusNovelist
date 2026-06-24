@@ -16,7 +16,7 @@
             <label>Foto</label>
             <div class="photo-uploader" (click)="photoInput.click()">
               <img *ngIf="photoPreview" [src]="photoPreview" class="photo-preview">
-              <div *ngIf="!photoPreview" class="photo-placeholder">➕</div>
+              <div *ngIf="!photoPreview" class="photo-placeholder"><span class="material-symbols-outlined">add_a_photo</span></div>
               <input type="file" #photoInput (change)="onPhotoSelected($event)" accept="image/*" style="display:none">
             </div>
           </div>
@@ -59,7 +59,8 @@
     
         <div class="form-actions">
           <button class="cancel-btn" *ngIf="editingId" (click)="resetForm()">Cancelar</button>
-          <button class="save-btn" [disabled]="!newAuthor.full_name" (click)="saveAuthor()">
+          <button class="save-btn" [disabled]="!newAuthor.full_name" (click)="saveAuthor()" style="display: flex; align-items: center; gap: 6px; justify-content: center;">
+            <span class="material-symbols-outlined" style="font-size: 18px;">save</span>
             {{ editingId ? 'Actualizar' : 'Crear Autor' }}
           </button>
         </div>
@@ -71,7 +72,7 @@
       <h3 class="section-title">Autores Registrados</h3>
       
       <div class="search-box" style="margin-bottom: 15px; background: rgba(0,0,0,0.2); border: 1px solid var(--nexus-border); border-radius: 8px; padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
-        <svg class="search-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <span class="material-symbols-outlined" style="color: #64748b; font-size: 20px;">search</span>
         <input type="text" placeholder="Buscar autor por nombre..." (input)="filterAuthors($event)" style="background: transparent; border: none; outline: none; color: white; width: 100%;">
       </div>
 
@@ -85,10 +86,16 @@
               <span class="author-count">{{ author.books_count }} libros</span>
             </div>
           </div>
-          <div class="author-actions">
-            <button class="preview-btn" (click)="openPreview(author.id)" title="Ver Perfil">👁️</button>
-            <button class="edit-icon" (click)="editAuthor(author)">✏️</button>
-            <button class="delete-icon" (click)="deleteAuthor(author.id)">×</button>
+          <div class="author-actions" style="display: flex; gap: 4px;">
+            <button class="preview-btn" (click)="openPreview(author.id)" title="Ver Perfil" style="background: transparent; border: none; cursor: pointer; color: #a5b4fc; display: flex; align-items: center; justify-content: center; padding: 4px;">
+              <span class="material-symbols-outlined" style="font-size: 18px;">visibility</span>
+            </button>
+            <button class="edit-icon" (click)="editAuthor(author)" style="background: transparent; border: none; cursor: pointer; color: #fbbf24; display: flex; align-items: center; justify-content: center; padding: 4px;">
+              <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
+            </button>
+            <button class="delete-icon" (click)="deleteAuthor(author.id)" style="background: transparent; border: none; cursor: pointer; color: #ef4444; display: flex; align-items: center; justify-content: center; padding: 4px;">
+              <span class="material-symbols-outlined" style="font-size: 18px;">delete</span>
+            </button>
           </div>
         </div>
       </div>

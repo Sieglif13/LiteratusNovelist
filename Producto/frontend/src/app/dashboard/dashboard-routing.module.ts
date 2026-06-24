@@ -5,6 +5,7 @@ import { OverviewComponent } from './overview/overview.component';
 import { BooksComponent } from './books/books.component';
 import { BookEditorComponent } from './book-editor/book-editor.component';
 import { AuthorsComponent } from './authors/authors.component';
+import { AuthorEditorComponent } from './author-editor/author-editor.component';
 import { AvatarEditorComponent } from './avatar-editor/avatar-editor.component';
 import { AvatarsComponent } from './avatars/avatars.component';
 import { UsersComponent } from './users/users.component';
@@ -21,6 +22,8 @@ const routes: Routes = [
       { path: 'books/:id/edit', component: BookEditorComponent },
       { path: 'books/:id/avatars/:avatarId', component: AvatarEditorComponent },
       { path: 'authors', component: AuthorsComponent },
+      { path: 'authors/new', component: AuthorEditorComponent },
+      { path: 'authors/:id/edit', component: AuthorEditorComponent },
       { path: 'avatars', component: AvatarsComponent },
       { path: 'users', component: UsersComponent },
     ]
