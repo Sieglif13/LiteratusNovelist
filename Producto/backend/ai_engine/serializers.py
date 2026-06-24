@@ -34,37 +34,37 @@ class AIAvatarListSerializer(serializers.ModelSerializer):
 
     def get_avatar_image_url(self, obj):
         request = self.context.get('request')
-        if obj.avatar_image and request:
+        if obj.avatar_image and obj.avatar_image.name and request:
             return request.build_absolute_uri(obj.avatar_image.url)
         return None
 
     def get_video_avatar_url(self, obj):
         request = self.context.get('request')
-        if obj.video_avatar and request:
+        if obj.video_avatar and obj.video_avatar.name and request:
             return request.build_absolute_uri(obj.video_avatar.url)
         return None
 
     def get_image_speaking_1_url(self, obj):
         request = self.context.get('request')
-        if obj.image_speaking_1 and request:
+        if obj.image_speaking_1 and obj.image_speaking_1.name and request:
             return request.build_absolute_uri(obj.image_speaking_1.url)
         return None
 
     def get_image_speaking_2_url(self, obj):
         request = self.context.get('request')
-        if obj.image_speaking_2 and request:
+        if obj.image_speaking_2 and obj.image_speaking_2.name and request:
             return request.build_absolute_uri(obj.image_speaking_2.url)
         return None
 
     def get_image_speaking_3_url(self, obj):
         request = self.context.get('request')
-        if obj.image_speaking_3 and request:
+        if obj.image_speaking_3 and obj.image_speaking_3.name and request:
             return request.build_absolute_uri(obj.image_speaking_3.url)
         return None
 
     def get_image_thinking_url(self, obj):
         request = self.context.get('request')
-        if obj.image_thinking and request:
+        if obj.image_thinking and obj.image_thinking.name and request:
             return request.build_absolute_uri(obj.image_thinking.url)
         return None
 

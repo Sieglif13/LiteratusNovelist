@@ -62,18 +62,18 @@
         <label style="text-align: center; display: block; margin-bottom: 2px;">Estado Hablando (Animación)</label>
         <p style="text-align: center; font-size: 11px; color: #64748b; margin-bottom: 8px;">Recomendado: 500x500px (1:1). El sistema intercalará estas 3 imágenes.</p>
         
-        <div style="display: flex; gap: 10px; justify-content: space-between;">
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; width: 100%;">
           <!-- Frame 1 -->
-          <div style="flex: 1;">
+          <div style="flex: 1 1 100px; min-width: 100px; max-width: 150px; display: flex; flex-direction: column; align-items: center;">
             <div class="avatar-img-preview" *ngIf="speakingPreview1" style="height: 100px; padding: 4px;">
               <img [src]="speakingPreview1" alt="Hablando 1" onerror="this.onerror=null;this.src='assets/placeholder-avatar.png'" style="height: 100%; object-fit: contain;">
               <button class="remove-img-btn" (click)="removeImage('speaking1')" title="Quitar imagen" style="width: 20px; height: 20px; top: -5px; right: -5px;">
                 <span class="material-symbols-outlined" style="font-size: 14px;">close</span>
               </button>
             </div>
-            <div class="file-upload" *ngIf="!speakingPreview1" style="padding: 10px; min-height: 100px;">
+            <div class="file-upload" *ngIf="!speakingPreview1" style="min-height: 100px; width: 100%;">
               <input type="file" (change)="onImageSelected($event, 'speaking1')" accept="image/*" id="speaking-img-input-1">
-              <label for="speaking-img-input-1" style="gap: 4px;">
+              <label for="speaking-img-input-1" style="gap: 4px; padding: 10px; width: 100%;">
                 <span class="upload-icon material-symbols-outlined" style="font-size: 20px; margin-bottom: 0;">looks_one</span>
                 <span style="font-size: 11px;">Frame 1</span>
               </label>
@@ -81,16 +81,16 @@
           </div>
 
           <!-- Frame 2 -->
-          <div style="flex: 1;">
+          <div style="flex: 1 1 100px; min-width: 100px; max-width: 150px; display: flex; flex-direction: column; align-items: center;">
             <div class="avatar-img-preview" *ngIf="speakingPreview2" style="height: 100px; padding: 4px;">
               <img [src]="speakingPreview2" alt="Hablando 2" onerror="this.onerror=null;this.src='assets/placeholder-avatar.png'" style="height: 100%; object-fit: contain;">
               <button class="remove-img-btn" (click)="removeImage('speaking2')" title="Quitar imagen" style="width: 20px; height: 20px; top: -5px; right: -5px;">
                 <span class="material-symbols-outlined" style="font-size: 14px;">close</span>
               </button>
             </div>
-            <div class="file-upload" *ngIf="!speakingPreview2" style="padding: 10px; min-height: 100px;">
+            <div class="file-upload" *ngIf="!speakingPreview2" style="min-height: 100px; width: 100%;">
               <input type="file" (change)="onImageSelected($event, 'speaking2')" accept="image/*" id="speaking-img-input-2">
-              <label for="speaking-img-input-2" style="gap: 4px;">
+              <label for="speaking-img-input-2" style="gap: 4px; padding: 10px; width: 100%;">
                 <span class="upload-icon material-symbols-outlined" style="font-size: 20px; margin-bottom: 0;">looks_two</span>
                 <span style="font-size: 11px;">Frame 2</span>
               </label>
@@ -98,16 +98,16 @@
           </div>
 
           <!-- Frame 3 -->
-          <div style="flex: 1;">
+          <div style="flex: 1 1 100px; min-width: 100px; max-width: 150px; display: flex; flex-direction: column; align-items: center;">
             <div class="avatar-img-preview" *ngIf="speakingPreview3" style="height: 100px; padding: 4px;">
               <img [src]="speakingPreview3" alt="Hablando 3" onerror="this.onerror=null;this.src='assets/placeholder-avatar.png'" style="height: 100%; object-fit: contain;">
               <button class="remove-img-btn" (click)="removeImage('speaking3')" title="Quitar imagen" style="width: 20px; height: 20px; top: -5px; right: -5px;">
                 <span class="material-symbols-outlined" style="font-size: 14px;">close</span>
               </button>
             </div>
-            <div class="file-upload" *ngIf="!speakingPreview3" style="padding: 10px; min-height: 100px;">
+            <div class="file-upload" *ngIf="!speakingPreview3" style="min-height: 100px; width: 100%;">
               <input type="file" (change)="onImageSelected($event, 'speaking3')" accept="image/*" id="speaking-img-input-3">
-              <label for="speaking-img-input-3" style="gap: 4px;">
+              <label for="speaking-img-input-3" style="gap: 4px; padding: 10px; width: 100%;">
                 <span class="upload-icon material-symbols-outlined" style="font-size: 20px; margin-bottom: 0;">looks_3</span>
                 <span style="font-size: 11px;">Frame 3</span>
               </label>

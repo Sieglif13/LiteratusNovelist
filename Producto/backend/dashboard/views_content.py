@@ -683,11 +683,11 @@ class AvatarAdminView(APIView):
             'is_major_character': av.is_major_character,
             'is_author': av.is_author,
             'chat_count': av.chat_count,
-            'avatar_image': request.build_absolute_uri(av.avatar_image.url) if av.avatar_image else None,
-            'image_speaking_1': request.build_absolute_uri(av.image_speaking_1.url) if av.image_speaking_1 else None,
-            'image_speaking_2': request.build_absolute_uri(av.image_speaking_2.url) if av.image_speaking_2 else None,
-            'image_speaking_3': request.build_absolute_uri(av.image_speaking_3.url) if av.image_speaking_3 else None,
-            'image_thinking': request.build_absolute_uri(av.image_thinking.url) if av.image_thinking else None,
+            'avatar_image': request.build_absolute_uri(av.avatar_image.url) if av.avatar_image and av.avatar_image.name else None,
+            'image_speaking_1': request.build_absolute_uri(av.image_speaking_1.url) if av.image_speaking_1 and av.image_speaking_1.name else None,
+            'image_speaking_2': request.build_absolute_uri(av.image_speaking_2.url) if av.image_speaking_2 and av.image_speaking_2.name else None,
+            'image_speaking_3': request.build_absolute_uri(av.image_speaking_3.url) if av.image_speaking_3 and av.image_speaking_3.name else None,
+            'image_thinking': request.build_absolute_uri(av.image_thinking.url) if av.image_thinking and av.image_thinking.name else None,
         })
 
     def put(self, request, pk):
