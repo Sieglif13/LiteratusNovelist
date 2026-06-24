@@ -218,8 +218,8 @@ export class DiscoverComponent implements OnInit, OnDestroy, AfterViewInit {
   private loadBooks(): void {
     this.isLoading = true;
     
-    // Carga paralela: Cat├ílogo General y Recomendaciones
-    this.api.get<any>('catalog/books/?ordering=-is_featured,-created_at&page_size=2000').subscribe({
+    // Carga paralela: Catálogo General y Recomendaciones
+    this.api.get<any>('catalog/books/?ordering=-is_featured,-created_at&page_size=200').subscribe({
       next: (response) => {
         if (response && response.count) {
           this.totalBooksCount = response.count;

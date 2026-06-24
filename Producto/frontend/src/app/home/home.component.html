@@ -1,82 +1,107 @@
-<div class="hero-landing-wrapper">
-  
-  <!-- BACKGROUND -->
-  <div class="epic-background">
-    <div class="comet"></div>
-    <div class="comet comet-2"></div>
-  </div>
-  <div class="clouds-layer"></div>
+<div class="white-landing-wrapper">
+  <!-- Top Nav -->
+  <nav class="white-nav">
+    <div class="nav-logo">
+      <div class="logo-icon">
+        <img src="assets/images/logo_icon.png" alt="Logo" style="height: 35px" onerror="this.style.display='none'">
+        <span class="material-symbols-rounded fallback-logo-icon">auto_stories</span>
+      </div>
+      <div class="logo-text">
+        <span class="logo-title">Literatus</span>
+        <span class="logo-subtitle">NOVELIST</span>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a routerLink="/discover" class="nav-link active">Explorar</a>
+      <a routerLink="/characters" class="nav-link">Personajes IA</a>
+      <a routerLink="/library" class="nav-link">Mi Biblioteca</a>
+      <button class="nav-btn-login" routerLink="/login">Iniciar Sesión</button>
+    </div>
+  </nav>
 
-  <!-- MAIN CONTENT -->
-  <div class="landing-content">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <h1 class="hero-title">No solo leas la historia: <span class="italic">¡Vivela!</span></h1>
+    <p class="hero-subtitle">Habla con los personajes más grandes de la literatura clásica.</p>
     
-    <!-- HEADER TITLE -->
-    <div class="title-section">
-      <h1 class="main-title">No solo leas la historia. <span class="highlight-italic">¡Vívela!</span></h1>
-      <p class="subtitle">Habla con los personajes más grandes de la literatura clásica</p>
-      <button class="cta-golden" (click)="askQuestion()">Habla Ahora</button>
-    </div>
-
-    <!-- HERO CHARACTERS (Floating) -->
-    <div class="hero-characters-stage">
-      <div class="hero-character-col" *ngFor="let char of heroCharacters; let i = index" [class.center-char]="i === 1">
-        <img [src]="char.image" [alt]="char.name" class="hero-char-img">
+    <div class="hero-image-container">
+      <button class="habla-ahora-btn" routerLink="/discover">Habla Ahora</button>
+      <div class="hero-characters-placeholder">
+        <img src="https://images.unsplash.com/photo-1550106208-410a56619a9d?q=80&w=1000&auto=format&fit=crop" alt="Personajes Clásicos" class="hero-characters-img" />
+        <div class="hero-characters-gradient"></div>
       </div>
     </div>
+  </section>
 
-    <div class="interaction-zone">
-      <!-- QUESTION SECTION -->
-      <div class="question-section">
-        <h2 class="question-title">¿Qué te gustaría preguntar?</h2>
-        
-        <div class="suggested-questions">
-          <button class="question-pill" *ngFor="let q of suggestedQuestions" (click)="setQuestion(q)">
-            {{ q }}
-          </button>
-        </div>
-
-        <div class="input-container">
-          <input type="text" [(ngModel)]="userQuestion" placeholder="Escribe tu pregunta aquí..." class="ask-input" (keyup.enter)="askQuestion()">
-          <button class="ask-btn" (click)="askQuestion()">Preguntar</button>
-        </div>
-      </div>
-
-      <div class="divider">
-        <span class="line"></span>
-        <span class="text">Conoce a los personajes</span>
-        <span class="line"></span>
-      </div>
-
-      <!-- CHARACTERS GRID -->
-      <div class="characters-grid" *ngIf="!isLoading">
-        <div class="char-card" *ngFor="let char of featuredCharacters" (click)="goToChat(char)">
-          <div class="char-image-wrap">
-            <img [src]="char.image_speaking_1 || char.avatar_image_url || 'assets/images/default-avatar.png'" [alt]="char.name" class="char-img">
-            <div class="char-overlay"></div>
-          </div>
-          <div class="char-info">
-            <h3 class="char-name">{{ char.name }}</h3>
-            <p class="char-book">{{ char.book_title || 'Mundo Literatus' }}</p>
-          </div>
-        </div>
-      </div>
-      
-      <div *ngIf="isLoading" class="loading-chars">
-        <span class="material-symbols-rounded loading-icon">hourglass_empty</span>
-        <p>Convocando personajes...</p>
-      </div>
-
-      <!-- MORE STORIES CTA -->
-      <div class="divider" style="margin-top: 4rem;">
-        <span class="line"></span>
-        <span class="text">Explora más historias</span>
-        <span class="line"></span>
-      </div>
-
-      <div class="explore-more-section">
-        <button class="cta-secondary" routerLink="/discover">Ver Catálogo Completo</button>
-      </div>
+  <!-- Chat Section -->
+  <section class="chat-section">
+    <h2 class="section-title italic">¿Qué te gustaria preguntar?</h2>
+    
+    <div class="question-pills">
+      <button class="q-pill">¿Qué opinás del amor?</button>
+      <button class="q-pill">¿Cómo resolverías un misterio?</button>
+      <button class="q-pill">¿Qué es el poder?</button>
     </div>
 
-  </div>
+    <div class="chat-input-wrapper">
+      <input type="text" class="chat-input" placeholder="Escribe tu pregunta aqui..." />
+      <button class="chat-submit-btn">Preguntar</button>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- Characters Section -->
+  <section class="characters-section">
+    <h2 class="section-title italic">Conoce a los personajes</h2>
+    <div class="characters-grid">
+      <!-- Sherlock Holmes -->
+      <div class="char-card">
+        <img src="https://images.unsplash.com/photo-1620862089408-7264a23de4f5?q=80&w=400&auto=format&fit=crop" alt="Sherlock Holmes" class="char-img" />
+        <div class="char-card-overlay"></div>
+        <div class="char-name-text">Sherlock Holmes</div>
+      </div>
+      <!-- El Alcalde -->
+      <div class="char-card">
+        <img src="https://images.unsplash.com/photo-1555597950-482a5d7c5709?q=80&w=400&auto=format&fit=crop" alt="El Alcalde" class="char-img" />
+        <div class="char-card-overlay"></div>
+        <div class="char-name-text">El Alcalde</div>
+      </div>
+      <!-- La Princesa -->
+      <div class="char-card">
+        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&auto=format&fit=crop" alt="La Princesa" class="char-img" />
+        <div class="char-card-overlay"></div>
+        <div class="char-name-text">La Princesa</div>
+      </div>
+      <!-- Dracula -->
+      <div class="char-card">
+        <img src="https://images.unsplash.com/photo-1615592389070-bcc97e05ad01?q=80&w=400&auto=format&fit=crop" alt="Drácula" class="char-img" />
+        <div class="char-card-overlay"></div>
+        <div class="char-name-text">Drácula</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- Books Section -->
+  <section class="books-section">
+    <h2 class="section-title italic">Explora más historias</h2>
+    <div class="books-grid">
+       <div class="book-card" routerLink="/book/el-principe-feliz-y-otros-cuentos-wilde-oscar">
+          <img src="https://srbmswjsbkpftjabcurg.supabase.co/storage/v1/object/public/literatus-media/book_covers/el-principe-feliz-y-otros-cuentos-wilde-oscar.jpg" alt="El Principe Feliz" class="book-img" />
+          <div class="book-title-text">El Principe Feliz</div>
+       </div>
+       <div class="book-card" routerLink="/book/la-metamorfosis-kafka-franz">
+          <img src="https://srbmswjsbkpftjabcurg.supabase.co/storage/v1/object/public/literatus-media/book_covers/la-metamorfosis-kafka-franz.jpg" alt="La Metamorfosis" class="book-img" />
+          <div class="book-title-text">La Metamorfosis</div>
+       </div>
+       <div class="book-card" routerLink="/book/el-gato-negro-allan-poe-edgar">
+          <img src="https://srbmswjsbkpftjabcurg.supabase.co/storage/v1/object/public/literatus-media/book_covers/el-gato-negro-allan-poe-edgar.jpg" alt="El Gato Negro" class="book-img" />
+          <div class="book-title-text">El Gato Negro</div>
+       </div>
+    </div>
+  </section>
+  
+  <div style="height: 100px;"></div> <!-- Spacer -->
 </div>
