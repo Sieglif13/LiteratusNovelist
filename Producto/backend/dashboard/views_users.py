@@ -16,7 +16,7 @@ class UserListAdminView(APIView):
     def get(self, request):
         # We assume users have a profile with ink_balance
         users = User.objects.select_related('profile').annotate(
-            chats_count=Count('chats') # Assuming related_name='chats' in ChatSession
+            chats_count=Count('chat_sessions')
         ).order_by('-last_login', '-date_joined')
         
         data = []
