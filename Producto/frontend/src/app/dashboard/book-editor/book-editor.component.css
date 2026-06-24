@@ -1,6 +1,7 @@
 .editor-container {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0 16px;
 }
 
 .editor-header {
@@ -36,7 +37,7 @@
   align-items: start;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1200px) {
   .editor-grid { grid-template-columns: 1fr; }
 }
 
@@ -445,4 +446,24 @@ input:checked + .slider:before { transform: translateX(16px); }
   background: #EF4444;
   color: white;
   box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3);
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  .chapter-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .chap-info {
+    width: 100%;
+  }
+  .chap-actions {
+    justify-content: flex-end;
+  }
+  .editor-footer > div {
+    flex-direction: column;
+  }
 }

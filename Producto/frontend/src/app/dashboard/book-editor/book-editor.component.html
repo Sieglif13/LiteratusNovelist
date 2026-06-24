@@ -1,6 +1,8 @@
 <div class="editor-container">
   <header class="editor-header">
-    <button class="back-btn" routerLink="/dashboard/books">← Volver</button>
+    <button class="back-btn" routerLink="/dashboard/books" style="display: flex; align-items: center; gap: 4px;">
+      <span class="material-symbols-outlined" style="font-size: 16px;">arrow_back</span> Volver
+    </button>
     <h2>{{ isEditing ? 'Editar Libro' : 'Añadir Nuevo Libro' }}</h2>
   </header>
 
@@ -15,7 +17,7 @@
           <div class="file-upload" [class.has-file]="epubFile">
             <input type="file" (change)="onEpubSelected($event)" accept=".epub" id="epub-input">
             <label for="epub-input">
-              <span class="icon">{{ epubFile ? '✅' : '📥' }}</span>
+              <span class="icon material-symbols-outlined">{{ epubFile ? 'check_circle' : 'file_download' }}</span>
               <span class="text">{{ epubFile ? epubFile.name : 'Seleccionar EPUB' }}</span>
             </label>
           </div>
@@ -46,7 +48,9 @@
               <option value="">-- Seleccionar Autor --</option>
               <option *ngFor="let author of authorsList" [value]="author.id">{{ author.full_name }}</option>
             </select>
-            <button type="button" class="add-btn" style="padding: 0 12px;" (click)="router.navigate(['/dashboard/authors'])" title="Gestionar Autores">⚙️</button>
+            <button type="button" class="add-btn" style="padding: 4px 12px; display: flex; align-items: center;" (click)="router.navigate(['/dashboard/authors'])" title="Gestionar Autores">
+              <span class="material-symbols-outlined" style="font-size: 18px;">settings</span>
+            </button>
           </div>
           <p class="error-text" *ngIf="bookForm.get('author_id')?.touched && bookForm.get('author_id')?.errors?.['required']">
             Debes seleccionar un autor.
@@ -100,7 +104,8 @@
           <div class="file-upload mini" [class.has-file]="pdfFile">
             <input type="file" (change)="onPdfSelected($event)" accept=".pdf" id="pdf-input">
             <label for="pdf-input">
-              {{ pdfFile ? '📄 ' + pdfFile.name : '📤 Subir PDF de descarga' }}
+              <span class="material-symbols-outlined" style="font-size: 16px; margin-right: 4px;">{{ pdfFile ? 'description' : 'upload_file' }}</span>
+              {{ pdfFile ? pdfFile.name : 'Subir PDF de descarga' }}
             </label>
           </div>
           <p class="help-text">Permite a los usuarios descargar la obra si tienen acceso.</p>
@@ -143,24 +148,31 @@
             <span class="chap-words">{{ chap.word_count }} palabras</span>
           </div>
           <div class="chap-actions">
-            <button class="edit-btn" (click)="openChapterEditor(i)">👁️ Ver</button>
-            <button class="delete-btn" (click)="removeChapter(i)">×</button>
+            <button class="edit-btn" style="display: flex; align-items: center; gap: 4px;" (click)="openChapterEditor(i)">
+              <span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> Ver
+            </button>
+            <button class="delete-btn" style="display: flex; align-items: center; justify-content: center;" (click)="removeChapter(i)">
+              <span class="material-symbols-outlined" style="font-size: 18px;">close</span>
+            </button>
           </div>
         </div>
       </div>
 
       <ng-template #noChapters>
         <div class="empty-chapters">
-          <div class="empty-icon">📖</div>
+          <div class="empty-icon material-symbols-outlined">menu_book</div>
           <p>Los capítulos aparecerán aquí tras procesar el EPUB.</p>
         </div>
       </ng-template>
 
       <div class="editor-footer">
         <div style="display: flex; gap: 12px; width: 100%;">
-          <button type="button" class="back-btn" style="flex: 1;" (click)="saveDraft()">💾 Borrador Local</button>
-          <button class="save-btn" style="flex: 2;" [disabled]="saving || bookForm.invalid || (!isEditing && !epubFile)" (click)="saveBook()">
-            {{ saving ? 'Guardando...' : (isEditing ? '✓ Actualizar Libro' : '🚀 Guardar Libro Completo') }}
+          <button type="button" class="back-btn" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;" (click)="saveDraft()">
+            <span class="material-symbols-outlined" style="font-size: 18px;">save</span> Borrador Local
+          </button>
+          <button class="save-btn" style="flex: 2; display: flex; align-items: center; justify-content: center; gap: 6px;" [disabled]="saving || bookForm.invalid || (!isEditing && !epubFile)" (click)="saveBook()">
+            <span class="material-symbols-outlined" style="font-size: 20px;">{{ isEditing ? 'check_circle' : 'rocket_launch' }}</span>
+            {{ saving ? 'Guardando...' : (isEditing ? 'Actualizar Libro' : 'Guardar Libro Completo') }}
           </button>
         </div>
       </div>
@@ -171,7 +183,9 @@
     <div class="avatars-section card" *ngIf="isEditing">
       <div class="section-header">
         <h3 class="section-title">Personajes (Avatares)</h3>
-        <button class="add-btn" (click)="router.navigate(['/dashboard/books', bookId, 'avatars', 'new'])">+ Nuevo</button>
+        <button class="add-btn" (click)="router.navigate(['/dashboard/books', bookId, 'avatars', 'new'])" style="display: flex; align-items: center; gap: 4px;">
+          <span class="material-symbols-outlined" style="font-size: 16px;">add</span> Nuevo
+        </button>
       </div>
 
       <div class="avatars-list" *ngIf="avatars.length > 0; else noAvatars">
@@ -202,7 +216,7 @@
       <!-- Header -->
       <header class="modal-header">
         <div class="chapter-editor-title">
-          <span class="chapter-editor-icon">📝</span>
+          <span class="chapter-editor-icon material-symbols-outlined">edit_document</span>
           <h3>Editando: {{ chapters[editingChapter].title }}</h3>
         </div>
         <div class="chapter-editor-actions">
@@ -242,7 +256,7 @@
         <div class="pane pane-preview">
           <div class="pane-header">
             <span class="pane-label preview-label">
-              👁️ Preview en tiempo real
+              <span class="material-symbols-outlined" style="font-size: 16px; margin-right: 4px;">visibility</span> Preview en tiempo real
             </span>
           </div>
           <div
@@ -254,8 +268,12 @@
 
       <!-- Footer -->
       <footer class="modal-footer">
-        <span class="footer-hint">💡 Los cambios del HTML se reflejan en tiempo real en el preview.</span>
-        <button class="save-btn" (click)="editingChapter = null">✓ Cerrar y Guardar Cambios</button>
+        <span class="footer-hint" style="display: flex; align-items: center; gap: 4px;">
+          <span class="material-symbols-outlined" style="font-size: 16px;">lightbulb</span> Los cambios del HTML se reflejan en tiempo real en el preview.
+        </span>
+        <button class="save-btn" style="display: flex; align-items: center; justify-content: center; gap: 6px;" (click)="editingChapter = null">
+          <span class="material-symbols-outlined">check_circle</span> Cerrar y Guardar Cambios
+        </button>
       </footer>
     </div>
   </div>
@@ -263,15 +281,15 @@
   <!-- ZONA DE PELIGRO (Super Abajo) -->
   <div class="danger-zone card" *ngIf="isEditing">
     <div class="danger-header">
-      <span class="icon">⚠️</span>
+      <span class="icon material-symbols-outlined" style="font-size: 32px; color: #EF4444;">warning</span>
       <div class="text">
         <h4>Zona de Peligro</h4>
         <p>Acciones irreversibles que afectan permanentemente a este libro.</p>
       </div>
     </div>
     <div class="danger-actions">
-      <button class="delete-book-btn" (click)="deleteBook()">
-        🗑️ Eliminar permanentemente este libro
+      <button class="delete-book-btn" style="display: flex; align-items: center; justify-content: center; gap: 8px;" (click)="deleteBook()">
+        <span class="material-symbols-outlined">delete_forever</span> Eliminar permanentemente este libro
       </button>
     </div>
   </div>

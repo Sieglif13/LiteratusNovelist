@@ -21,12 +21,16 @@ class UserListAdminView(APIView):
         
         data = []
         for u in users:
-            profile = getattr(u, 'profile', None)
+            try:
+                profile = u.profile
+            except Exception:
+                profile = None
+                
             data.append({
                 'id': str(u.pk),
                 'username': u.username,
                 'email': u.email,
-                'role': u.get_role_display() if hasattr(u, 'get_role_display') else u.role,
+                'role': u.get_role_display() if hasattr(u, 'get_role_display') else getattr(u, 'role', 'Unknown'),
                 'last_login': u.last_login,
                 'date_joined': u.date_joined,
                 'ink_balance': profile.ink_balance if profile else 0,

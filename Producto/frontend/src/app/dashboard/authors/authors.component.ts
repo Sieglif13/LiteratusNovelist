@@ -47,6 +47,14 @@ export class AuthorsComponent implements OnInit {
     });
   }
 
+  filterAuthors(event: Event): void {
+    const query = (event.target as HTMLInputElement).value.toLowerCase();
+    this.filteredAuthors = this.authors.filter(a => 
+      a.full_name.toLowerCase().includes(query) || 
+      (a.nationality && a.nationality.toLowerCase().includes(query))
+    );
+  }
+
   onPhotoSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {
