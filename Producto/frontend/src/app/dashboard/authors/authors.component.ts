@@ -133,11 +133,5 @@ export class AuthorsComponent implements OnInit {
     this.photoPreview = null;
   }
     
-  filterAuthors(event: Event): void {
-    const query = (event.target as HTMLInputElement).value.toLowerCase();
-    this.filteredAuthors = this.authors.filter(a => 
-      a.full_name.toLowerCase().includes(query) || 
-      (a.nationality && a.nationality.toLowerCase().includes(query))
-    );
-  }
+
 }
