@@ -1,13 +1,13 @@
-/* ── RESET & BASE ── */
+﻿/* ÔöÇÔöÇ RESET & BASE ÔöÇÔöÇ */
 .home-wrapper {
   min-height: 100vh;
   color: var(--text-main);
   overflow-x: clip;
 }
 
-/* ═══════════════════════════════════════════
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
    HERO
-═══════════════════════════════════════════ */
+ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 .hero-section {
   position: relative;
   min-height: auto;
@@ -63,7 +63,7 @@
   padding: 6px 16px;
   background: transparent;
   border: 1px solid var(--glow-gold);
-  border-radius: 4px; /* Más clásico, menos píldora */
+  border-radius: 4px; /* M├ís cl├ísico, menos p├¡ldora */
   font-size: .8rem;
   letter-spacing: 1.5px;
   text-transform: uppercase;
@@ -73,13 +73,13 @@
 
 .hero-headline {
   /*
-   * Cormorant Garamond 700: la elección tipógrafica central de la app.
+   * Cormorant Garamond 700: la elecci├│n tip├│grafica central de la app.
    * Esta fuente serif de display comunica:
-   * — Autoridad literaria (como un libro clásico encuadernado en cuero)
-   * — Elegancia contemporánea (funciona en dark mode mejor que las serifs tradicionales)
-   * — Contraste impactante con la UI sans-serif de todo lo demás
+   * ÔÇö Autoridad literaria (como un libro cl├ísico encuadernado en cuero)
+   * ÔÇö Elegancia contempor├ínea (funciona en dark mode mejor que las serifs tradicionales)
+   * ÔÇö Contraste impactante con la UI sans-serif de todo lo dem├ís
    *
-   * El truco: tamaño grande (hasta 5.5rem), tracking muy negativo (-3px),
+   * El truco: tama├▒o grande (hasta 5.5rem), tracking muy negativo (-3px),
    * y font-style que mezcla normal/italic en .glow-span hace que se vea
    * editorial de revista de lujo, no como una plantilla.
    */
@@ -162,7 +162,7 @@
 .cta-primary:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 24px rgba(212,175,55,0.4);
-  background: #E5C158; /* Ligeramente más brillante */
+  background: #E5C158; /* Ligeramente m├ís brillante */
 }
 
 :host-context([data-theme="neon"]) .cta-primary:hover {
@@ -212,7 +212,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 320px; /* Espacio mínimo para el Lottie en desktop */
+  min-height: 320px; /* Espacio m├¡nimo para el Lottie en desktop */
 }
 
 .hero-lottie-container {
@@ -233,9 +233,9 @@
   50% { transform: translateY(-15px); }
 }
 
-/* ═══════════════════════════════════════════
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
    RECOMENDACIONES INTELIGENTES
-   ═══════════════════════════════════════════ */
+   ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 .recommended-section {
   padding: 1rem 6vw 3rem;
 }
@@ -351,9 +351,9 @@
 .book-card-3d:hover { transform: scale(1.06) translateY(-10px) rotate(0deg) !important; z-index: 10; }
 .book-card-3d img { width:100%; height:100%; object-fit:cover; }
 
-/* ═══════════════════════════════════════════
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
    BANNER INSPIRACIONAL (librito)
-═══════════════════════════════════════════ */
+ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 .inspirational-banner {
   display: grid;
   grid-template-columns: 200px 1fr;
@@ -396,8 +396,8 @@
   line-height: 1.55;
   color: var(--text-main);
   /*
-   * EB Garamond itálica: para citas y textos literarios.
-   * La serif clásica en itálica refuerza el carácter intelectual de la plataforma.
+   * EB Garamond it├ílica: para citas y textos literarios.
+   * La serif cl├ísica en it├ílica refuerza el car├ícter intelectual de la plataforma.
    */
   font-family: var(--font-literary);
   font-weight: 400;
@@ -424,9 +424,9 @@
   50%      { transform: scale(1.05); }
 }
 
-/* ═══════════════════════════════════════════
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
    MOOD CHIPS
-═══════════════════════════════════════════ */
+ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 .mood-section {
   padding: 3rem 6vw 1.5rem;
 }
@@ -507,9 +507,9 @@
 
 .chip-emoji { font-size: 1.1rem; }
 
-/* ═══════════════════════════════════════════
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
    DISCOVERY (EXPLORAR)
-═══════════════════════════════════════════ */
+ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 .explore-action-container {
   display: flex;
   align-items: center;
@@ -525,12 +525,12 @@
 
 @media (max-width: 600px) {
   .explore-hint {
-    display: none; /* Ocultar en móviles para evitar amontonamiento */
+    display: none; /* Ocultar en m├│viles para evitar amontonamiento */
   }
 }
-/* ═══════════════════════════════════════════
-   BUSCADOR SEMÁNTICO
-═══════════════════════════════════════════ */
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+   BUSCADOR SEM├üNTICO
+ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 .search-section {
   padding: 1.5rem 6vw 2rem;
   display: flex;
@@ -608,9 +608,9 @@
 
 .hint-chip:hover { background: rgba(168,85,247,.2); color: #c4b5fd; }
 
-/* ═══════════════════════════════════════════
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
    SKELETON LOADER
-═══════════════════════════════════════════ */
+ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 .loading-skeleton { padding: 2rem 6vw; }
 
 .skeleton-trending {
@@ -633,9 +633,9 @@
   100% { background-position: -100% 0; }
 }
 
-/* ═══════════════════════════════════════════
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
    TRENDING SECTION
-═══════════════════════════════════════════ */
+ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 .trending-section {
   padding: 1.5rem 6vw 1.5rem;
 }
@@ -783,9 +783,9 @@
   color: #93c5fd;
 }
 
-/* ═══════════════════════════════════════════
-   ANIMACIÓN DE CARGA ESTILO SAMSUNG
-═══════════════════════════════════════════ */
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+   ANIMACI├ôN DE CARGA ESTILO SAMSUNG
+ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 @keyframes samsungLoad {
   0% { opacity: 0; transform: translateY(40px) scale(0.95); }
   100% { opacity: 1; transform: translateY(0) scale(1); }
@@ -795,7 +795,7 @@
   animation: samsungLoad 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
 }
 
-/* Cascada de aparición (staggered delay) */
+/* Cascada de aparici├│n (staggered delay) */
 .trending-card:nth-child(1), .recommended-card:nth-child(1) { animation-delay: 0.05s; }
 .trending-card:nth-child(2), .recommended-card:nth-child(2) { animation-delay: 0.10s; }
 .trending-card:nth-child(3), .recommended-card:nth-child(3) { animation-delay: 0.15s; }
@@ -808,11 +808,11 @@
 .trending-card:nth-child(10), .recommended-card:nth-child(10) { animation-delay: 0.50s; }
 
 /* Se han removido las secciones antiguas (Liyumi, Search, Discovery Grid) 
-   para mantener el código limpio y mantenible. */
+   para mantener el c├│digo limpio y mantenible. */
 
-/* ═══════════════════════════════════════════
-   RESPONSIVE — MOBILE FIRST
-═══════════════════════════════════════════ */
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+   RESPONSIVE ÔÇö MOBILE FIRST
+ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 @media (max-width: 900px) {
   .hero-section {
     grid-template-columns: 1fr;
@@ -822,7 +822,7 @@
   }
   .hero-visual { 
     display: flex;
-    height: 350px; /* Ajuste para móvil también */
+    height: 350px; /* Ajuste para m├│vil tambi├®n */
     margin-top: 1rem;
   }
   .hero-lottie-container {
@@ -871,9 +871,9 @@
   .trending-section, .discovery-section, .mood-section { padding-left: 4vw; padding-right: 4vw; }
 }
 
-/* ═══════════════════════════════════════════
-   PERSONAJES IA — FEATURED CAROUSEL
-═══════════════════════════════════════════ */
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+   PERSONAJES IA ÔÇö FEATURED CAROUSEL
+ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 .characters-feature-section { padding: 1.5rem 6vw 2.5rem; position: relative; }
 .characters-header { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem; }
 .char-header-left { display: flex; flex-direction: column; gap: 0.5rem; }
@@ -903,9 +903,9 @@
 .char-count-chip { display: flex; align-items: center; gap: 5px; font-size: 0.78rem; color: #a855f7; font-weight: 600; }
 @media (max-width: 600px) { .char-book-card { flex: 0 0 190px; } .char-cover-wrap { width: 190px; height: 270px; } .characters-header { flex-direction: column; align-items: flex-start; } }
 
-/* ═══════════════════════════════════════════════════════════
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
    SCROLL REVEAL
-═══════════════════════════════════════════════════════════ */
+ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 .reveal-section {
   opacity: 0;
   transform: translateY(40px);
@@ -916,9 +916,9 @@
   transform: translateY(0);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   HERO – mejoras CTA IA
-═══════════════════════════════════════════════════════════ */
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+   HERO ÔÇô mejoras CTA IA
+ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 .cta-ghost--ai {
   display: inline-flex;
   align-items: center;
@@ -966,9 +966,9 @@
   box-shadow: 0 0 8px #7e22ce;
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
    CHAT DEMO SECTION
-═══════════════════════════════════════════════════════════ */
+ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 .chat-demo-section {
   padding: 2rem 6vw 3rem; /* Padding reducido */
   text-align: center;
@@ -1115,9 +1115,9 @@
   33%, 100% { background: rgba(168,85,247,0.25); transform: scale(1); }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   ¿CÓMO FUNCIONA?
-═══════════════════════════════════════════════════════════ */
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+   ┬┐C├ôMO FUNCIONA?
+ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 .how-it-works-section {
   padding: 3rem 6vw 2rem; /* Padding reducido */
 }
@@ -1184,9 +1184,9 @@
   .how-step { min-width: 150px; padding: 1.5rem 1rem; }
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
    STATS / PRUEBA SOCIAL
-═══════════════════════════════════════════════════════════ */
+ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 .stats-section {
   padding: 2.5rem 6vw;
   background: linear-gradient(135deg, rgba(212,175,55,0.04) 0%, rgba(168,85,247,0.04) 100%);
@@ -1244,9 +1244,9 @@
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
    CTA TABERNA
-═══════════════════════════════════════════════════════════ */
+ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 .ink-cta-section {
   padding: 6rem 6vw;
   text-align: center;
@@ -1313,22 +1313,22 @@
   letter-spacing: 0.06em;
 }
 
-/* ═══════════════════════════════════════════════════════════
+/* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
    RESPONSIVE FIXES (Global & Chat Demo)
-═══════════════════════════════════════════════════════════ */
+ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
 @media (max-width: 768px) {
   .chat-demo-section {
     padding: 2rem 4vw 2rem;
   }
   .chat-demo-window {
-    min-height: 280px; /* Da más espacio vertical a los textos de la IA */
+    min-height: 280px; /* Da m├ís espacio vertical a los textos de la IA */
     padding: 1.5rem 1rem 3rem;
   }
   .chat-conv {
     inset: 1.5rem 1rem 3rem;
   }
   .chat-bubble {
-    max-width: 95%; /* Que los globos ocupen más ancho en celular */
+    max-width: 95%; /* Que los globos ocupen m├ís ancho en celular */
     padding: 0.75rem 1rem;
     font-size: 0.88rem;
   }

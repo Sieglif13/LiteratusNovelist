@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+﻿import { Component, OnInit, OnDestroy, inject, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ApiService } from '../core/services/api.service';
 import { AuthService } from '../core/services/auth.service';
@@ -37,22 +37,22 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   totalBooksCount: number = 1854; // Fallback exact count
 
 
-  // Libros con personajes IA activos (hardcoded — ya tienen AIAvatars configurados)
+  // Libros con personajes IA activos (hardcoded ÔÇö ya tienen AIAvatars configurados)
   featuredWithCharacters = [
     {
       slug: 'el-gato-negro-allan-poe-edgar',
       title: 'El Gato Negro',
       author: 'Edgar Allan Poe',
       cover: 'https://srbmswjsbkpftjabcurg.supabase.co/storage/v1/object/public/literatus-media/book_covers/el-gato-negro-allan-poe-edgar.jpg',
-      genre: 'Terror · Gótico',
+      genre: 'Terror ┬À G├│tico',
       characterCount: 3
     },
     {
       slug: 'el-principe-feliz-y-otros-cuentos-wilde-oscar',
-      title: 'El Príncipe Feliz',
+      title: 'El Pr├¡ncipe Feliz',
       author: 'Oscar Wilde',
       cover: 'https://srbmswjsbkpftjabcurg.supabase.co/storage/v1/object/public/literatus-media/book_covers/el-principe-feliz-y-otros-cuentos-wilde-oscar.jpg',
-      genre: 'Cuento · Clásico',
+      genre: 'Cuento ┬À Cl├ísico',
       characterCount: 4
     },
     {
@@ -60,7 +60,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
       title: 'La Metamorfosis',
       author: 'Franz Kafka',
       cover: 'https://srbmswjsbkpftjabcurg.supabase.co/storage/v1/object/public/literatus-media/book_covers/la-metamorfosis-kafka-franz.jpg',
-      genre: 'Ficción · Absurdismo',
+      genre: 'Ficci├│n ┬À Absurdismo',
       characterCount: 5
     },
     {
@@ -68,7 +68,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
       title: 'Metamorfosis',
       author: 'Ovidio',
       cover: 'https://srbmswjsbkpftjabcurg.supabase.co/storage/v1/object/public/literatus-media/book_covers/las-metamorfosis-ovidio.jpg',
-      genre: 'Mitos · Clásico',
+      genre: 'Mitos ┬À Cl├ísico',
       characterCount: 6
     }
   ];
@@ -131,7 +131,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     // Observa TODAS las reveal-section presentes en el DOM en este momento
     document.querySelectorAll('.reveal-section:not(.visible)').forEach(el => revealObserver.observe(el));
 
-    // Animación de contadores de stats
+    // Animaci├│n de contadores de stats
     const statsEl = document.querySelector('.stats-section');
     if (statsEl) {
       const statsObserver = new IntersectionObserver(
@@ -187,7 +187,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   private loadBooks(): void {
     this.isLoading = true;
     
-    // Carga paralela: Catálogo General y Recomendaciones
+    // Carga paralela: Cat├ílogo General y Recomendaciones
     this.api.get<any>('catalog/books/?ordering=-is_featured,-created_at&page_size=50').subscribe({
       next: (response) => {
         if (response && response.count) {
@@ -204,7 +204,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
         }, 150);
       },
       error: () => {
-        this.errorMsg = 'No se pudo cargar el catálogo.';
+        this.errorMsg = 'No se pudo cargar el cat├ílogo.';
         this.isLoading = false;
       }
     });
@@ -215,7 +215,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
         setTimeout(() => {
           if (!this.destroy$.isStopped) {
             this.initRevealObserver();
-            this.initAutoScroll(); // También inicializar auto scroll para los recomendados si es necesario
+            this.initAutoScroll(); // Tambi├®n inicializar auto scroll para los recomendados si es necesario
           }
         }, 100);
       }

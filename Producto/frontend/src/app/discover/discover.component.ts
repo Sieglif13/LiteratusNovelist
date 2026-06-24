@@ -1,12 +1,12 @@
-import { Component, OnInit, OnDestroy, inject, ViewChild, ElementRef } from '@angular/core';
+﻿import { Component, OnInit, OnDestroy, inject, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from '../core/services/api.service';
 import { AuthService } from '../core/services/auth.service';
 
-/* ────────────────────────────────────────────────────────────────────
+/* ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
    Mood definitions: each maps to a filter function used to segment
    the book pool into thematic rows.
-   ──────────────────────────────────────────────────────────────────── */
+   ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 interface Mood {
   id: string;
   label: string;
@@ -32,40 +32,40 @@ export class DiscoverComponent implements OnInit, OnDestroy {
   allBooks: any[] = [];
   isLoading = true;
 
-  /* ── Hero ── */
+  /* ÔöÇÔöÇ Hero ÔöÇÔöÇ */
   heroBook: any = null;
   private heroRefreshInterval: any;
 
-  /* ── TTS ── */
+  /* ÔöÇÔöÇ TTS ÔöÇÔöÇ */
   private ttsUtterance: SpeechSynthesisUtterance | null = null;
   isPlaying = false;
   currentAudioBook: any = null;
 
-  /* ── Mood Picker ── */
+  /* ÔöÇÔöÇ Mood Picker ÔöÇÔöÇ */
   activeMood: string | null = null;
   moods: Mood[] = [
     { id: 'all', label: 'Todo', icon: 'apps', filterFn: () => true },
-    { id: 'dark', label: 'Algo oscuro', icon: 'dark_mode', filterFn: (b) => this.hasCategory(b, 'terror') || this.hasCategory(b, 'misterio') || this.hasCategory(b, 'suspense') },
-    { id: 'brave', label: 'Sentirme valiente', icon: 'swords', filterFn: (b) => this.hasCategory(b, 'aventura') || this.hasCategory(b, 'fantasía') || this.hasCategory(b, 'ciencia ficción') || this.hasCategory(b, 'acción') },
-    { id: 'short', label: 'Lectura rápida', icon: 'timer', filterFn: (b) => {
+    { id: 'dark', label: 'Algo oscuro', icon: 'dark_mode', filterFn: (b) => this.hasTag(b, 'terror') || this.hasTag(b, 'polic├¡aca') || this.hasTag(b, 'suspense') },
+    { id: 'brave', label: 'Sentirme valiente', icon: 'swords', filterFn: (b) => this.hasTag(b, 'acci├│n') || this.hasTag(b, 'aventura') || this.hasTag(b, 'mitos') || this.hasTag(b, 'leyendas') },
+    { id: 'short', label: 'Lectura r├ípida', icon: 'timer', filterFn: (b) => {
       const time = String(b.estimated_reading_time || '');
-      return time.includes('15') || time.includes('20') || time.includes('30') || this.hasCategory(b, 'cuentos') || this.hasCategory(b, 'novela corta');
+      return time.includes('15') || time.includes('20') || time.includes('30') || this.hasTag(b, 'cuentos') || this.hasTag(b, 'novela corta') || this.hasTag(b, 'antolog├¡as');
     } },
-    { id: 'reflect', label: 'Para reflexionar', icon: 'psychology', filterFn: (b) => this.hasCategory(b, 'clásica') || this.hasCategory(b, 'contemporánea') || this.hasCategory(b, 'ensayos') },
-    { id: 'love', label: 'Un poco de romance', icon: 'favorite', filterFn: (b) => this.hasCategory(b, 'romance') || this.hasCategory(b, 'romántica') || this.hasCategory(b, 'poesía') },
+    { id: 'reflect', label: 'Para reflexionar', icon: 'psychology', filterFn: (b) => this.hasTag(b, 'filosof├¡a') || this.hasTag(b, 'ensayos') || this.hasTag(b, 'psicolog├¡a') || this.hasTag(b, 'sociedad') },
+    { id: 'love', label: 'Un poco de romance', icon: 'favorite', filterFn: (b) => this.hasTag(b, 'rom├íntica') || this.hasTag(b, 'er├│tica') || this.hasTag(b, 'poes├¡a') },
   ];
 
-  /* ── Rows ── */
+  /* ÔöÇÔöÇ Rows ÔöÇÔöÇ */
   trendingBooks: any[] = [];
   iaBooks: any[] = [];
   quickBooks: any[] = [];
   quoteBooks: any[] = [];
   matchPairs: MatchPair[] = [];
 
-  /* ── Saved for later (in-memory + localStorage) ── */
+  /* ÔöÇÔöÇ Saved for later (in-memory + localStorage) ÔöÇÔöÇ */
   savedIds: Set<string> = new Set();
 
-  /* ── Hover state for row cards ── */
+  /* ÔöÇÔöÇ Hover state for row cards ÔöÇÔöÇ */
   hoverBook: any = null;
 
   @ViewChild('trendingTrack') trendingTrack!: ElementRef;
@@ -82,9 +82,9 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     if (this.heroRefreshInterval) clearInterval(this.heroRefreshInterval);
   }
 
-  /* ═══════════════════════════════════════════════════════════════════
+  /* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
      DATA LOADING
-     ═══════════════════════════════════════════════════════════════════ */
+     ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
   private loadBooks(): void {
     this.isLoading = true;
     this.api.get<any>('catalog/books/?ordering=-view_count,-created_at&page_size=50').subscribe({
@@ -168,9 +168,9 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     return pairs;
   }
 
-  /* ═══════════════════════════════════════════════════════════════════
+  /* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
      MOOD FILTER
-     ═══════════════════════════════════════════════════════════════════ */
+     ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
   setMood(moodId: string): void {
     if (this.activeMood === moodId) {
       this.activeMood = null; // toggle off
@@ -187,9 +187,9 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     this.buildRows(filtered);
   }
 
-  /* ═══════════════════════════════════════════════════════════════════
-     HERO TEASER — Extract a snippet from synopsis
-     ═══════════════════════════════════════════════════════════════════ */
+  /* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+     HERO TEASER ÔÇö Extract a snippet from synopsis
+     ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
   getSynopsisSnippet(book: any): string {
     if (!book?.synopsis) return '';
     const text = book.synopsis.trim();
@@ -201,9 +201,9 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     return pick + '.';
   }
 
-  /* ═══════════════════════════════════════════════════════════════════
-     FOMO / SOCIAL PROOF — Simulated "now reading" count
-     ═══════════════════════════════════════════════════════════════════ */
+  /* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
+     FOMO / SOCIAL PROOF ÔÇö Simulated "now reading" count
+     ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
   getNowReadingCount(book: any): number {
     // Deterministic hash-based pseudo-random count so it stays stable
     const hash = this.hashString(book.id || book.slug || '0');
@@ -219,9 +219,9 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     return Math.abs(h);
   }
 
-  /* ═══════════════════════════════════════════════════════════════════
+  /* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
      SAVE FOR LATER
-     ═══════════════════════════════════════════════════════════════════ */
+     ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
   saveForLater(book: any): void {
     const id = book.id || book.slug;
     if (this.savedIds.has(id)) {
@@ -252,9 +252,9 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     localStorage.setItem('discover_saved', JSON.stringify([...this.savedIds]));
   }
 
-  /* ═══════════════════════════════════════════════════════════════════
+  /* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
      TTS / AUDIO
-     ═══════════════════════════════════════════════════════════════════ */
+     ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
   toggleAudio(book: any): void {
     if (this.isPlaying && this.currentAudioBook === book) {
       this.stopAudio();
@@ -298,31 +298,23 @@ export class DiscoverComponent implements OnInit, OnDestroy {
     this.ttsUtterance = null;
   }
 
-  /* ═══════════════════════════════════════════════════════════════════
+  /* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
      NAVIGATION
-     ═══════════════════════════════════════════════════════════════════ */
+     ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
   goToBook(book: any): void {
     if (book?.slug) {
       this.router.navigate(['/book', book.slug]);
     }
   }
 
-  /* ═══════════════════════════════════════════════════════════════════
+  /* ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ
      UTILS
-     ═══════════════════════════════════════════════════════════════════ */
-  private hasCategory(book: any, keyword: string): boolean {
-    const kw = keyword.toLowerCase();
-    
-    // Check tags
-    if (book.tags && book.tags.some((t: any) => (t.name || '').toLowerCase().includes(kw))) {
-      return true;
-    }
-    
-    // Check genres
-    if (book.genres && book.genres.some((g: any) => (g.name || '').toLowerCase().includes(kw))) {
-      return true;
-    }
-    
-    return false;
+     ÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉÔòÉ */
+  private hasTag(book: any, tagName: string): boolean {
+    if (!book.tags) return false;
+    return book.tags.some((t: any) => {
+      const name = (t.name || '').toLowerCase();
+      return name.includes(tagName.toLowerCase());
+    });
   }
 }
