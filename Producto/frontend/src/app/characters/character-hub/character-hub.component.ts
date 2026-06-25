@@ -101,10 +101,15 @@ export class CharacterHubComponent implements OnInit, OnDestroy {
   }
 
   openChat(character: any) {
-    if (!character || !character.book_slug) return;
+    if (!character) return;
 
     if (!this.auth.isLoggedIn()) {
-      this.router.navigate(['/login'], { queryParams: { returnUrl: `/book/${character.book_slug}` } });
+      this.router.navigate(['/demo-chat', character.id]);
+      return;
+    }
+
+    if (!character.book_slug) {
+      this.router.navigate(['/demo-chat', character.id]);
       return;
     }
 

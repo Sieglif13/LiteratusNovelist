@@ -203,7 +203,7 @@
         <p class="dchat-hint" *ngIf="!auth.isLoggedIn()">
           <span class="material-symbols-rounded" style="font-size:13px; color:var(--glow-gold);">info</span>
           {{ remainingMessages }} mensaje{{ remainingMessages !== 1 ? 's' : '' }} restante{{ remainingMessages !== 1 ? 's' : '' }} ·
-          <a routerLink="/register" style="color: #a855f7;">Regístrate gratis</a> para chatear sin límites
+          <a (click)="goToRegister()" style="color: #a855f7; cursor: pointer; text-decoration: underline;">Regístrate gratis</a> para chatear sin límites
         </p>
       </footer>
 

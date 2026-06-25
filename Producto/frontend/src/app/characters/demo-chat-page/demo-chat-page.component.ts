@@ -33,7 +33,7 @@ export class DemoChatPageComponent implements OnInit, OnDestroy {
   partialTranscript = '';
   audioLevel = 0;
 
-  avatarId: number | null = null;
+  avatarId: string | null = null;
   avatar: any = null;
   avatarLoading = true;
 
@@ -45,8 +45,7 @@ export class DemoChatPageComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     window.scrollTo(0, 0);
-    const idParam = this.route.snapshot.paramMap.get('avatarId');
-    this.avatarId = idParam ? parseInt(idParam, 10) : null;
+    this.avatarId = this.route.snapshot.paramMap.get('avatarId');
     this.loadAvatar();
 
     this.speechService.transcript$.pipe(takeUntil(this.destroy$)).subscribe(text => {
@@ -139,7 +138,13 @@ export class DemoChatPageComponent implements OnInit, OnDestroy {
   }
 
   goBack(): void { this.router.navigate(['/characters']); }
-  goToRegister(): void { this.router.navigate(['/register']); }
+  goToRegister(): void { 
+    if (this.avatar && this.avatar.book_slug) {
+      this.router.navigate(['/register'], { queryParams: { returnUrl: `/book/${this.avatar.book_slug}` } });
+    } else {
+      this.router.navigate(['/register']);
+    }
+  }
 
   toggleCallMode() {
     this.isCallMode = !this.isCallMode;

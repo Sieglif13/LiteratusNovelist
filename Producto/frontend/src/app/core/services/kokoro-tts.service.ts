@@ -52,7 +52,7 @@ export class KokoroTtsService {
   private isStopped = false;
   private isPlayingQueue = false;
   private isPaused = false;
-  private avatarId: number | null = null;
+  private avatarId: string | number | null = null;
 
   // Estado de reproducción para Pause/Resume y Karaoke
   private currentBuffer: AudioBuffer | null = null;
@@ -131,7 +131,7 @@ export class KokoroTtsService {
     this.selectedVoiceId = 'ef_dora'; // Auto-switch a voz remota válida
   }
 
-  async speak(fullText: string, avatarId: number, startWordIdx: number = 0, voiceId?: string): Promise<void> {
+  async speak(fullText: string, avatarId: string | number | null, startWordIdx: number = 0, voiceId?: string): Promise<void> {
     this.currentSpeakId++;
     const mySpeakId = this.currentSpeakId;
     
