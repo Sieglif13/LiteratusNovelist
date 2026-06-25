@@ -47,9 +47,8 @@ class AIAvatarListSerializer(serializers.ModelSerializer):
         return None
 
     def get_video_avatar_url(self, obj):
-        request = self.context.get('request')
-        if obj.video_avatar and obj.video_avatar.name and request:
-            return request.build_absolute_uri(obj.video_avatar.url)
+        # El campo video_avatar fue eliminado en favor de las animaciones manga
+        # Se mantiene por compatibilidad con el frontend si aún lo espera
         return None
 
     def get_image_speaking_1_url(self, obj):
