@@ -32,81 +32,75 @@
   </header>
 
   <!-- ═══════════════════════════════════════════════════════════
-       2. DEMO DE CHAT IA INTERACTIVO
+       2. EJEMPLOS DE CHAT EN CARRUSEL
   ═══════════════════════════════════════════════════════════ -->
-  <section class="chat-demo-section reveal-section" aria-label="Chat de demostración con personajes IA">
-    <div class="chat-demo-inner">
-      <div class="chat-demo-label">
-        <span class="pulse-dot-sm"></span>
-        <span>IA en tiempo real</span>
-      </div>
+
+  <section class="chat-examples-section reveal-section" aria-label="Ejemplos de chat con personajes IA">
+    <div class="chat-examples-inner">
       <h2 class="chat-demo-title">Conversa con los grandes personajes</h2>
-      <p class="chat-demo-sub">Así es como se siente leer en Literatus.</p>
 
-      <div class="chat-demo-window">
-        <!-- Messages feed -->
-        <div class="demo-chat-messages">
-          <div *ngFor="let msg of demoMessages"
-               [class]="'demo-msg ' + (msg.role === 'user' ? 'demo-msg--user' : 'demo-msg--char')">
-            <ng-container *ngIf="msg.role === 'assistant'">
-              <span class="char-avatar material-symbols-rounded" style="color: var(--glow-gold);">swords</span>
-              <div class="char-bubble-body">
-                <span class="char-name">{{ demoAvatarName }}</span>
-                {{ msg.content }}
+      <div class="chat-examples-carousel">
+        <div class="chat-examples-track">
+          <!-- Ejemplo 1 -->
+          <div class="chat-example-card">
+            <div class="chat-example-header">
+              <span class="material-symbols-rounded example-icon" style="color: #f97316;">swords</span>
+              <div class="example-meta">
+                <h4>Don Quijote</h4>
+                <span>El Ingenioso Hidalgo</span>
               </div>
-            </ng-container>
-            <ng-container *ngIf="msg.role === 'user'">
-              <div class="chat-bubble chat-bubble--user">{{ msg.content }}</div>
-            </ng-container>
-          </div>
-
-          <!-- Typing indicator -->
-          <div class="demo-msg demo-msg--char" *ngIf="demoSending">
-            <span class="char-avatar material-symbols-rounded" style="color: var(--glow-gold);">swords</span>
-            <div class="char-bubble-body typing-indicator">
-              <span></span><span></span><span></span>
+            </div>
+            <div class="chat-example-body">
+              <div class="example-msg user">¿Por qué luchas contra molinos?</div>
+              <div class="example-msg char">Porque donde otros ven molinos, yo veo gigantes. El valor no reside en la victoria, sino en no bajar la espada.</div>
             </div>
           </div>
-        </div>
 
-        <!-- Limit reached CTA -->
-        <div class="demo-limit-reached" *ngIf="demoChatLimitReached">
-          <p>Has agotado tus <strong>3 mensajes de prueba</strong>.</p>
-          <p style="opacity:0.7; font-size:0.9rem;">Regístrate gratis para chatear sin límites.</p>
-          <button class="cta-primary" (click)="goToRegister()" id="demo-register-cta">Crear cuenta gratis →</button>
-        </div>
+          <!-- Ejemplo 2 -->
+          <div class="chat-example-card">
+            <div class="chat-example-header">
+              <span class="material-symbols-rounded example-icon" style="color: #10b981;">science</span>
+              <div class="example-meta">
+                <h4>El Monstruo</h4>
+                <span>Frankenstein</span>
+              </div>
+            </div>
+            <div class="chat-example-body">
+              <div class="example-msg user">¿Por qué odias a tu creador?</div>
+              <div class="example-msg char">Me dio la vida, pero me negó el afecto. Soy un ser solitario en un mundo que me rechaza por mi aspecto.</div>
+            </div>
+          </div>
 
-        <!-- Input area -->
-        <div class="demo-input-area" *ngIf="!demoChatLimitReached">
-          <div class="demo-remaining" *ngIf="!auth.isLoggedIn()">
-            <span class="material-symbols-rounded" style="font-size:14px;color:var(--glow-gold);">info</span>
-            {{ demoRemainingMessages }} mensaje{{ demoRemainingMessages !== 1 ? 's' : '' }} de prueba restante{{ demoRemainingMessages !== 1 ? 's' : '' }}
+          <!-- Ejemplo 3 -->
+          <div class="chat-example-card">
+            <div class="chat-example-header">
+              <span class="material-symbols-rounded example-icon" style="color: #8b5cf6;">pets</span>
+              <div class="example-meta">
+                <h4>Plutón (El Gato)</h4>
+                <span>El Gato Negro</span>
+              </div>
+            </div>
+            <div class="chat-example-body">
+              <div class="example-msg user">¿Por qué huyes de tu amo?</div>
+              <div class="example-msg char">El alcohol ha envenenado su alma. Las manos que solían acariciarme ahora me inspiran un terror indescriptible.</div>
+            </div>
           </div>
-          <div class="demo-input-row">
-            <input
-              type="text"
-              class="demo-input"
-              [(ngModel)]="demoInput"
-              (keydown)="onDemoKeydown($event)"
-              placeholder="Escribe tu pregunta a Don Quijote..."
-              [disabled]="demoSending"
-              maxlength="500"
-              id="demo-chat-input"
-            />
-            <button
-              class="demo-send-btn"
-              (click)="sendDemoMessage()"
-              [disabled]="demoSending || !demoInput.trim()"
-              aria-label="Enviar mensaje"
-              id="demo-chat-send-btn"
-            >
-              <span class="material-symbols-rounded">send</span>
-            </button>
+          
+          <!-- Ejemplo 4 -->
+          <div class="chat-example-card">
+            <div class="chat-example-header">
+              <span class="material-symbols-rounded example-icon" style="color: #3b82f6;">water_drop</span>
+              <div class="example-meta">
+                <h4>El Principito</h4>
+                <span>Antoine de Saint-Exupéry</span>
+              </div>
+            </div>
+            <div class="chat-example-body">
+              <div class="example-msg user">¿Qué significa domesticar?</div>
+              <div class="example-msg char">Significa crear lazos. Si me domesticas, nos necesitaremos el uno al otro. Serás para mí único en el mundo.</div>
+            </div>
           </div>
-          <p class="demo-login-hint" *ngIf="!auth.isLoggedIn()">
-            ¿Quieres chatear sin límites?
-            <a routerLink="/register" style="color:var(--glow-gold);">Regístrate gratis</a>
-          </p>
+
         </div>
       </div>
     </div>
