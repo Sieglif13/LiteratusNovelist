@@ -130,7 +130,7 @@
         <div class="avatars-carousel-track" #avatarsCarousel *ngIf="!avatarsLoading && showcaseAvatars.length > 0">
           <div class="avatar-card"
                *ngFor="let avatar of showcaseAvatars; trackBy: trackById"
-               (click)="goToCharacterChat(avatar.id)"
+               (click)="goToCharacterChat(avatar)"
                [attr.id]="'avatar-card-' + avatar.id">
             <div class="avatar-img-wrap">
               <img

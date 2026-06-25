@@ -170,8 +170,37 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigate(['/characters']);
   }
 
-  goToCharacterChat(avatarId: number): void {
-    this.router.navigate(['/demo-chat', avatarId]);
+  goToCharacterChat(avatar: DemoAvatar): void {
+    if (!avatar) return;
+
+    if (!this.auth.isLoggedIn()) {
+      this.router.navigate(['/demo-chat', avatar.id]);
+      return;
+    }
+
+    if (!avatar.book_slug) {
+      this.router.navigate(['/demo-chat', avatar.id]);
+      return;
+    }
+
+    // Si está logueado, verificar propiedad
+    this.api.get<any>(`library/inventory/check/?slug=${avatar.book_slug}`).subscribe({
+      next: (res: any) => {
+        if (res.owned) {
+          // Va al lector con el chat IA abierto
+          this.router.navigate(['/reader', res.inventory_id], { 
+            queryParams: { chatWith: avatar.id } 
+          });
+        } else {
+          // Va a la página del libro para adquirirlo
+          this.router.navigate(['/book', avatar.book_slug]);
+        }
+      },
+      error: () => {
+        // Fallback
+        this.router.navigate(['/book', avatar.book_slug]);
+      }
+    });
   }
 
   scrollCarousel(direction: number): void {
