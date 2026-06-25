@@ -13,6 +13,16 @@ export class RegisterComponent {
   errorMsg = '';
   successMsg = '';
   isLoading = false;
+  showPassword = false;
+  showConfirmPassword = false;
+
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmPassword() {
+    this.showConfirmPassword = !this.showConfirmPassword;
+  }
 
   private fb = inject(FormBuilder);
   private api = inject(ApiService);

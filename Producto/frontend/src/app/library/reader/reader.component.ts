@@ -313,15 +313,18 @@ export class ReaderComponent implements OnInit, OnDestroy {
         // Esperar a que los avatares carguen para poder iniciar el chat
         const checkAvatars = setInterval(() => {
           if (this.avatars && this.avatars.length > 0) {
-            const avatar = this.avatars.find(a => a.id == avatarId);
+            clearInterval(checkAvatars);
+            // Usar toString() para comparar UUIDs de forma segura
+            const avatar = this.avatars.find(a => String(a.id) === String(avatarId));
             if (avatar) {
               this.startChat(avatar);
+            } else {
+              console.warn(`Avatar con ID ${avatarId} no encontrado.`);
             }
-            clearInterval(checkAvatars);
           }
-        }, 100);
-        // Timeout de seguridad de 5 segundos
-        setTimeout(() => clearInterval(checkAvatars), 5000);
+        }, 200);
+        // Timeout de seguridad de 10 segundos
+        setTimeout(() => clearInterval(checkAvatars), 10000);
       }
     });
 

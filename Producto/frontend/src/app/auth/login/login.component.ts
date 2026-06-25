@@ -14,6 +14,11 @@ export class LoginComponent implements OnInit {
   errorMsg = '';
   isLoading = false;
   returnUrl: string = '/catalog';
+  showPassword = false;
+
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+  }
 
   private fb = inject(FormBuilder);
   private api = inject(ApiService);

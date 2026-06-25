@@ -128,7 +128,7 @@ class SpendInkView(APIView):
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 from django.contrib.auth.tokens import default_token_generator
-from .utils import send_password_reset_email
+from .utils import send_password_reset_email, email_verification_token
 
 class VerifyEmailView(APIView):
     """
@@ -150,12 +150,15 @@ class VerifyEmailView(APIView):
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             user = None
             
-        if user is not None and default_token_generator.check_token(user, token):
-            user.is_active = True
-            user.save()
-            return Response({'message': 'Cuenta verificada exitosamente.'}, status=status.HTTP_200_OK)
-        else:
-            return Response({'error': 'El enlace de verificación es inválido o ha expirado.'}, status=status.HTTP_400_BAD_REQUEST)
+        if user is not None:
+            if user.is_active:
+                return Response({'message': 'Tu cuenta ya estaba verificada. Puedes iniciar sesión.'}, status=status.HTTP_200_OK)
+            if email_verification_token.check_token(user, token):
+                user.is_active = True
+                user.save()
+                return Response({'message': 'Cuenta verificada exitosamente.'}, status=status.HTTP_200_OK)
+                
+        return Response({'error': 'El enlace de verificación es inválido o ha expirado.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class PasswordResetRequestView(APIView):

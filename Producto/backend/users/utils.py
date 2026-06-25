@@ -5,6 +5,24 @@ from django.core.mail import send_mail as django_send_mail
 from django.conf import settings
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+
+
+class EmailVerificationTokenGenerator(PasswordResetTokenGenerator):
+    """
+    Generador de tokens para verificación de correo.
+    No incluye last_login en el hash para evitar que el token se invalide
+    si el usuario intenta hacer login antes de verificar su cuenta.
+    """
+    def _make_hash_value(self, user, timestamp):
+        # Solo usar pk, is_active y timestamp (excluir last_login)
+        return f"{user.pk}{user.is_active}{timestamp}"
+
+
+# Instancia del generador personalizado para verificación de correo
+email_verification_token = EmailVerificationTokenGenerator()
+
+# Mantener default_token_generator para reset de contraseña
 from django.contrib.auth.tokens import default_token_generator
 
 def send_mail_via_resend_api(subject, message, from_email, recipient_list, html_message=None):
@@ -57,7 +75,8 @@ def send_verification_email(user):
     Envía el correo de verificación de cuenta al usuario.
     """
     uid = urlsafe_base64_encode(force_bytes(user.pk))
-    token = default_token_generator.make_token(user)
+    # Usar el generador personalizado que no incluye last_login
+    token = email_verification_token.make_token(user)
     
     frontend_url = settings.FRONTEND_URL
     verify_url = f"{frontend_url}/verify-email?uid={uid}&token={token}"

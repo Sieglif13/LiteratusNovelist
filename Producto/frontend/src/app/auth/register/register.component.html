@@ -28,22 +28,34 @@
 
       <div class="form-group">
         <label>Contraseña</label>
-        <input type="password" 
-               class="glass-input" 
-               [ngClass]="{'is-invalid': f['password'].touched && f['password'].invalid}"
-               formControlName="password" 
-               placeholder="Mínimo 8 caracteres">
+        <div style="position: relative;">
+          <input [type]="showPassword ? 'text' : 'password'" 
+                 class="glass-input" 
+                 [ngClass]="{'is-invalid': f['password'].touched && f['password'].invalid}"
+                 formControlName="password" 
+                 placeholder="Mínimo 8 caracteres">
+          <button type="button" (click)="togglePassword()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 5px;">
+            <svg lucideEyeOff *ngIf="showPassword" style="width: 20px; height: 20px;"></svg>
+            <svg lucideEye *ngIf="!showPassword" style="width: 20px; height: 20px;"></svg>
+          </button>
+        </div>
         <div class="validation-error" *ngIf="f['password'].touched && f['password'].errors?.['required']">La contraseña es requerida.</div>
         <div class="validation-error" *ngIf="f['password'].touched && f['password'].errors?.['minlength']">Mínimo 8 caracteres de seguridad.</div>
       </div>
 
       <div class="form-group">
         <label>Confirmar Contraseña</label>
-        <input type="password" 
-               class="glass-input" 
-               [ngClass]="{'is-invalid': f['confirmPassword'].touched && f['confirmPassword'].invalid}"
-               formControlName="confirmPassword" 
-               placeholder="Repite la contraseña">
+        <div style="position: relative;">
+          <input [type]="showConfirmPassword ? 'text' : 'password'" 
+                 class="glass-input" 
+                 [ngClass]="{'is-invalid': f['confirmPassword'].touched && f['confirmPassword'].invalid}"
+                 formControlName="confirmPassword" 
+                 placeholder="Repite la contraseña">
+          <button type="button" (click)="toggleConfirmPassword()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 5px;">
+            <svg lucideEyeOff *ngIf="showConfirmPassword" style="width: 20px; height: 20px;"></svg>
+            <svg lucideEye *ngIf="!showConfirmPassword" style="width: 20px; height: 20px;"></svg>
+          </button>
+        </div>
         <div class="validation-error" *ngIf="f['confirmPassword'].touched && f['confirmPassword'].errors?.['passwordMismatch']">Las contraseñas no coinciden.</div>
       </div>
 
