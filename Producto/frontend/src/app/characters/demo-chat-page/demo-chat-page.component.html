@@ -9,8 +9,8 @@
   <!-- Main layout -->
   <div class="dchat-layout" *ngIf="!avatarLoading && avatar">
 
-    <!-- ── SIDEBAR: Perfil del personaje ── -->
-    <aside class="dchat-sidebar">
+    <!-- ── SIDEBAR: Perfil del personaje (Solo Desktop) ── -->
+    <aside class="dchat-sidebar hide-on-mobile">
       <button class="dchat-back-btn" (click)="goBack()" id="dchat-back-btn">
         <span class="material-symbols-rounded">arrow_back</span>
         Personajes
@@ -24,9 +24,6 @@
             class="dchat-avatar-img"
             onerror="this.src='assets/default_cover.jpg'"
           />
-          <div class="dchat-live-pill">
-            <span class="dchat-pulse"></span> DEMO EN VIVO
-          </div>
         </div>
 
         <h1 class="dchat-char-name">{{ avatar.name }}</h1>
@@ -60,10 +57,13 @@
     </aside>
 
     <!-- ── CHAT AREA ── -->
-    <main class="dchat-main">
+    <main class="dchat-main" [class.immersive-mode]="isCallMode">
 
-      <!-- Header -->
+      <!-- Header (Unificado para móvil, compacto en PC) -->
       <header class="dchat-header">
+        <button class="dchat-back-btn-mobile show-on-mobile" (click)="goBack()">
+          <span class="material-symbols-rounded">arrow_back</span>
+        </button>
         <div class="dchat-header-avatar">
           <img
             [src]="avatar.avatar_image_url || 'assets/default_avatar.jpg'"
@@ -77,16 +77,52 @@
         </div>
         <div class="dchat-header-info">
           <h2>{{ avatar.name }}</h2>
-          <span *ngIf="avatar.book_title">{{ avatar.book_title }}</span>
+          <span *ngIf="avatar.book_title" class="show-on-mobile">{{ avatar.book_title }}</span>
         </div>
-        <div class="dchat-header-badge">
-          <span class="material-symbols-rounded" style="font-size:16px; color:#a855f7;">auto_awesome</span>
-          Demo IA
+        
+        <div class="dchat-header-actions">
+          <button class="dchat-icon-btn" (click)="toggleCallMode()" [class.active]="isCallMode" title="Modo Llamada">
+            <span class="material-symbols-rounded">call</span>
+          </button>
+          <button class="dchat-icon-btn" *ngIf="isCallMode" (click)="toggleMute()" title="Silenciar">
+            <span class="material-symbols-rounded">{{ isMuted ? 'volume_off' : 'volume_up' }}</span>
+          </button>
         </div>
       </header>
 
-      <!-- Messages -->
-      <div class="dchat-messages" id="dchat-messages-feed">
+      <!-- Panel Manga (Solo en Call Mode) -->
+      <div class="chat-manga-panel" *ngIf="isCallMode" [class.immersive-manga]="isCallMode">
+        <div class="manga-portrait-container">
+          <img [src]="getMangaFrameUrl()" 
+               [alt]="avatar?.name"
+               class="chat-manga-img"
+               [class.speaking]="isVideoSpeaking"
+               [class.thinking]="isSending">
+          <div class="manga-glow-effect"></div>
+        </div>
+        <div class="manga-status-tag" *ngIf="isSending || isVideoSpeaking">
+          <span class="status-label" *ngIf="isSending">🧠 Pensando...</span>
+          <span class="status-label" *ngIf="isVideoSpeaking">🗣️ Hablando...</span>
+        </div>
+        
+        <!-- VISUALIZADOR DE ONDAS Y TRANSCRIPT -->
+        <div class="voice-controls">
+          <app-audio-visualizer 
+            [isActive]="(speechService.isListening$ | async) ?? false" 
+            [level]="audioLevel">
+          </app-audio-visualizer>
+          <p class="partial-transcript" *ngIf="partialTranscript">
+            <i>{{ partialTranscript }}</i>
+          </p>
+          <p class="listening-status" *ngIf="!(speechService.isListening$ | async)">
+            <span *ngIf="isVideoSpeaking">Personaje hablando...</span>
+            <span *ngIf="!isVideoSpeaking && !isSending">Micrófono pausado</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Messages (Oculto en Call Mode o visible debajo) -->
+      <div class="dchat-messages" id="dchat-messages-feed" *ngIf="!isCallMode">
 
         <div *ngFor="let msg of messages"
              [class]="'dchat-msg ' + (msg.role === 'user' ? 'dchat-msg--user' : 'dchat-msg--char')">
@@ -139,13 +175,16 @@
       </div>
 
       <!-- Input -->
-      <footer class="dchat-input-wrap" *ngIf="!limitReached">
+      <footer class="dchat-input-wrap" *ngIf="!limitReached" [class.call-mode-footer]="isCallMode">
         <div class="dchat-input-inner">
+          <button class="dchat-mic-btn" (click)="speechService.toggleListening()" [class.recording]="speechService.isListening$ | async" title="Hablar">
+            <span class="material-symbols-rounded">mic</span>
+          </button>
           <textarea
             class="dchat-input"
             [(ngModel)]="inputText"
             (keydown)="onKeydown($event)"
-            [placeholder]="'Escribe algo a ' + avatar.name + '...'"
+            [placeholder]="isCallMode ? 'Escribe o habla por el micrófono...' : ('Escribe algo a ' + avatar.name + '...')"
             [disabled]="isSending"
             rows="1"
             maxlength="500"

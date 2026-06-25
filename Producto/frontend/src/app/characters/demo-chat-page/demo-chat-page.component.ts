@@ -1,8 +1,11 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
+import { KokoroTtsService } from '../../core/services/kokoro-tts.service';
+import { SpeechRecognitionService } from '../../core/services/speech-recognition.service';
 
 export interface DemoMessage {
   role: 'user' | 'assistant';
@@ -20,6 +23,15 @@ export class DemoChatPageComponent implements OnInit, OnDestroy {
   private api = inject(ApiService);
   public auth = inject(AuthService);
   private destroy$ = new Subject<void>();
+  public kokoroVoice = inject(KokoroTtsService);
+  public speechService = inject(SpeechRecognitionService);
+
+  isCallMode = false;
+  isMuted = false;
+  isVideoSpeaking = false;
+  activeTalkingFrame = 1;
+  partialTranscript = '';
+  audioLevel = 0;
 
   avatarId: number | null = null;
   avatar: any = null;
@@ -32,9 +44,25 @@ export class DemoChatPageComponent implements OnInit, OnDestroy {
   limitReached = false;
 
   ngOnInit(): void {
+    window.scrollTo(0, 0);
     const idParam = this.route.snapshot.paramMap.get('avatarId');
     this.avatarId = idParam ? parseInt(idParam, 10) : null;
     this.loadAvatar();
+
+    this.speechService.transcript$.pipe(takeUntil(this.destroy$)).subscribe(text => {
+      if (text) {
+        this.inputText = text;
+        this.sendMessage();
+      }
+    });
+
+    this.speechService.partialTranscript$.pipe(takeUntil(this.destroy$)).subscribe(text => {
+      this.partialTranscript = text;
+    });
+
+    this.speechService.audioLevel$.pipe(takeUntil(this.destroy$)).subscribe(level => {
+      this.audioLevel = level;
+    });
   }
 
   private loadAvatar(): void {
@@ -78,6 +106,10 @@ export class DemoChatPageComponent implements OnInit, OnDestroy {
         if (this.remainingMessages <= 0) this.limitReached = true;
         this.isSending = false;
         setTimeout(() => this.scrollToBottom(), 60);
+
+        if (this.isCallMode && !this.isMuted) {
+          this.speakChatReply(res.reply);
+        }
       },
       error: (err) => {
         const errData = err?.error;
@@ -109,7 +141,72 @@ export class DemoChatPageComponent implements OnInit, OnDestroy {
   goBack(): void { this.router.navigate(['/characters']); }
   goToRegister(): void { this.router.navigate(['/register']); }
 
+  toggleCallMode() {
+    this.isCallMode = !this.isCallMode;
+    if (this.isCallMode) {
+      this.speechService.startListening();
+    } else {
+      this.speechService.stopListening();
+      this.kokoroVoice.stop();
+      setTimeout(() => this.scrollToBottom(), 100);
+    }
+  }
+
+  toggleMute() {
+    this.isMuted = !this.isMuted;
+    if (this.isMuted) {
+      this.kokoroVoice.stop();
+    }
+  }
+
+  getMangaFrameUrl(): string {
+    if (!this.avatar || !this.avatar.avatar_image_url) {
+      return '';
+    }
+    const url = this.avatar.avatar_image_url;
+    if (!url.includes('manga_assets')) {
+      return url;
+    }
+    
+    let base = url;
+    if (base.endsWith('calm.webp') || base.endsWith('calm.png')) {
+      base = base.substring(0, base.lastIndexOf('/') + 1);
+    } else {
+      if (!base.endsWith('/')) base += '/';
+    }
+
+    if (this.isSending) {
+      return base + 'thinking.webp';
+    } else if (this.isVideoSpeaking) {
+      return base + `talking_${this.activeTalkingFrame}.webp`;
+    }
+    return base + 'calm.webp';
+  }
+
+  private speakChatReply(text: string) {
+    const charName = this.avatar?.name || 'Unknown';
+    const nameLower = charName.toLowerCase();
+    
+    let voiceId = 'ef_dora';
+    if (nameLower.includes('alcalde') || nameLower.includes('rey') || nameLower.includes('padre') || nameLower.includes('señor')) {
+      voiceId = 'em_santa';
+    } else if (nameLower.includes('príncipe') || nameLower.includes('principe') || nameLower.includes('autor') || nameLower.includes('joven') || nameLower.includes('niño')) {
+      voiceId = 'em_alex';
+    }
+
+    this.kokoroVoice.speak(text, this.avatarId || 1, 0, voiceId);
+    
+    this.kokoroVoice.isSpeaking$.pipe(takeUntil(this.destroy$)).subscribe(speaking => {
+      this.isVideoSpeaking = speaking;
+      if (speaking) {
+        this.activeTalkingFrame = Math.floor(Math.random() * 3) + 1;
+      }
+    });
+  }
+
   ngOnDestroy(): void {
+    this.speechService.stopListening();
+    this.kokoroVoice.stop();
     this.destroy$.next();
     this.destroy$.complete();
   }
