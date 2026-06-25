@@ -298,6 +298,93 @@ class ChatInteractionView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+class DemoChatView(APIView):
+    """
+    POST /api/v1/ai/demo-chat/
+    Chat de demostración público para visitantes sin cuenta.
+    - No requiere autenticación.
+    - Limitado a DEMO_MSG_LIMIT mensajes por IP por día (TTL = 24h en caché).
+    - Usa Don Quijote como personaje demo por defecto.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    DEMO_MSG_LIMIT = 3       # mensajes máximos por IP por día
+    DEMO_AVATAR_NAME = 'Don Quijote'  # Nombre del personaje demo
+
+    def _get_client_ip(self, request):
+        """Extrae la IP real del visitante, considerando proxies (Vercel/Cloudflare)."""
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            return x_forwarded_for.split(',')[0].strip()
+        return request.META.get('REMOTE_ADDR', '0.0.0.0')
+
+    def post(self, request):
+        from django.core.cache import cache
+
+        ip = self._get_client_ip(request)
+        cache_key = f'demo_chat_ip_{ip}'
+        msg_count = cache.get(cache_key, 0)
+
+        if msg_count >= self.DEMO_MSG_LIMIT:
+            return Response({
+                'error': 'DEMO_LIMIT_REACHED',
+                'message': f'Has usado tus {self.DEMO_MSG_LIMIT} mensajes de prueba de hoy. ¡Regístrate gratis para chatear sin límites!',
+                'remaining': 0,
+            }, status=status.HTTP_429_TOO_MANY_REQUESTS)
+
+        message = request.data.get('message', '').strip()
+        if not message:
+            return Response({'error': 'El campo "message" es requerido.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if len(message) > 500:
+            return Response({'error': 'El mensaje es demasiado largo (máx. 500 caracteres).'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Buscar el avatar de demo (Don Quijote)
+        try:
+            avatar = AIAvatar.objects.filter(name__icontains=self.DEMO_AVATAR_NAME).first()
+            if not avatar:
+                # Fallback: cualquier avatar disponible
+                avatar = AIAvatar.objects.order_by('-chat_count').first()
+            if not avatar:
+                return Response({'error': 'No hay personajes de demostración disponibles.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        except Exception:
+            return Response({'error': 'Error al cargar el personaje demo.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        # Crear una sesión temporal en memoria (sin guardar en BD para no contaminar)
+        # Usamos una sesión fake que AIService puede usar
+        class FakeSession:
+            def __init__(self, av):
+                self.avatar = av
+                self.messages = type('obj', (object,), {
+                    'order_by': lambda self, *a, **kw: type('qs', (object,), {
+                        '__getitem__': lambda s, k: [],
+                        '__iter__': lambda s: iter([]),
+                    })()
+                })()
+
+        fake_session = FakeSession(avatar)
+
+        try:
+            ai_service = AIService(avatar=avatar, session=fake_session)
+            ai_result = ai_service.generate_reply(message)
+            reply_text = ai_result.get('text', 'No pude responder en este momento.')
+        except Exception as e:
+            return Response({'error': f'Error del motor IA: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        # Incrementar el contador de mensajes (TTL = 86400s = 24h)
+        new_count = msg_count + 1
+        cache.set(cache_key, new_count, timeout=86400)
+        remaining = max(0, self.DEMO_MSG_LIMIT - new_count)
+
+        return Response({
+            'reply': reply_text,
+            'avatar_name': avatar.name,
+            'avatar_image': avatar.image_url if hasattr(avatar, 'image_url') else None,
+            'remaining_messages': remaining,
+            'limit': self.DEMO_MSG_LIMIT,
+        }, status=status.HTTP_200_OK)
+
+
 class TTSGenerateView(APIView):
     """
     POST /api/v1/ai/audio/generate/

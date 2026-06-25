@@ -14,7 +14,21 @@ export interface Book {
   cover_image: string | null;
   tags?: { name: string; slug: string }[];
   price?: number;
-  author_name?: string;  // Nombre del autor para mostrar en las tarjetas
+  author_name?: string;
+}
+
+export interface DemoAvatar {
+  id: number;
+  name: string;
+  description: string;
+  image_url: string | null;
+  chat_count: number;
+  edition?: { book?: { title?: string } };
+}
+
+export interface DemoChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
 }
 
 @Component({
@@ -31,11 +45,26 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   // State
   allBooks: Book[] = [];
   trendingBooks: Book[] = [];
-  recommendedBooks: Book[] = []; // Nueva lista de recomendados
+  recommendedBooks: Book[] = [];
   discoveryBooks: Book[] = [];
-  randomDiscoveryBooks: Book[] = []; // Para el carrusel aleatorio
-  totalBooksCount: number = 1854; // Fallback exact count
+  randomDiscoveryBooks: Book[] = [];
+  totalBooksCount: number = 1854;
 
+  // Avatars showcase (from API)
+  showcaseAvatars: DemoAvatar[] = [];
+  avatarsLoading = false;
+
+  // Demo Chat state
+  demoMessages: DemoChatMessage[] = [
+    { role: 'user', content: '¿Por qué luchas contra molinos?' },
+    { role: 'assistant', content: 'Porque donde otros ven molinos, yo veo gigantes. El valor no reside en la victoria, sino en no bajar la espada.' }
+  ];
+  demoInput = '';
+  demoSending = false;
+  demoRemainingMessages = 3;
+  demoChatLimitReached = false;
+  demoAvatarName = 'Don Quijote';
+  demoAvatarImage: string | null = null;
 
   // Libros con personajes IA activos (hardcoded — ya tienen AIAvatars configurados)
   featuredWithCharacters = [
@@ -111,12 +140,101 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit(): void {
     this.loadBooks();
+    this.loadShowcaseAvatars();
   }
 
   ngAfterViewInit(): void {
-    // Observar secciones que ya existen al iniciar (chat demo)
     this.initRevealObserver();
   }
+
+  // ─── Avatar Showcase ─────────────────────────────────────────────────────────
+
+  private loadShowcaseAvatars(): void {
+    this.avatarsLoading = true;
+    this.api.get<any>('ai/hub/avatars/?sort=popularity').subscribe({
+      next: (response: any) => {
+        const avatars = Array.isArray(response) ? response : (response.results || []);
+        this.showcaseAvatars = avatars.slice(0, 8);
+        this.avatarsLoading = false;
+      },
+      error: () => {
+        this.avatarsLoading = false;
+      }
+    });
+  }
+
+  goToCharactersHub(): void {
+    this.router.navigate(['/characters']);
+  }
+
+  goToCharacterChat(avatarId: number): void {
+    if (this.auth.isLoggedIn()) {
+      this.router.navigate(['/characters'], { queryParams: { avatar: avatarId } });
+    } else {
+      this.router.navigate(['/register']);
+    }
+  }
+
+  // ─── Demo Chat ───────────────────────────────────────────────────────────────
+
+  sendDemoMessage(): void {
+    const msg = this.demoInput.trim();
+    if (!msg || this.demoSending || this.demoChatLimitReached) return;
+
+    this.demoMessages.push({ role: 'user', content: msg });
+    this.demoInput = '';
+    this.demoSending = true;
+
+    this.api.post<any>('ai/demo-chat/', { message: msg }).subscribe({
+      next: (res: any) => {
+        this.demoMessages.push({ role: 'assistant', content: res.reply });
+        this.demoRemainingMessages = res.remaining_messages ?? 0;
+        if (res.avatar_name) this.demoAvatarName = res.avatar_name;
+        if (res.avatar_image) this.demoAvatarImage = res.avatar_image;
+        if (this.demoRemainingMessages <= 0) {
+          this.demoChatLimitReached = true;
+        }
+        this.demoSending = false;
+        setTimeout(() => this.scrollDemoToBottom(), 50);
+      },
+      error: (err: any) => {
+        const errData = err?.error;
+        if (errData?.error === 'DEMO_LIMIT_REACHED') {
+          this.demoChatLimitReached = true;
+          this.demoRemainingMessages = 0;
+          this.demoMessages.push({
+            role: 'assistant',
+            content: errData.message || 'Has alcanzado el límite de mensajes de prueba. ¡Regístrate para continuar!'
+          });
+        } else {
+          this.demoMessages.push({
+            role: 'assistant',
+            content: 'El viento sopla fuerte hoy y mi conexión es débil. Intenta de nuevo en un momento.'
+          });
+        }
+        this.demoSending = false;
+        setTimeout(() => this.scrollDemoToBottom(), 50);
+      }
+    });
+  }
+
+  onDemoKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.sendDemoMessage();
+    }
+  }
+
+  private scrollDemoToBottom(): void {
+    const el = document.querySelector('.demo-chat-messages');
+    if (el) el.scrollTop = el.scrollHeight;
+  }
+
+  goToRegister(): void {
+    this.router.navigate(['/register']);
+  }
+
+  // ─── Existing logic ───────────────────────────────────────────────────────────
 
   private initRevealObserver(): void {
     const revealObserver = new IntersectionObserver(
@@ -128,10 +246,8 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
       }),
       { threshold: 0.05 }
     );
-    // Observa TODAS las reveal-section presentes en el DOM en este momento
     document.querySelectorAll('.reveal-section:not(.visible)').forEach(el => revealObserver.observe(el));
 
-    // Animación de contadores de stats
     const statsEl = document.querySelector('.stats-section');
     if (statsEl) {
       const statsObserver = new IntersectionObserver(
@@ -186,8 +302,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private loadBooks(): void {
     this.isLoading = true;
-    
-    // Carga paralela: Catálogo General y Recomendaciones
+
     this.api.get<any>('catalog/books/?ordering=-is_featured,-created_at&page_size=50').subscribe({
       next: (response) => {
         if (response && response.count) {
@@ -196,9 +311,8 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
         this.allBooks = response.results || response;
         this.buildSections();
         this.isLoading = false;
-        // Re-observar las secciones que se acaban de renderizar (dentro de *ngIf)
         setTimeout(() => {
-          if (this.destroy$.isStopped) return; // FIX: Prevenir memory leaks
+          if (this.destroy$.isStopped) return;
           this.initAutoScroll();
           this.initRevealObserver();
         }, 150);
@@ -215,7 +329,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
         setTimeout(() => {
           if (!this.destroy$.isStopped) {
             this.initRevealObserver();
-            this.initAutoScroll(); // También inicializar auto scroll para los recomendados si es necesario
+            this.initAutoScroll();
           }
         }, 100);
       }
@@ -249,17 +363,13 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private buildSections(): void {
-    // Trending: libros destacados primero
     this.trendingBooks = this.allBooks.filter(b => b.is_featured).slice(0, 6);
     if (this.trendingBooks.length === 0) {
       this.trendingBooks = this.allBooks.slice(0, 6);
     }
 
-    // Discovery: todos menos los trending
     const trendingSlugs = new Set(this.trendingBooks.map(b => b.slug));
     this.discoveryBooks = this.allBooks.filter(b => !trendingSlugs.has(b.slug));
-    
-    // Shuffle array para el carrusel aleatorio
     this.randomDiscoveryBooks = [...this.allBooks].sort(() => 0.5 - Math.random());
   }
 
@@ -273,5 +383,9 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
 
   trackBySlug(_: number, book: Book): string {
     return book.slug;
+  }
+
+  trackById(_: number, avatar: DemoAvatar): number {
+    return avatar.id;
   }
 }

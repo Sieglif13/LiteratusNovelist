@@ -11,6 +11,7 @@ from .views import (
     ChatHistoryView,
     ChatInteractionView,
     TTSGenerateView,
+    DemoChatView,
 )
 
 urlpatterns = [
@@ -41,6 +42,10 @@ urlpatterns = [
     # Enviar mensaje al LLM (consume tinta)
     # POST /api/v1/ai/chat/
     path('chat/', ChatInteractionView.as_view(), name='ai-chat'),
+
+    # Chat de demostración público (sin auth, rate limiting por IP)
+    # POST /api/v1/ai/demo-chat/
+    path('demo-chat/', DemoChatView.as_view(), name='ai-demo-chat'),
 
     # Narración AI (TTS ElevenLabs)
     # POST /api/v1/ai/audio/generate/
