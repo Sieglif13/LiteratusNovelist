@@ -134,7 +134,7 @@
                [attr.id]="'avatar-card-' + avatar.id">
             <div class="avatar-img-wrap">
               <img
-                [src]="avatar.image_url || 'assets/default_avatar.jpg'"
+                [src]="avatar.avatar_image_url || 'assets/default_avatar.jpg'"
                 [alt]="avatar.name"
                 class="avatar-img"
                 loading="lazy"
@@ -149,7 +149,7 @@
             </div>
             <div class="avatar-meta">
               <h3 class="avatar-name">{{ avatar.name }}</h3>
-              <p class="avatar-book" *ngIf="avatar.edition?.book?.title">{{ avatar.edition?.book?.title }}</p>
+              <p class="avatar-book" *ngIf="avatar.book_title">{{ avatar.book_title }}</p>
             </div>
           </div>
         </div>

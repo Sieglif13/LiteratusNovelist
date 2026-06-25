@@ -21,9 +21,10 @@ export interface DemoAvatar {
   id: number;
   name: string;
   description: string;
-  image_url: string | null;
+  avatar_image_url: string | null;
   chat_count: number;
-  edition?: { book?: { title?: string } };
+  book_title?: string;
+  book_slug?: string;
 }
 
 export interface DemoChatMessage {
