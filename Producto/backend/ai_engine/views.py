@@ -322,7 +322,7 @@ class DemoChatView(APIView):
         """GET /api/v1/ai/demo-chat/?avatar_id=<int> — Devuelve info del personaje para la UI."""
         avatar_id = request.query_params.get('avatar_id')
         try:
-            if avatar_id:
+            if avatar_id and avatar_id != 'undefined':
                 avatar = AIAvatar.objects.select_related('edition__book').get(pk=avatar_id)
             else:
                 avatar = AIAvatar.objects.filter(
@@ -332,8 +332,8 @@ class DemoChatView(APIView):
                     avatar = AIAvatar.objects.select_related('edition__book').order_by('-chat_count').first()
             if not avatar:
                 return Response({'error': 'No hay personajes disponibles.'}, status=status.HTTP_404_NOT_FOUND)
-        except AIAvatar.DoesNotExist:
-            return Response({'error': 'Personaje no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+        except (AIAvatar.DoesNotExist, ValueError):
+            return Response({'error': 'Personaje no encontrado o ID inválido.'}, status=status.HTTP_404_NOT_FOUND)
 
         # Comprobar cuántos mensajes le quedan a esta IP
         ip = self._get_client_ip(request)
@@ -343,7 +343,7 @@ class DemoChatView(APIView):
         remaining = max(0, self.DEMO_MSG_LIMIT - msg_count)
 
         serializer = GlobalHubAvatarSerializer(avatar, context={'request': request})
-        data = serializer.data
+        data = dict(serializer.data)
         data['remaining_messages'] = remaining
         data['limit'] = self.DEMO_MSG_LIMIT
         data['greeting_message'] = avatar.greeting_message
@@ -374,7 +374,7 @@ class DemoChatView(APIView):
 
         # Buscar el avatar solicitado o el de demostración por defecto
         try:
-            if avatar_id:
+            if avatar_id and avatar_id != 'undefined':
                 avatar = AIAvatar.objects.get(pk=avatar_id)
             else:
                 avatar = AIAvatar.objects.filter(name__icontains=self.DEMO_AVATAR_NAME).first()
@@ -382,8 +382,8 @@ class DemoChatView(APIView):
                     avatar = AIAvatar.objects.order_by('-chat_count').first()
             if not avatar:
                 return Response({'error': 'No hay personajes de demostración disponibles.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
-        except AIAvatar.DoesNotExist:
-            return Response({'error': 'Personaje no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+        except (AIAvatar.DoesNotExist, ValueError):
+            return Response({'error': 'Personaje no encontrado o ID inválido.'}, status=status.HTTP_404_NOT_FOUND)
 
         # Sesión temporal en memoria (sin guardar en BD)
         class FakeSession:
