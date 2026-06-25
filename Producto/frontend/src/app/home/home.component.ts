@@ -105,6 +105,8 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   activeCharacterIndex = 0;
   private charCarouselInterval: any;
 
+  @ViewChild('avatarsCarousel') avatarsCarousel!: ElementRef;
+
   private _readingContainer?: ElementRef;
   @ViewChild('readingContainer') set readingContainer(el: ElementRef) {
     if (el && !this._readingContainer) {
@@ -168,10 +170,14 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   goToCharacterChat(avatarId: number): void {
-    if (this.auth.isLoggedIn()) {
-      this.router.navigate(['/characters'], { queryParams: { avatar: avatarId } });
-    } else {
-      this.router.navigate(['/register']);
+    this.router.navigate(['/demo-chat', avatarId]);
+  }
+
+  scrollCarousel(direction: number): void {
+    if (this.avatarsCarousel) {
+      const el = this.avatarsCarousel.nativeElement;
+      const scrollAmount = 320 * direction; // width of card (220px) + gap (24px) approx
+      el.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   }
 

@@ -23,6 +23,7 @@ import { PaymentSuccessComponent } from './catalog/payment-success/payment-succe
 import { PaymentFailureComponent } from './catalog/payment-failure/payment-failure.component';
 import { LibraryListComponent } from './library/library-list/library-list.component';
 import { CharacterHubComponent } from './characters/character-hub/character-hub.component';
+import { DemoChatPageComponent } from './characters/demo-chat-page/demo-chat-page.component';
 import { AudioVisualizerComponent } from './core/components/audio-visualizer/audio-visualizer.component';
 
 import { MatMenuModule } from '@angular/material/menu';
@@ -59,6 +60,7 @@ import { ResetPasswordComponent } from './auth/reset-password/reset-password.com
     PaymentFailureComponent,
     LibraryListComponent,
     CharacterHubComponent,
+    DemoChatPageComponent,
     ProfileComponent,
     AuthorListComponent,
     AudioVisualizerComponent,

@@ -23,6 +23,7 @@ import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './users/profile/profile.component';
 import { AuthorListComponent } from './catalog/author-list/author-list.component';
 import { CharacterHubComponent } from './characters/character-hub/character-hub.component';
+import { DemoChatPageComponent } from './characters/demo-chat-page/demo-chat-page.component';
 import { CategoriesComponent } from './categories/categories.component';
 import { CategoryDetailComponent } from './categories/category-detail/category-detail.component';
 import { DiscoverComponent } from './discover/discover.component';
@@ -39,6 +40,8 @@ const routes: Routes = [
   { path: 'catalog', component: BookListComponent },
   { path: 'authors', component: AuthorListComponent },
   { path: 'characters', component: CharacterHubComponent },
+  { path: 'demo-chat/:avatarId', component: DemoChatPageComponent },
+  { path: 'demo-chat', component: DemoChatPageComponent },
   { path: 'book/:slug', component: BookDetailPageComponent },
   { path: 'author/:slug', component: AuthorDetailPageComponent },
   { path: 'checkout/:type/:reference', component: CheckoutComponent, canActivate: [authGuard] },

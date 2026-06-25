@@ -304,12 +304,12 @@ class DemoChatView(APIView):
     Chat de demostración público para visitantes sin cuenta.
     - No requiere autenticación.
     - Limitado a DEMO_MSG_LIMIT mensajes por IP por día (TTL = 24h en caché).
-    - Usa Don Quijote como personaje demo por defecto.
+    - Acepta avatar_id para chatear con cualquier personaje.
     """
     permission_classes = [permissions.AllowAny]
 
     DEMO_MSG_LIMIT = 3       # mensajes máximos por IP por día
-    DEMO_AVATAR_NAME = 'Don Quijote'  # Nombre del personaje demo
+    DEMO_AVATAR_NAME = 'Don Quijote'  # Fallback si no se pasa avatar_id
 
     def _get_client_ip(self, request):
         """Extrae la IP real del visitante, considerando proxies (Vercel/Cloudflare)."""
@@ -317,6 +317,37 @@ class DemoChatView(APIView):
         if x_forwarded_for:
             return x_forwarded_for.split(',')[0].strip()
         return request.META.get('REMOTE_ADDR', '0.0.0.0')
+
+    def get(self, request):
+        """GET /api/v1/ai/demo-chat/?avatar_id=<int> — Devuelve info del personaje para la UI."""
+        avatar_id = request.query_params.get('avatar_id')
+        try:
+            if avatar_id:
+                avatar = AIAvatar.objects.select_related('edition__book').get(pk=avatar_id)
+            else:
+                avatar = AIAvatar.objects.filter(
+                    name__icontains=self.DEMO_AVATAR_NAME
+                ).select_related('edition__book').first()
+                if not avatar:
+                    avatar = AIAvatar.objects.select_related('edition__book').order_by('-chat_count').first()
+            if not avatar:
+                return Response({'error': 'No hay personajes disponibles.'}, status=status.HTTP_404_NOT_FOUND)
+        except AIAvatar.DoesNotExist:
+            return Response({'error': 'Personaje no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Comprobar cuántos mensajes le quedan a esta IP
+        ip = self._get_client_ip(request)
+        from django.core.cache import cache
+        cache_key = f'demo_chat_ip_{ip}'
+        msg_count = cache.get(cache_key, 0)
+        remaining = max(0, self.DEMO_MSG_LIMIT - msg_count)
+
+        serializer = GlobalHubAvatarSerializer(avatar, context={'request': request})
+        data = serializer.data
+        data['remaining_messages'] = remaining
+        data['limit'] = self.DEMO_MSG_LIMIT
+        data['greeting_message'] = avatar.greeting_message
+        return Response(data)
 
     def post(self, request):
         from django.core.cache import cache
@@ -333,25 +364,28 @@ class DemoChatView(APIView):
             }, status=status.HTTP_429_TOO_MANY_REQUESTS)
 
         message = request.data.get('message', '').strip()
+        avatar_id = request.data.get('avatar_id')
+
         if not message:
             return Response({'error': 'El campo "message" es requerido.'}, status=status.HTTP_400_BAD_REQUEST)
 
         if len(message) > 500:
             return Response({'error': 'El mensaje es demasiado largo (máx. 500 caracteres).'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Buscar el avatar de demo (Don Quijote)
+        # Buscar el avatar solicitado o el de demostración por defecto
         try:
-            avatar = AIAvatar.objects.filter(name__icontains=self.DEMO_AVATAR_NAME).first()
-            if not avatar:
-                # Fallback: cualquier avatar disponible
-                avatar = AIAvatar.objects.order_by('-chat_count').first()
+            if avatar_id:
+                avatar = AIAvatar.objects.get(pk=avatar_id)
+            else:
+                avatar = AIAvatar.objects.filter(name__icontains=self.DEMO_AVATAR_NAME).first()
+                if not avatar:
+                    avatar = AIAvatar.objects.order_by('-chat_count').first()
             if not avatar:
                 return Response({'error': 'No hay personajes de demostración disponibles.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
-        except Exception:
-            return Response({'error': 'Error al cargar el personaje demo.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except AIAvatar.DoesNotExist:
+            return Response({'error': 'Personaje no encontrado.'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Crear una sesión temporal en memoria (sin guardar en BD para no contaminar)
-        # Usamos una sesión fake que AIService puede usar
+        # Sesión temporal en memoria (sin guardar en BD)
         class FakeSession:
             def __init__(self, av):
                 self.avatar = av
@@ -379,13 +413,13 @@ class DemoChatView(APIView):
         return Response({
             'reply': reply_text,
             'avatar_name': avatar.name,
-            'avatar_image': avatar.image_url if hasattr(avatar, 'image_url') else None,
             'remaining_messages': remaining,
             'limit': self.DEMO_MSG_LIMIT,
         }, status=status.HTTP_200_OK)
 
 
 class TTSGenerateView(APIView):
+
     """
     POST /api/v1/ai/audio/generate/
     Genera audio con Kokoro-82M (via Hugging Face Space).

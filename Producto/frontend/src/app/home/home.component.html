@@ -113,7 +113,7 @@
   </section>
 
   <!-- ═══════════════════════════════════════════════════════════
-       2b. GALERÍA DE PERSONAJES
+       2b. GALERÍA DE PERSONAJES (CARRUSEL SLIDABLE COMPACTO)
   ═══════════════════════════════════════════════════════════ -->
   <section class="avatars-showcase-section reveal-section" aria-label="Personajes disponibles">
     <div class="avatars-showcase-inner">
@@ -124,53 +124,69 @@
             Personajes con IA
           </p>
           <h2 class="avatars-title">Conoce a los personajes</h2>
-          <p class="avatars-subtitle">Cada personaje tiene su propia personalidad, historia y forma de hablar. Todos impulsados por IA.</p>
+          <p class="avatars-subtitle">Cada personaje tiene su propia personalidad, historia y forma de hablar en vivo.</p>
         </div>
-        <a routerLink="/characters" class="avatars-see-all" id="avatars-see-all-btn">Ver todos los personajes →</a>
-      </div>
-
-      <!-- Loading skeleton -->
-      <div class="avatars-grid" *ngIf="avatarsLoading">
-        <div class="avatar-card avatar-card--skeleton" *ngFor="let s of [1,2,3,4,5,6,7,8]"></div>
-      </div>
-
-      <!-- Avatars grid -->
-      <div class="avatars-grid" *ngIf="!avatarsLoading && showcaseAvatars.length > 0">
-        <div class="avatar-card"
-             *ngFor="let avatar of showcaseAvatars; trackBy: trackById"
-             (click)="goToCharacterChat(avatar.id)"
-             [attr.id]="'avatar-card-' + avatar.id">
-          <div class="avatar-img-wrap">
-            <img
-              [src]="avatar.image_url || 'assets/default_avatar.jpg'"
-              [alt]="avatar.name"
-              class="avatar-img"
-              loading="lazy"
-              onerror="this.src='assets/default_cover.jpg'"
-            />
-            <div class="avatar-overlay">
-              <button class="avatar-chat-btn">
-                <span class="material-symbols-rounded">chat</span>
-                Chatear
-              </button>
-            </div>
-            <div class="avatar-chat-count">
-              <span class="material-symbols-rounded" style="font-size:12px;">forum</span>
-              {{ avatar.chat_count | number }}
-            </div>
-          </div>
-          <div class="avatar-meta">
-            <h3 class="avatar-name">{{ avatar.name }}</h3>
-            <p class="avatar-book" *ngIf="avatar.edition?.book?.title">{{ avatar.edition?.book?.title }}</p>
-            <p class="avatar-desc">{{ avatar.description | slice:0:80 }}{{ (avatar.description?.length || 0) > 80 ? '...' : '' }}</p>
+        
+        <!-- Controls & See All -->
+        <div class="avatars-header-controls">
+          <a routerLink="/characters" class="avatars-see-all" id="avatars-see-all-btn">Ver todos →</a>
+          <div class="carousel-nav-arrows" *ngIf="!avatarsLoading && showcaseAvatars.length > 0">
+            <button class="carousel-arrow-btn" (click)="scrollCarousel(-1)" aria-label="Personajes anteriores" id="carousel-prev-btn">
+              <span class="material-symbols-rounded">chevron_left</span>
+            </button>
+            <button class="carousel-arrow-btn" (click)="scrollCarousel(1)" aria-label="Personajes siguientes" id="carousel-next-btn">
+              <span class="material-symbols-rounded">chevron_right</span>
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- Empty state -->
-      <div class="avatars-empty" *ngIf="!avatarsLoading && showcaseAvatars.length === 0">
-        <span class="material-symbols-rounded" style="font-size:3rem; color: var(--glow-gold);">person_search</span>
-        <p>Los personajes están siendo configurados. ¡Vuelve pronto!</p>
+      <!-- Carousel wrapper -->
+      <div class="avatars-carousel-container">
+        
+        <!-- Loading skeleton -->
+        <div class="avatars-carousel-track" *ngIf="avatarsLoading">
+          <div class="avatar-card avatar-card--skeleton" *ngFor="let s of [1,2,3,4,5,6]"></div>
+        </div>
+
+        <!-- Avatars carousel -->
+        <div class="avatars-carousel-track" #avatarsCarousel *ngIf="!avatarsLoading && showcaseAvatars.length > 0">
+          <div class="avatar-card"
+               *ngFor="let avatar of showcaseAvatars; trackBy: trackById"
+               (click)="goToCharacterChat(avatar.id)"
+               [attr.id]="'avatar-card-' + avatar.id">
+            <div class="avatar-img-wrap">
+              <img
+                [src]="avatar.image_url || 'assets/default_avatar.jpg'"
+                [alt]="avatar.name"
+                class="avatar-img"
+                loading="lazy"
+                onerror="this.src='assets/default_cover.jpg'"
+              />
+              <div class="avatar-overlay">
+                <span class="avatar-chat-badge">
+                  <span class="material-symbols-rounded" style="font-size: 16px;">chat</span>
+                  Chatear
+                </span>
+              </div>
+              <div class="avatar-chat-count">
+                <span class="material-symbols-rounded" style="font-size:12px;">forum</span>
+                {{ avatar.chat_count | number }}
+              </div>
+            </div>
+            <div class="avatar-meta">
+              <h3 class="avatar-name">{{ avatar.name }}</h3>
+              <p class="avatar-book" *ngIf="avatar.edition?.book?.title">{{ avatar.edition?.book?.title }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty state -->
+        <div class="avatars-empty" *ngIf="!avatarsLoading && showcaseAvatars.length === 0">
+          <span class="material-symbols-rounded" style="font-size:3rem; color: var(--glow-gold);">person_search</span>
+          <p>Los personajes están siendo configurados. ¡Vuelve pronto!</p>
+        </div>
+
       </div>
 
       <div class="avatars-cta-row">
