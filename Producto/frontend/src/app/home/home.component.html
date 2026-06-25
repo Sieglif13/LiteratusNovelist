@@ -111,33 +111,16 @@
   ═══════════════════════════════════════════════════════════ -->
   <section class="avatars-showcase-section reveal-section" aria-label="Personajes disponibles">
     <div class="avatars-showcase-inner">
+
+      <!-- Header: solo título + Ver todos -->
       <div class="avatars-showcase-header">
-        <div>
-          <p class="avatars-eyebrow">
-            <span class="pulse-dot-sm"></span>
-            Personajes con IA
-          </p>
-          <h2 class="avatars-title">Conoce a los personajes</h2>
-          <p class="avatars-subtitle">Cada personaje tiene su propia personalidad, historia y forma de hablar en vivo.</p>
-        </div>
-        
-        <!-- Controls & See All -->
-        <div class="avatars-header-controls">
-          <a routerLink="/characters" class="avatars-see-all" id="avatars-see-all-btn">Ver todos →</a>
-          <div class="carousel-nav-arrows" *ngIf="!avatarsLoading && showcaseAvatars.length > 0">
-            <button class="carousel-arrow-btn" (click)="scrollCarousel(-1)" aria-label="Personajes anteriores" id="carousel-prev-btn">
-              <span class="material-symbols-rounded">chevron_left</span>
-            </button>
-            <button class="carousel-arrow-btn" (click)="scrollCarousel(1)" aria-label="Personajes siguientes" id="carousel-next-btn">
-              <span class="material-symbols-rounded">chevron_right</span>
-            </button>
-          </div>
-        </div>
+        <h2 class="avatars-title">Conoce a los personajes</h2>
+        <a routerLink="/characters" class="avatars-see-all" id="avatars-see-all-btn">Ver todos →</a>
       </div>
 
       <!-- Carousel wrapper -->
       <div class="avatars-carousel-container">
-        
+
         <!-- Loading skeleton -->
         <div class="avatars-carousel-track" *ngIf="avatarsLoading">
           <div class="avatar-card avatar-card--skeleton" *ngFor="let s of [1,2,3,4,5,6]"></div>
@@ -159,13 +142,9 @@
               />
               <div class="avatar-overlay">
                 <span class="avatar-chat-badge">
-                  <span class="material-symbols-rounded" style="font-size: 16px;">chat</span>
+                  <span class="material-symbols-rounded" style="font-size:16px;">chat</span>
                   Chatear
                 </span>
-              </div>
-              <div class="avatar-chat-count">
-                <span class="material-symbols-rounded" style="font-size:12px;">forum</span>
-                {{ avatar.chat_count | number }}
               </div>
             </div>
             <div class="avatar-meta">
@@ -181,13 +160,6 @@
           <p>Los personajes están siendo configurados. ¡Vuelve pronto!</p>
         </div>
 
-      </div>
-
-      <div class="avatars-cta-row">
-        <a routerLink="/characters" class="cta-primary" id="avatars-bottom-cta">
-          Ver todos los personajes
-          <span class="material-symbols-rounded" style="font-size:20px;">arrow_forward</span>
-        </a>
       </div>
     </div>
   </section>
