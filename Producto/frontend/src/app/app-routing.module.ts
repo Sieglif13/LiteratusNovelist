@@ -26,7 +26,6 @@ import { CharacterHubComponent } from './characters/character-hub/character-hub.
 import { DemoChatPageComponent } from './characters/demo-chat-page/demo-chat-page.component';
 import { CategoriesComponent } from './categories/categories.component';
 import { CategoryDetailComponent } from './categories/category-detail/category-detail.component';
-import { DiscoverComponent } from './discover/discover.component';
 
 const routes: Routes = [
   { path: 'home', component: HomeComponent },
@@ -56,7 +55,6 @@ const routes: Routes = [
   },
   { path: 'categories', component: CategoriesComponent },
   { path: 'categories/:slug', component: CategoryDetailComponent },
-  { path: 'discover', component: DiscoverComponent },
   { path: '', component: HomeComponent, pathMatch: 'full' },
   { path: '**', redirectTo: '' }
 ];
