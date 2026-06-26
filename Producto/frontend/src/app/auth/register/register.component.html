@@ -1,7 +1,7 @@
 <div class="auth-wrapper">
   <div class="glass-panel login-box">
     <h2>Únete a Literatus</h2>
-    <p class="subtitle">Forja tu destino en la narrativa inmersiva.</p>
+    <p class="subtitle">Crea tu cuenta y comienza a disfrutar de Literatus.</p>
     
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
       
@@ -68,7 +68,7 @@
       </div>
 
       <button type="submit" class="glass-btn" [disabled]="isLoading">
-        {{ isLoading ? 'Creando Avatar...' : 'Forjar Cuenta' }}
+        {{ isLoading ? 'Creando cuenta...' : 'Crear Cuenta' }}
       </button>
 
     </form>
