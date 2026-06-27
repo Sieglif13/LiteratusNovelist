@@ -1,4 +1,4 @@
-﻿import { Injectable, NgZone } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Subject, BehaviorSubject, Subscription } from 'rxjs';
 import { KokoroTtsService } from './kokoro-tts.service';
 
@@ -76,22 +76,27 @@ export class SpeechRecognitionService {
 
     this.recognition.onresult = (event: any) => {
       this.zone.run(() => {
+        // Mute por software: si la IA está procesando o hablando, ignoramos resultados (evita el eco)
+        const isBusy = this.kokoroVoice.isProcessing$.value || this.kokoroVoice.isSpeaking$.value;
+        if (isBusy) return;
+
         let interimTranscript = '';
         let finalTranscript = '';
 
         for (let i = event.resultIndex; i < event.results.length; ++i) {
           if (event.results[i].isFinal) {
-            finalTranscript += event.results[i][0].transcript;
+            finalTranscript += event.results[i][0].transcript + ' ';
           } else {
-            interimTranscript += event.results[i][0].transcript;
+            // BUGFIX ANDROID: Reemplazar en vez de concatenar, porque a veces emite múltiples interims solapados
+            interimTranscript = event.results[i][0].transcript;
           }
         }
 
-        if (finalTranscript) {
+        if (finalTranscript.trim()) {
           this.currentTranscript += (this.currentTranscript ? ' ' : '') + finalTranscript.trim();
         }
 
-        this.partialTranscriptSubject.next(this.currentTranscript + ' ' + interimTranscript);
+        this.partialTranscriptSubject.next((this.currentTranscript + ' ' + interimTranscript).trim());
         this.resetSilenceTimer();
       });
     };
@@ -220,10 +225,33 @@ export class SpeechRecognitionService {
     // 2 segundos de pausa envían el mensaje
     this.silenceTimer = setTimeout(() => {
       this.zone.run(() => {
-        if (this.currentTranscript.trim()) {
-          this.transcriptSubject.next(this.currentTranscript.trim());
+        let textToSend = this.currentTranscript.trim();
+        
+        // Si hay resultados intermedios atascados, los forzamos a enviarse
+        if (!textToSend && this.partialTranscriptSubject.value) {
+          textToSend = this.partialTranscriptSubject.value.trim();
+        }
+
+        if (textToSend) {
+          this.transcriptSubject.next(textToSend);
           this.currentTranscript = '';
           this.partialTranscriptSubject.next('');
+          
+          // Bugfix Android Chrome: Detener y reiniciar la sesión del Web Speech API
+          // limpia el buffer interno y evita el loop repetitivo de "Hola Hola Hola"
+          if (this.isListeningSubject.value) {
+             this.pauseListening();
+             setTimeout(() => {
+                const isBusy = this.kokoroVoice.isProcessing$.value || this.kokoroVoice.isSpeaking$.value;
+                if (!isBusy && this.isListeningSubject.value === false) {
+                   // Solo reactivamos si la IA no empezó a hablar de inmediato
+                   this.resumeListening();
+                } else if (isBusy) {
+                   // Si la IA empezó a responder muy rápido, dejamos que setupVoiceSync lo despierte luego
+                   this.wasListeningBeforeVoice = true;
+                }
+             }, 500);
+          }
         }
       });
     }, 2000);
