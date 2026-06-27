@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+﻿import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
 export interface KokoroSentence {
@@ -279,6 +279,9 @@ export class KokoroTtsService {
     }
 
     this.isPlayingQueue = true;
+    if (!this.isSpeaking$.value) {
+      this.isSpeaking$.next(true);
+    }
     const item = this.audioQueue.shift()!;
     
     this.currentBuffer = item.buffer;

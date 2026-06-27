@@ -1,4 +1,4 @@
-import { Injectable, NgZone } from '@angular/core';
+﻿import { Injectable, NgZone } from '@angular/core';
 import { Subject, BehaviorSubject, Subscription } from 'rxjs';
 import { KokoroTtsService } from './kokoro-tts.service';
 
