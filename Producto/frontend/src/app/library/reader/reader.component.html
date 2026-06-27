@@ -83,6 +83,11 @@
         <span class="material-symbols-rounded" style="font-size:1.3rem;">touch_app</span>
       </button>
 
+      <!-- Toggle Modo Inmersivo (oculta/muestra la barra) -->
+      <button class="toc-trigger-btn immersive-toggle-btn" (click)="toggleImmersiveButton()" [title]="isToolbarHidden ? 'Salir de modo inmersivo' : 'Modo inmersivo (ocultar barra)'">
+        <span class="material-symbols-rounded" style="font-size:1.3rem;">{{ isToolbarHidden ? 'fullscreen_exit' : 'fullscreen' }}</span>
+      </button>
+
       <button class="toc-trigger-btn" (click)="toggleAudioPanel()" title="Narración AI" [class.active]="isAudioPanelOpen">
         <svg lucideVolume2 [size]="20" class="lucide-icon"></svg>
       </button>

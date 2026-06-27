@@ -3855,15 +3855,234 @@
 .theme-sepia .immersive-footer .listening-status,
 .immersive-footer .listening-status {
   color: rgba(255, 255, 255, 0.6) !important;
+  transition: all 0.2s;
+}
+
+.theme-light .fab-btn {
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+.theme-sepia .fab-btn {
+  background: rgba(244, 236, 216, 0.95);
+  border-color: rgba(91, 70, 54, 0.15);
+  color: #4a3b32;
+}
+
+.fab-btn:hover {
+  transform: scale(1.05);
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.lottie-theme-filter { filter: brightness(0) invert(1); } /* Dark theme (default) */
+.theme-light .lottie-theme-filter { filter: brightness(0); } /* Black in light theme */
+.theme-sepia .lottie-theme-filter { filter: brightness(0); } /* Black in sepia theme */
+
+.audio-controls-panel .toc-header {
+  margin-bottom: 0.5rem;
+}
+
+/* THEME LIGHT FOR CHARACTER CHAT */
+.theme-light .char-sidebar,
+.theme-light .sidebar-chat-view {
+  background: rgba(255, 255, 255, 0.95);
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+.theme-light .chat-topbar,
+.theme-light .sidebar-chat-header,
+.theme-light .sidebar-header {
+  background: rgba(240, 240, 240, 0.9);
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  color: #333;
+}
+.theme-light .ai-bubble {
+  background: rgba(0,0,0,0.05);
+  color: #333 !important;
+}
+.theme-light .user-bubble {
+  background: #3b82f6;
+  color: white !important;
+}
+.theme-light .chat-footer {
+  border-top: 1px solid rgba(0,0,0,0.1);
+}
+.theme-light .chat-input-box {
+  background: rgba(0,0,0,0.05);
+  border-color: rgba(0,0,0,0.1);
+}
+.theme-light .chat-text-input {
+  color: #333;
+}
+.theme-light .chat-text-input::placeholder {
+  color: #888;
+}
+.theme-light .chat-disclaimer {
+  color: #888;
+}
+.theme-light .topbar-name,
+.theme-light .sidebar-chat-title,
+.theme-light .sidebar-title,
+.theme-light .char-name,
+.theme-light .profile-name,
+.theme-light .profile-desc {
+  color: #333;
+}
+
+/* THEME SEPIA FOR CHARACTER CHAT */
+.theme-sepia .char-sidebar,
+.theme-sepia .sidebar-chat-view {
+  background: rgba(244, 236, 216, 0.95);
+  border-left: 1px solid rgba(91, 70, 54, 0.15);
+  color: #4a3b32;
+}
+.theme-sepia .chat-topbar,
+.theme-sepia .sidebar-chat-header,
+.theme-sepia .sidebar-header {
+  background: rgba(234, 226, 206, 0.9);
+  border-bottom: 1px solid rgba(91, 70, 54, 0.1);
+  color: #4a3b32;
+}
+.theme-sepia .ai-bubble {
+  background: rgba(91, 70, 54, 0.08);
+  color: #4a3b32 !important;
+}
+.theme-sepia .user-bubble {
+  background: #4a3b32;
+  color: #f4ecd8 !important;
+}
+.theme-sepia .chat-footer {
+  border-top: 1px solid rgba(91, 70, 54, 0.1);
+}
+.theme-sepia .chat-input-box {
+  background: rgba(91, 70, 54, 0.05);
+  border-color: rgba(91, 70, 54, 0.1);
+}
+.theme-sepia .chat-text-input {
+  color: #4a3b32;
+}
+.theme-sepia .chat-text-input::placeholder {
+  color: rgba(74, 59, 50, 0.6);
+}
+.theme-sepia .chat-disclaimer {
+  color: rgba(74, 59, 50, 0.6);
+}
+.theme-sepia .topbar-name,
+.theme-sepia .sidebar-chat-title,
+.theme-sepia .sidebar-title,
+.theme-sepia .char-name,
+.theme-sepia .profile-name,
+.theme-sepia .profile-desc,
+.theme-sepia .topbar-initial {
+  color: #4a3b32;
+}
+.theme-sepia .topbar-mode,
+.theme-sepia .ai-label,
+.theme-sepia .listening-status {
+  color: rgba(74, 59, 50, 0.7);
+}
+.theme-sepia .topbar-close-btn,
+.theme-sepia .topbar-back-btn,
+.theme-sepia .topbar-call-btn,
+.theme-sepia .sidebar-close-btn,
+.theme-sepia .sidebar-back-btn {
+  color: rgba(74, 59, 50, 0.7);
+}
+.theme-sepia .topbar-close-btn:hover,
+.theme-sepia .topbar-back-btn:hover,
+.theme-sepia .topbar-call-btn:hover,
+.theme-sepia .sidebar-close-btn:hover,
+.theme-sepia .sidebar-back-btn:hover {
+  background: rgba(91, 70, 54, 0.1);
+  color: #4a3b32;
+}
+
+/* THEME LIGHT EXTENSIONS FOR CHAT BUTTONS */
+.theme-light .topbar-initial {
+  color: #333;
+}
+.theme-light .topbar-mode,
+.theme-light .ai-label,
+.theme-light .listening-status {
+  color: rgba(0, 0, 0, 0.6);
+}
+.theme-light .topbar-close-btn,
+.theme-light .topbar-back-btn,
+.theme-light .topbar-call-btn,
+.theme-light .sidebar-close-btn,
+.theme-light .sidebar-back-btn {
+  color: rgba(0, 0, 0, 0.6);
+}
+.theme-light .topbar-close-btn:hover,
+.theme-light .topbar-back-btn:hover,
+.theme-light .topbar-call-btn:hover,
+.theme-light .sidebar-close-btn:hover,
+.theme-light .sidebar-back-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: #000;
+}
+
+/* FORZAR COLORES CLAROS EN MODO LLAMADA PARA TODOS LOS TEMAS */
+/* Como el modo llamada (immersive) siempre tiene fondo oscuro, forzamos texto claro */
+.immersive-footer .chat-input-box {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+.theme-light .immersive-footer .chat-text-input,
+.theme-sepia .immersive-footer .chat-text-input,
+.immersive-footer .chat-text-input {
+  color: white !important;
+}
+.theme-light .immersive-footer .chat-text-input::placeholder,
+.theme-sepia .immersive-footer .chat-text-input::placeholder,
+.immersive-footer .chat-text-input::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+.theme-light .immersive-footer .chat-disclaimer,
+.theme-sepia .immersive-footer .chat-disclaimer,
+.immersive-footer .chat-disclaimer {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+.theme-light .immersive-footer .listening-status,
+.theme-sepia .immersive-footer .listening-status,
+.immersive-footer .listening-status {
+  color: rgba(255, 255, 255, 0.6) !important;
 }
 .immersive-footer .partial-transcript {
   color: #a855f7 !important;
 }
 
-/* Evitar selección de texto durante Toque Fluido (Tap to Scroll) */
+/* Toque Fluido: evitar selección accidental en tap simple sin bloquear long-press del diccionario.
+   - touch-action: pan-y → permite scroll vertical, previene zoom/selección en tap rápido
+   - user-select: none en .word → evita que el tap en palabras las seleccione visualmente
+   La selección manual mediante long-press sigue funcionando a nivel del navegador. */
 .reading-canvas.tap-to-scroll-active {
+  touch-action: pan-y;
+}
+.reading-canvas.tap-to-scroll-active .word {
   user-select: none;
   -webkit-user-select: none;
+  pointer-events: none; /* El tap va al canvas, no a la palabra, para que onCanvasClick maneje el scroll */
+}
+
+/* Botón de modo inmersivo en el toolbar */
+.immersive-toggle-btn {
+  position: relative;
+}
+.immersive-toggle-btn:hover {
+  background: rgba(251, 191, 36, 0.2) !important;
+  border-color: rgba(251, 191, 36, 0.5) !important;
+  color: #fbbf24 !important;
+}
+.immersive-toggle-btn.active,
+.workbench-container.immersive .immersive-toggle-btn {
+  background: rgba(251, 191, 36, 0.15);
+  border-color: rgba(251, 191, 36, 0.5);
+  color: #fbbf24;
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.25);
 }
 
 .btn-kokoro-local { background: #333; color: #ff5555; border: 1px solid #ff5555; padding: 6px 12px; border-radius: 6px; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 0 5px rgba(255,85,85,0.2); margin-top: 10px; width: 100%; } .btn-kokoro-local.active { background: #1a4a1a; color: #55ff55; border-color: #55ff55; box-shadow: 0 0 8px rgba(85,255,85,0.4); cursor: pointer; } .btn-kokoro-local.downloading { background: #4a4a1a; color: #ffff55; border-color: #ffff55; pointer-events: none; } .kokoro-progress-bar { width: 100%; height: 6px; background: #222; border-radius: 3px; margin-top: 8px; overflow: hidden; } .kokoro-progress-fill { height: 100%; background: #ffff55; transition: width 0.2s ease; }

@@ -603,19 +603,10 @@ export class ReaderComponent implements OnInit, OnDestroy {
     if (target.closest('.word') || target.closest('img') || target.closest('button')) {
       return; 
     }
-    
-    // Si la toolbar está oculta, reintentar activar pantalla completa web por si falló
-    if (this.isToolbarHidden && !document.fullscreenElement) {
-       // La parte nativa ya está oculta, esto es solo por si estamos en navegador web
-       if (document.documentElement.requestFullscreen) {
-         document.documentElement.requestFullscreen().catch(() => {});
-       }
-    }
 
+    // Solo ejecutar lógica de toque fluido si está activo
     if (!this.tapToScrollActive) {
-      // Alternar la visibilidad de la interfaz al tocar la pantalla
-      this.isToolbarHidden = !this.isToolbarHidden;
-      this.toggleImmersiveMode(this.isToolbarHidden);
+      // Sin toque fluido: no hacer nada (el modo inmersivo se controla con el botón del toolbar)
       return;
     }
     
@@ -1067,6 +1058,12 @@ export class ReaderComponent implements OnInit, OnDestroy {
     this.tapToScrollActive = !this.tapToScrollActive;
   }
 
+  // Botón dedicado en el toolbar para activar/desactivar el modo inmersivo
+  toggleImmersiveButton() {
+    this.isToolbarHidden = !this.isToolbarHidden;
+    this.toggleImmersiveMode(this.isToolbarHidden);
+  }
+
   // ── ECONOMÍA DE TINTA: desbloqueo permanente de Voz Premium (REMOVED) ──────
   purchaseNarration() {
     if (this.isUnlocking || !this.bookSlug) return;
@@ -1261,6 +1258,10 @@ export class ReaderComponent implements OnInit, OnDestroy {
   }
 
   onWordClick(wordIdx: number) {
+    // Si el Toque Fluido está activo, ignorar el click en palabras para evitar
+    // el highlight accidental del audio al hacer scroll táctil
+    if (this.tapToScrollActive) return;
+
     if (this.currentAudioMode === 'pro') {
       this.audioService.seekToWord(wordIdx, this.currentChapterPlainText);
     }
