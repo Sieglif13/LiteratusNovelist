@@ -83,18 +83,19 @@ export class SpeechRecognitionService {
         let interimTranscript = '';
         let finalTranscript = '';
 
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
+        // BUGFIX: En Android, event.resultIndex puede reiniciarse o enviar todo el historial de nuevo.
+        // Si sumamos (+=) al currentTranscript, se produce un crecimiento exponencial ("malo malo malo malo").
+        // La solución es reconstruir TODO el texto final desde cero (índice 0) en cada evento.
+        for (let i = 0; i < event.results.length; ++i) {
           if (event.results[i].isFinal) {
             finalTranscript += event.results[i][0].transcript + ' ';
           } else {
-            // BUGFIX ANDROID: Reemplazar en vez de concatenar, porque a veces emite múltiples interims solapados
+            // Reemplazar el interim en lugar de concatenar
             interimTranscript = event.results[i][0].transcript;
           }
         }
 
-        if (finalTranscript.trim()) {
-          this.currentTranscript += (this.currentTranscript ? ' ' : '') + finalTranscript.trim();
-        }
+        this.currentTranscript = finalTranscript.trim();
 
         this.partialTranscriptSubject.next((this.currentTranscript + ' ' + interimTranscript).trim());
         this.resetSilenceTimer();
