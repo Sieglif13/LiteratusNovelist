@@ -4156,3 +4156,25 @@
     position: relative !important; /* Evitar solapamiento en móvil */
   }
 }
+/* MOVILES (Teclado abierto o pantallas bajas): Maximizar espacio para el chat */
+@media (max-height: 550px) {
+  .chat-manga-panel:not(.immersive-manga) {
+    display: none !important;
+  }
+  
+  .profile-hero {
+    display: none !important;
+  }
+  
+  .char-sidebar {
+    height: 100% !important; /* Fallback ms seguro si dvh falla */
+  }
+}
+/* Garantizar que el sidebar no se desborde si 100dvh falla en Android */
+@media (max-width: 768px) {
+  .char-sidebar {
+    top: 0 !important;
+    bottom: 0 !important;
+    height: auto !important; /* Dejar que top y bottom definan la altura real */
+  }
+}
