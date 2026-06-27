@@ -604,9 +604,11 @@ export class ReaderComponent implements OnInit, OnDestroy {
       return; 
     }
 
-    // Solo ejecutar lógica de toque fluido si está activo
+    // Sin Toque Fluido: click en espacio vacío alterna el modo inmersivo
+    // (mismo comportamiento que el botón del toolbar)
     if (!this.tapToScrollActive) {
-      // Sin toque fluido: no hacer nada (el modo inmersivo se controla con el botón del toolbar)
+      this.isToolbarHidden = !this.isToolbarHidden;
+      this.toggleImmersiveMode(this.isToolbarHidden);
       return;
     }
     
