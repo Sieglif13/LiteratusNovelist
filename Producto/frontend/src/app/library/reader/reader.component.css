@@ -4114,3 +4114,45 @@
   /* padding-top intencionalente NO se modifica aquí */
   padding-bottom: 24px !important;
 }
+
+/* MOVILES: Ajustes extra para el chat y el perfil del personaje */
+@media (max-width: 768px) {
+  .profile-hero {
+    height: 35vh !important;
+    min-height: 200px !important;
+  }
+  
+  .chat-manga-panel {
+    height: 160px !important;
+    padding: 5px 0 !important;
+  }
+  
+  .chat-manga-panel.immersive-manga {
+    height: 35vh !important;
+  }
+  
+  .manga-portrait-container {
+    width: 120px !important;
+    height: 120px !important;
+  }
+  
+  .chat-manga-panel.immersive-manga .manga-portrait-container {
+    width: 180px !important;
+    height: 180px !important;
+  }
+  
+  .chat-manga-img {
+    object-fit: cover !important;
+    object-position: center top !important; /* Mejor enfoque en el rostro */
+  }
+
+  .chat-messages-area {
+    padding: 0.75rem !important;
+  }
+  
+  .sidebar-header {
+    padding: 0.75rem !important;
+    background: rgba(26,26,46,0.95) !important;
+    position: relative !important; /* Evitar solapamiento en móvil */
+  }
+}
