@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, OnDestroy, ChangeDetectorRef, HostListener, ViewChild, ElementRef } from '@angular/core';
+﻿import { Component, OnInit, inject, OnDestroy, ChangeDetectorRef, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { ApiService } from '../../core/services/api.service';
@@ -193,7 +193,9 @@ export class ReaderComponent implements OnInit, OnDestroy {
   showVideoAvatar: boolean = false;
   isVideoSpeaking: boolean = false;
   activeTalkingFrame: number = 1;
+  activeThinkingFrame: number = 1;
   private talkingInterval: any;
+  private thinkingInterval: any;
 
   // Estado IA
   aiProvider: string = 'gemini'; // 'gemini', 'deepseek', 'none'
@@ -500,6 +502,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
     this.audioService.stop();
     this.kokoroVoice.stop();
     this.saveAudioPosition();
+    this.stopThinkingAnimation();
 
     // Restaurar las barras del OS al salir del lector
     this.toggleImmersiveMode(false);
@@ -1484,6 +1487,9 @@ export class ReaderComponent implements OnInit, OnDestroy {
     this.chatInput = '';
     this.isSendingMessage = true;
 
+    // Iniciar ciclo de expresiones
+    this.startThinkingAnimation();
+
     // Añadir mensaje optimista del usuario
     this.chatMessages.push({
       role: 'user',
@@ -1513,6 +1519,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
         this.aiStatus = res.ai_status || 'ok';
         
         this.isSendingMessage = false;
+        this.stopThinkingAnimation();
         setTimeout(() => this.scrollChatToBottom(), 50);
 
         // Hablar respuesta si el avatar está visible o siempre (según preferencia)
@@ -1521,6 +1528,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
       error: (err) => {
         console.error('Error en el chat', err);
         this.isSendingMessage = false;
+        this.stopThinkingAnimation();
         this.aiStatus = 'error';
         // Eliminar mensaje optimista si hubo error
         this.chatMessages.pop();
@@ -1532,6 +1540,23 @@ export class ReaderComponent implements OnInit, OnDestroy {
   formatMessage(text: string): string {
     if (!text) return '';
     return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  }
+
+  private startThinkingAnimation() {
+    if (this.thinkingInterval) return;
+    this.activeThinkingFrame = 1;
+    this.thinkingInterval = setInterval(() => {
+      this.activeThinkingFrame = this.activeThinkingFrame === 1 ? 2 : 1;
+      this.cdr.detectChanges();
+    }, 2000);
+  }
+
+  private stopThinkingAnimation() {
+    if (this.thinkingInterval) {
+      clearInterval(this.thinkingInterval);
+      this.thinkingInterval = null;
+    }
+    this.activeThinkingFrame = 1;
   }
 
   toggleCallMode() {
@@ -1856,7 +1881,8 @@ export class ReaderComponent implements OnInit, OnDestroy {
     }
 
     if (this.isSendingMessage) {
-      return base + 'thinking.webp';
+      // Alternar entre calm y thinking cada 2s para sensacion de vida
+      return this.activeThinkingFrame === 1 ? base + 'thinking.webp' : base + 'calm.webp';
     } else if (this.isVideoSpeaking) {
       return base + `talking_${this.activeTalkingFrame}.webp`;
     }
