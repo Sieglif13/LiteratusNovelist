@@ -1,5 +1,6 @@
-﻿import { Injectable, inject } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { AudioCacheService } from './audio-cache.service';
 
 export interface KokoroSentence {
   text: string;
@@ -18,6 +19,7 @@ export class KokoroTtsService {
   downloadProgress$ = new BehaviorSubject<number>(0); // 0 a 100
   
   engineMode$ = new BehaviorSubject<'remote' | 'local'>('remote');
+  isMuted$ = new BehaviorSubject<boolean>(false); // Global Mute
 
   currentSentenceIdx$ = new BehaviorSubject<number>(-1);
   currentWordIndex$ = new BehaviorSubject<number>(-1);
@@ -66,6 +68,7 @@ export class KokoroTtsService {
 
   // Instancia Local de KokoroTTS (cargada dinámicamente)
   private ttsInstance: any = null;
+  private audioCache = inject(AudioCacheService);
   
   constructor() {
     const savedMode = localStorage.getItem('kokoro-engine-mode') as 'remote' | 'local';
@@ -73,6 +76,20 @@ export class KokoroTtsService {
       // Si el usuario tenía "local" guardado, iniciamos la descarga en background sin bloquear
       this.engineMode$.next('local');
       this.downloadLocalEngine().catch(err => console.error("Fallo auto-load local:", err));
+    }
+
+    const savedMute = localStorage.getItem('literatus_tts_muted');
+    if (savedMute === 'true') {
+      this.isMuted$.next(true);
+    }
+  }
+
+  toggleMute() {
+    const newMute = !this.isMuted$.value;
+    this.isMuted$.next(newMute);
+    localStorage.setItem('literatus_tts_muted', newMute ? 'true' : 'false');
+    if (newMute) {
+      this.stop();
     }
   }
 
@@ -132,9 +149,12 @@ export class KokoroTtsService {
   }
 
   async speak(fullText: string, avatarId: string | number | null, startWordIdx: number = 0, voiceId?: string): Promise<void> {
+    if (this.isMuted$.value) return;
+
     this.currentSpeakId++;
     const mySpeakId = this.currentSpeakId;
     
+    // Detenemos cualquier audio anterior y limpiamos la cola inmediatamente
     this.stop();
     this.overrideVoiceId = voiceId || null;
     this.isStopped = false;
@@ -377,6 +397,14 @@ export class KokoroTtsService {
           this.audioCtx = new AudioContext();
         }
 
+        // 1. Revisar Caché (IndexedDB)
+        const cachedArrayBuffer = await this.audioCache.getAudio(voiceId, textToSpeak);
+        if (cachedArrayBuffer) {
+           audioBuffer = await this.audioCtx.decodeAudioData(cachedArrayBuffer);
+           return { buffer: audioBuffer, sentence };
+        }
+
+        // 2. Si no hay caché, generarlo (Local o Remoto)
         if (useLocal) {
            // MODO LOCAL ONNX
            const rawAudio = await this.ttsInstance.generate(textToSpeak, {
@@ -387,6 +415,10 @@ export class KokoroTtsService {
            
            audioBuffer = this.audioCtx.createBuffer(1, rawAudio.audio.length, rawAudio.sampling_rate);
            audioBuffer.copyToChannel(rawAudio.audio, 0);
+           
+           // Nota: Caché de rawAudio a ArrayBuffer es complejo (Float32Array a WAV).
+           // Por ahora, en local es tan rápido que no es crítico cachear en DB, 
+           // pero el modo remoto sí.
         } else {
            // MODO REMOTO HF API
            const response = await fetch(hfApiUrl, {
@@ -409,6 +441,11 @@ export class KokoroTtsService {
            if (this.isStopped) return null;
 
            const arrayBuffer = await response.arrayBuffer();
+           
+           // Guardar copia exacta en caché
+           const bufferToCache = arrayBuffer.slice(0);
+           this.audioCache.saveAudio(voiceId, textToSpeak, bufferToCache);
+
            audioBuffer = await this.audioCtx.decodeAudioData(arrayBuffer);
         }
 

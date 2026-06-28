@@ -228,12 +228,22 @@
           <span class="ai-pulse"></span>
           <span class="ai-label">{{ aiProvider === 'gemini' ? 'G' : 'D' }}</span>
         </div>
+        <!-- Botón de Mute Global -->
+        <button class="topbar-mute-btn" 
+                (click)="toggleMute()" 
+                [title]="isMuted ? 'Activar Voz (TTS)' : 'Silenciar Voz (TTS)'">
+          <span class="material-symbols-rounded" style="font-size: 1.3rem;" [style.color]="isMuted ? '#ff5252' : 'inherit'">
+            {{ isMuted ? 'volume_off' : 'volume_up' }}
+          </span>
+        </button>
+
         <!-- Botón de Modo Llamada (Voz) -->
         <button class="topbar-call-btn" 
                 [class.active]="isCallMode"
                 (click)="toggleCallMode()" 
                 title="Modo Llamada (Voz Inmersiva)">
           <span class="material-symbols-rounded" style="font-size: 1.2rem;">call</span>
+          <span class="beta-badge">BETA</span>
         </button>
 
         <button class="topbar-close-btn" (click)="isChatOpen = false; isCharPanelOpen = false"><span class="material-symbols-rounded" style="font-size: 1.3rem;">close</span></button>
@@ -280,7 +290,11 @@
             <img *ngIf="selectedAvatar?.avatar_image_url" [src]="selectedAvatar.avatar_image_url">
           </div>
           
-          <div class="msg-bubble" [class.user-bubble]="msg.role === 'user'" [class.ai-bubble]="msg.role !== 'user'" [innerHTML]="formatMessage(msg.content)">
+          <div class="msg-bubble" [class.user-bubble]="msg.role === 'user'" [class.ai-bubble]="msg.role !== 'user'">
+            <div [innerHTML]="formatMessage(msg.content)"></div>
+            <button *ngIf="msg.role !== 'user'" class="replay-btn" (click)="playMessageAudio(msg)" title="Volver a escuchar">
+              <span class="material-symbols-rounded">play_circle</span>
+            </button>
           </div>
         </div>
       </div>

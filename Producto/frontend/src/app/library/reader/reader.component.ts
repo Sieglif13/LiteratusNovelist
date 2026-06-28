@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, inject, OnDestroy, ChangeDetectorRef, HostListener, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, inject, OnDestroy, ChangeDetectorRef, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { ApiService } from '../../core/services/api.service';
@@ -500,6 +500,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
     this.releaseWakeLock();
     document.removeEventListener('visibilitychange', this.handleVisibilityChange);
     this.audioService.stop();
+    this.stopCallMode();
     this.kokoroVoice.stop();
     this.saveAudioPosition();
     this.stopThinkingAnimation();
@@ -1418,7 +1419,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
       this.showCharProfile = false;
       if (this.isChatOpen) {
         this.isChatOpen = false;
-        this.kokoroVoice.stop();
+        this.stopCallMode();
       }
     }
   }
@@ -1559,13 +1560,45 @@ export class ReaderComponent implements OnInit, OnDestroy {
     this.activeThinkingFrame = 1;
   }
 
+  get isMuted() {
+    return this.kokoroVoice.isMuted$.value;
+  }
+
+  toggleMute() {
+    this.kokoroVoice.toggleMute();
+  }
+
+  playMessageAudio(msg: any) {
+    if (!msg || !msg.content) return;
+    // Si el usuario da click a Replay, reproducimos sin importar el Mute global
+    // Pero temporalmente, el Mute global del kokoroService aborta el .speak().
+    // Tendríamos que llamar a `.speak` desmuteando o ignorando.
+    // La mejor forma es quitar temporalmente el mute si está silenciado
+    const wasMuted = this.kokoroVoice.isMuted$.value;
+    if (wasMuted) {
+      this.kokoroVoice.isMuted$.next(false);
+    }
+    
+    this.speakChatReply(msg.content);
+    
+    if (wasMuted) {
+       // Restaurar mute después de que inicie la generación
+       setTimeout(() => this.kokoroVoice.isMuted$.next(true), 100);
+    }
+  }
+
+  stopCallMode() {
+    this.isCallMode = false;
+    this.speechService.stopListening();
+    this.kokoroVoice.stop();
+  }
+
   toggleCallMode() {
     this.isCallMode = !this.isCallMode;
     if (this.isCallMode) {
       this.speechService.startListening();
     } else {
-      this.speechService.stopListening();
-      this.kokoroVoice.stop();
+      this.stopCallMode();
       // Pequeño delay para que el *ngIf restaure el DOM y podamos scrollear
       setTimeout(() => this.scrollChatToBottom(), 100);
     }
@@ -1573,7 +1606,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
 
   closeChat() {
     this.isChatOpen = false;
-    this.kokoroVoice.stop();
+    this.stopCallMode();
   }
 
   private scrollChatToBottom() {
