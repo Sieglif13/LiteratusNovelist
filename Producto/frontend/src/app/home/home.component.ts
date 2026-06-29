@@ -395,9 +395,9 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private buildSections(): void {
-    this.trendingBooks = this.allBooks.filter(b => b.is_featured).slice(0, 6);
+    this.trendingBooks = this.allBooks.filter(b => b.is_featured).slice(0, 20);
     if (this.trendingBooks.length === 0) {
-      this.trendingBooks = this.allBooks.slice(0, 6);
+      this.trendingBooks = this.allBooks.slice(0, 20);
     }
 
     const trendingSlugs = new Set(this.trendingBooks.map(b => b.slug));
