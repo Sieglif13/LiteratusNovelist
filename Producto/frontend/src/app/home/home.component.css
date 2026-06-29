@@ -1545,3 +1545,70 @@
   .avatar-card { flex: 0 0 130px; }
   .avatar-img-wrap { height: 100px; }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   FIX CAROUSEL CROPPING & RESPONSIVE PADDING
+═══════════════════════════════════════════════════════════ */
+/* Fix right-side cutoff on scrollable containers */
+.trending-track::after,
+.recommended-track::after,
+.char-carousel-track::after,
+.avatars-carousel-track::after,
+.chat-examples-track::after,
+.mood-chips-track::after {
+  content: "";
+  flex: 0 0 1px;
+  padding-right: 6vw;
+}
+
+/* Maximize space on Tablets */
+@media (max-width: 900px) {
+  .trending-track,
+  .recommended-track,
+  .char-carousel-track,
+  .avatars-carousel-track,
+  .chat-examples-track,
+  .mood-chips-track {
+    padding-left: 4vw;
+    padding-right: 4vw;
+  }
+  
+  .trending-track::after,
+  .recommended-track::after,
+  .char-carousel-track::after,
+  .avatars-carousel-track::after,
+  .chat-examples-track::after,
+  .mood-chips-track::after {
+    padding-right: 4vw;
+  }
+
+  .section-header, .characters-header, .chat-demo-title, .avatars-showcase-header {
+    padding: 0 4vw;
+  }
+}
+
+/* Maximize space on Mobile */
+@media (max-width: 600px) {
+  .trending-track,
+  .recommended-track,
+  .char-carousel-track,
+  .avatars-carousel-track,
+  .chat-examples-track,
+  .mood-chips-track {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .trending-track::after,
+  .recommended-track::after,
+  .char-carousel-track::after,
+  .avatars-carousel-track::after,
+  .chat-examples-track::after,
+  .mood-chips-track::after {
+    padding-right: 1rem;
+  }
+
+  .section-header, .characters-header, .chat-demo-title, .avatars-showcase-header {
+    padding: 0 1rem;
+  }
+}
