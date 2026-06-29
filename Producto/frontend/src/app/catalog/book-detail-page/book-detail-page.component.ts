@@ -107,7 +107,7 @@ export class BookDetailPageComponent implements OnInit, AfterViewInit, OnDestroy
         this.chatService.updateInkBalance(this.userInkBalance);
         
         if (data.avatars && data.avatars.length > 0) {
-          this.displayAvatars = [...data.avatars, ...data.avatars, ...data.avatars, ...data.avatars];
+          this.displayAvatars = data.avatars;
         }
         
         this.isLoading = false;
