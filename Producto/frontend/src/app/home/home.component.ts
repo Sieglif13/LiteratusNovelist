@@ -323,6 +323,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
         setTimeout(() => {
           if (this.destroy$.isStopped) return;
           this.initAutoScroll();
+          this.initRevealObserver();
         }, 100);
       },
       error: (error) => {
@@ -341,6 +342,10 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
             this.initAutoScroll();
           }
         }, 100);
+      },
+      error: () => {
+        // Fallback silently if recommendations fail
+        this.recommendedBooks = [];
       }
     });
   }
