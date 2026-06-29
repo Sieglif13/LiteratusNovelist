@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { tap } from 'rxjs/operators';
+import { tap, catchError } from 'rxjs/operators';
 
 export interface StoreSettings {
   theme: string;
@@ -16,7 +16,12 @@ export class SettingsService {
   private currentThemeSubject = new BehaviorSubject<string>('default');
   public currentTheme$ = this.currentThemeSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    const savedTheme = localStorage.getItem('literatus-theme');
+    if (savedTheme) {
+      this.setTheme(savedTheme);
+    }
+  }
 
   loadSettings(): Observable<StoreSettings> {
     return this.http.get<StoreSettings>(this.apiUrl).pipe(
@@ -24,7 +29,8 @@ export class SettingsService {
         if (settings && settings.theme) {
           this.setTheme(settings.theme);
         }
-      })
+      }),
+      catchError(() => of({ theme: localStorage.getItem('literatus-theme') || 'default' } as StoreSettings))
     );
   }
 
