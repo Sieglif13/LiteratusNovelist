@@ -176,10 +176,18 @@ class BookDetailFullSerializer(BookDetailSerializer):
         ]
 
     def get_avatars(self, obj):
-        # Recolectar todos los avatares de todas las ediciones del libro
-        # Esto asume prefetch_related('editions__avatars') en la view
-        avatars = AIAvatar.objects.filter(edition__book=obj)
-        return AIAvatarLightSerializer(avatars, many=True, context=self.context).data
+        # Recolectar todos los avatares de todas las ediciones del libro pero filtrar duplicados por nombre
+        # Esto evita que el mismo personaje/autor aparezca N veces si el libro tiene N ediciones
+        avatars_qs = AIAvatar.objects.filter(edition__book=obj)
+        
+        unique_avatars = []
+        seen_names = set()
+        for avatar in avatars_qs:
+            if avatar.name not in seen_names:
+                seen_names.add(avatar.name)
+                unique_avatars.append(avatar)
+                
+        return AIAvatarLightSerializer(unique_avatars, many=True, context=self.context).data
 
     def get_total_words(self, obj):
         """Calcula el total de palabras de todos los capítulos."""
