@@ -1127,7 +1127,7 @@
    ¿CÓMO FUNCIONA?
 ═══════════════════════════════════════════════════════════ */
 .how-it-works-section {
-  padding: 3rem 6vw 2rem; /* Padding reducido */
+  padding: 3rem 0 2rem; /* Eliminado el padding lateral global */
 }
 .how-steps {
   display: flex;
@@ -1326,7 +1326,7 @@
 ═══════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
   .chat-examples-section {
-    padding: 1.5rem 4vw 1.5rem;
+    padding: 1.5rem 0 1.5rem;
   }
 }
 
@@ -1524,20 +1524,21 @@
 /* ── Responsive ─────────────────────────────────────────── */
 /* Tablet */
 @media (max-width: 900px) {
-  .avatars-showcase-section { padding: 1.5rem 5vw 1.5rem; }
+  .avatars-showcase-section { padding: 1.5rem 0 1.5rem; }
   .avatar-card { flex: 0 0 165px; }
   .avatar-img-wrap { height: 135px; }
 }
 
 /* Mobile */
 @media (max-width: 600px) {
-  .avatars-showcase-section { padding: 1rem 4vw 1.5rem; }
+  .avatars-showcase-section { padding: 1rem 0 1.5rem; }
   .avatars-title { font-size: 1.3rem; }
   .avatars-carousel-track { gap: 12px; }
   .avatar-card { flex: 0 0 145px; }
   .avatar-img-wrap { height: 115px; }
   .avatar-name { font-size: 0.8rem; }
   .avatar-book { font-size: 0.65rem; }
+  .how-it-works-section { padding: 1rem 0 1.5rem; }
 }
 
 /* Very small screens */
@@ -1555,7 +1556,8 @@
 .char-carousel-track::after,
 .avatars-carousel-track::after,
 .chat-examples-track::after,
-.mood-chips-track::after {
+.mood-chips-track::after,
+.how-steps::after {
   content: "";
   flex: 0 0 1px;
   padding-right: 6vw;
@@ -1578,7 +1580,8 @@
   .char-carousel-track::after,
   .avatars-carousel-track::after,
   .chat-examples-track::after,
-  .mood-chips-track::after {
+  .mood-chips-track::after,
+  .how-steps::after {
     padding-right: 4vw;
   }
 
@@ -1604,7 +1607,8 @@
   .char-carousel-track::after,
   .avatars-carousel-track::after,
   .chat-examples-track::after,
-  .mood-chips-track::after {
+  .mood-chips-track::after,
+  .how-steps::after {
     padding-right: 1rem;
   }
 
