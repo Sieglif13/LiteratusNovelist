@@ -1,5 +1,6 @@
-import { Component, OnInit, OnDestroy, inject, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, PLATFORM_ID, Inject, inject, ChangeDetectorRef, ElementRef, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
+import { isPlatformBrowser } from '@angular/common';
 import { ApiService } from '../core/services/api.service';
 import { AuthService } from '../core/services/auth.service';
 import { Router } from '@angular/router';
@@ -42,6 +43,8 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   private api = inject(ApiService);
   public auth = inject(AuthService);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
+  private platformId = inject(PLATFORM_ID);
   private destroy$ = new Subject<void>();
 
   // State
@@ -347,6 +350,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
       next: (response: any) => {
         if (this.destroy$.isStopped) return;
         const booksWithCharacters = response.results || response;
+        console.log("AI Books Response:", booksWithCharacters);
         this.featuredWithCharacters = booksWithCharacters.map((b: any) => ({
           slug: b.slug,
           title: b.title,
@@ -355,6 +359,8 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
           genre: (b.genres && b.genres.length > 0) ? b.genres[0].name : 'Ficción',
           characterCount: b.ai_character_count
         }));
+        console.log("Mapped featuredWithCharacters:", this.featuredWithCharacters);
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error cargando libros con IA', error);
