@@ -110,8 +110,11 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   private scrollIntervals: any[] = [];
 
   ngOnInit(): void {
-    this.loadBooks();
-    this.loadShowcaseAvatars();
+    if (isPlatformBrowser(this.platformId)) {
+      this.loadBooks();
+      this.loadAIBooks();
+      this.loadShowcaseAvatars();
+    }
   }
 
   ngAfterViewInit(): void {
@@ -160,7 +163,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
             queryParams: { chatWith: avatar.id } 
           });
         } else {
-          // Va a la página del libro para adquirirlo
+          // Va a la página del libro para adquirir it
           this.router.navigate(['/book', avatar.book_slug]);
         }
       },
@@ -306,11 +309,10 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private loadBooks(): void {
     this.isLoading = true;
-
     this.api.get<any>('catalog/books/?ordering=-is_featured,-created_at&page_size=50').subscribe({
-      next: (response) => {
-        if (response && response.count) {
-          this.totalBooksCount = response.count;
+      next: (response: any) => {
+        if (this.destroy$.isStopped) {
+          return;
         }
         this.allBooks = response.results || response;
         this.buildSections();
@@ -318,11 +320,11 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
         setTimeout(() => {
           if (this.destroy$.isStopped) return;
           this.initAutoScroll();
-          this.initRevealObserver();
-        }, 150);
+        }, 100);
       },
-      error: () => {
-        this.errorMsg = 'No se pudo cargar el catálogo.';
+      error: (error) => {
+        if (this.destroy$.isStopped) return;
+        console.error('Error cargando libros', error);
         this.isLoading = false;
       }
     });
@@ -336,6 +338,26 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
             this.initAutoScroll();
           }
         }, 100);
+      }
+    });
+  }
+
+  private loadAIBooks(): void {
+    this.api.get<any>('catalog/books/?has_ai_avatars=true&page_size=10').subscribe({
+      next: (response: any) => {
+        if (this.destroy$.isStopped) return;
+        const booksWithCharacters = response.results || response;
+        this.featuredWithCharacters = booksWithCharacters.map((b: any) => ({
+          slug: b.slug,
+          title: b.title,
+          author: b.author_name || 'Desconocido',
+          cover: b.cover_image || 'assets/default_cover.jpg',
+          genre: (b.genres && b.genres.length > 0) ? b.genres[0].name : 'Ficción',
+          characterCount: b.ai_character_count
+        }));
+      },
+      error: (error) => {
+        console.error('Error cargando libros con IA', error);
       }
     });
   }
@@ -375,17 +397,6 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     const trendingSlugs = new Set(this.trendingBooks.map(b => b.slug));
     this.discoveryBooks = this.allBooks.filter(b => !trendingSlugs.has(b.slug));
     this.randomDiscoveryBooks = [...this.allBooks].sort(() => 0.5 - Math.random());
-    
-    // Poblar dinámicamente el carrusel de IA buscando libros que tengan ai_character_count > 0
-    const booksWithCharacters = this.allBooks.filter(b => b.ai_character_count && b.ai_character_count > 0);
-    this.featuredWithCharacters = booksWithCharacters.map((b: any) => ({
-      slug: b.slug,
-      title: b.title,
-      author: b.author_name || 'Desconocido',
-      cover: b.cover_image || 'assets/default_cover.jpg',
-      genre: (b.genres && b.genres.length > 0) ? b.genres[0].name : 'Ficción',
-      characterCount: b.ai_character_count
-    }));
   }
 
   scrollToCatalog(): void {
