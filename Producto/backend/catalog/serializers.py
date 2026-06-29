@@ -87,10 +87,11 @@ class BookListSerializer(serializers.ModelSerializer):
     tags = serializers.SerializerMethodField()
     price = serializers.SerializerMethodField()
     author_name = serializers.SerializerMethodField()
+    ai_character_count = serializers.IntegerField(read_only=True)
     
     class Meta:
         model = Book
-        fields = ['id', 'title', 'slug', 'synopsis', 'is_featured', 'cover_image', 'genres', 'tags', 'price', 'author_name']
+        fields = ['id', 'title', 'slug', 'synopsis', 'is_featured', 'cover_image', 'genres', 'tags', 'price', 'author_name', 'ai_character_count']
 
     def get_price(self, obj):
         editions = obj.editions.all()

@@ -15,6 +15,7 @@ export interface Book {
   tags?: { name: string; slug: string }[];
   price?: number;
   author_name?: string;
+  ai_character_count?: number;
 }
 
 export interface DemoAvatar {
@@ -67,41 +68,8 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   demoAvatarName = 'Don Quijote';
   demoAvatarImage: string | null = null;
 
-  // Libros con personajes IA activos (hardcoded — ya tienen AIAvatars configurados)
-  featuredWithCharacters = [
-    {
-      slug: 'el-gato-negro-allan-poe-edgar',
-      title: 'El Gato Negro',
-      author: 'Edgar Allan Poe',
-      cover: 'https://srbmswjsbkpftjabcurg.supabase.co/storage/v1/object/public/literatus-media/book_covers/el-gato-negro-allan-poe-edgar.jpg',
-      genre: 'Terror · Gótico',
-      characterCount: 3
-    },
-    {
-      slug: 'el-principe-feliz-y-otros-cuentos-wilde-oscar',
-      title: 'El Príncipe Feliz',
-      author: 'Oscar Wilde',
-      cover: 'https://srbmswjsbkpftjabcurg.supabase.co/storage/v1/object/public/literatus-media/book_covers/el-principe-feliz-y-otros-cuentos-wilde-oscar.jpg',
-      genre: 'Cuento · Clásico',
-      characterCount: 4
-    },
-    {
-      slug: 'la-metamorfosis-kafka-franz',
-      title: 'La Metamorfosis',
-      author: 'Franz Kafka',
-      cover: 'https://srbmswjsbkpftjabcurg.supabase.co/storage/v1/object/public/literatus-media/book_covers/la-metamorfosis-kafka-franz.jpg',
-      genre: 'Ficción · Absurdismo',
-      characterCount: 5
-    },
-    {
-      slug: 'las-metamorfosis-ovidio',
-      title: 'Metamorfosis',
-      author: 'Ovidio',
-      cover: 'https://srbmswjsbkpftjabcurg.supabase.co/storage/v1/object/public/literatus-media/book_covers/las-metamorfosis-ovidio.jpg',
-      genre: 'Mitos · Clásico',
-      characterCount: 6
-    }
-  ];
+  // Libros con personajes IA activos (se carga dinámicamente)
+  featuredWithCharacters: any[] = [];
 
   activeCharacterIndex = 0;
   private charCarouselInterval: any;
@@ -346,7 +314,6 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
         }
         this.allBooks = response.results || response;
         this.buildSections();
-        this.updateFeaturedWithLiveCovers();
         this.isLoading = false;
         setTimeout(() => {
           if (this.destroy$.isStopped) return;
@@ -399,21 +366,6 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  private updateFeaturedWithLiveCovers(): void {
-    this.featuredWithCharacters = this.featuredWithCharacters.map(f => {
-      const liveBook = this.allBooks.find(b => b.slug === f.slug);
-      if (liveBook) {
-        return {
-          ...f,
-          title: liveBook.title,
-          cover: liveBook.cover_image || f.cover,
-          author: liveBook.author_name || f.author
-        };
-      }
-      return f;
-    });
-  }
-
   private buildSections(): void {
     this.trendingBooks = this.allBooks.filter(b => b.is_featured).slice(0, 6);
     if (this.trendingBooks.length === 0) {
@@ -423,6 +375,17 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     const trendingSlugs = new Set(this.trendingBooks.map(b => b.slug));
     this.discoveryBooks = this.allBooks.filter(b => !trendingSlugs.has(b.slug));
     this.randomDiscoveryBooks = [...this.allBooks].sort(() => 0.5 - Math.random());
+    
+    // Poblar dinámicamente el carrusel de IA buscando libros que tengan ai_character_count > 0
+    const booksWithCharacters = this.allBooks.filter(b => b.ai_character_count && b.ai_character_count > 0);
+    this.featuredWithCharacters = booksWithCharacters.map((b: any) => ({
+      slug: b.slug,
+      title: b.title,
+      author: b.author_name || 'Desconocido',
+      cover: b.cover_image || 'assets/default_cover.jpg',
+      genre: (b.genres && b.genres.length > 0) ? b.genres[0].name : 'Ficción',
+      characterCount: b.ai_character_count
+    }));
   }
 
   scrollToCatalog(): void {
