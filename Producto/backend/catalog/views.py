@@ -80,6 +80,10 @@ class BookViewSet(viewsets.ReadOnlyModelViewSet):
         qs = Book.objects.prefetch_related('genres', 'book_authors__author', 'editions', 'tags')
         qs = qs.annotate(ai_character_count=Count('editions__avatars', distinct=True))
         
+        has_ai = self.request.query_params.get('has_ai_avatars', None)
+        if has_ai and has_ai.lower() == 'true':
+            qs = qs.filter(ai_character_count__gt=0)
+        
         genre_name = self.request.query_params.get('genres__name', None)
         if genre_name:
             qs = qs.filter(genres__name__iexact=genre_name).distinct()
