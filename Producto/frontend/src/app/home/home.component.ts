@@ -346,6 +346,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
         }
         this.allBooks = response.results || response;
         this.buildSections();
+        this.updateFeaturedWithLiveCovers();
         this.isLoading = false;
         setTimeout(() => {
           if (this.destroy$.isStopped) return;
@@ -395,6 +396,21 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
       }, 4000);
 
       this.scrollIntervals.push(interval);
+    });
+  }
+
+  private updateFeaturedWithLiveCovers(): void {
+    this.featuredWithCharacters = this.featuredWithCharacters.map(f => {
+      const liveBook = this.allBooks.find(b => b.slug === f.slug);
+      if (liveBook) {
+        return {
+          ...f,
+          title: liveBook.title,
+          cover: liveBook.cover_image || f.cover,
+          author: liveBook.author_name || f.author
+        };
+      }
+      return f;
     });
   }
 
