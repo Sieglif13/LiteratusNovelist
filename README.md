@@ -59,6 +59,7 @@ La solucion separa claramente la experiencia de usuario en Angular de una API Dj
 - **Motor multi-provider:** Gemini con failover por segunda API key y respaldo DeepSeek; consumo dinamico de Tinta segun proveedor.
 - **Economia virtual:** perfiles con saldo de Tinta, compra de libros con Tinta y paquetes de recarga.
 - **Pagos Webpay Plus:** creacion y confirmacion de transacciones, entrega atomica de libros o Tinta y soporte para compras gratuitas.
+- **Personalizacion de UI:** soporte para temas (Oscuro, Claro, Sepia) modificables desde el perfil del usuario.
 - **Dashboard administrativo:** metricas, gestion de libros, parseo EPUB, alta/edicion de autores, categorias y avatares.
 - **API documentada:** esquema OpenAPI y Swagger UI via drf-spectacular.
 - **PWA y Android:** service worker para cache de assets/inventario y proyecto Android generado con Capacitor.
@@ -385,6 +386,8 @@ LiteratusNovelist/
 - **Supabase y media:** revisar uso de `supabase-js` desde frontend, asegurar RLS/buckets y mover operaciones sensibles al backend cuando corresponda.
 - **Dashboard financiero:** corregir la consulta de metricas que filtra transacciones por `AUTHORIZED`, ya que el modelo usa estados como `exitosa`, `fallida`, `iniciada` y `reversada`.
 - **Flujos de cuenta:** agregar recuperacion de contrasena, verificacion de email y politicas de bloqueo/rate limit para login.
+- **Refuerzo de lógica de negocio:** restringir permisos de escritura (POST/PUT/DELETE) en endpoints como `GenreViewSet` exclusivamente a administradores, y corregir rutas que esperan `<int:pk>` en modelos que usan UUID (ej. `AIAvatar`).
+- **Idempotencia de Pagos:** reforzar la confirmacion de Webpay (especialmente recarga de Tinta) para evitar doble entrega si el token se confirma mas de una vez.
 - **SEO:** implementar meta tags dinamicos, `robots.txt`, `sitemap.xml` y evaluar SSR/SSG para fichas de libros/autores.
 - **Testing:** ampliar pruebas backend para compras, Webpay, consumo de Tinta, permisos de biblioteca y chat; agregar pruebas frontend de rutas criticas.
 - **Observabilidad:** incorporar logging estructurado, captura de errores y metricas de latencia para IA/TTS/pagos.
