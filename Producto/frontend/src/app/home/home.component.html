@@ -193,6 +193,7 @@
         <div class="char-book-card" *ngFor="let book of featuredWithCharacters; let i = index"
              (click)="goToCharBook(book.slug)">
           <div class="char-cover-wrap">
+            <div class="border-glow-wrapper"></div>
             <img [src]="book.cover" [alt]="book.title" class="char-cover-img" loading="lazy"
                  onerror="this.src='assets/default_cover.jpg'">
             <div class="char-cover-overlay">
