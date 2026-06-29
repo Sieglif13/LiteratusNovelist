@@ -453,16 +453,32 @@ class BookDetailAdminView(APIView):
                 else:
                     chapters_raw = chapters_json
                 
-                # Para simplificar, eliminamos los anteriores y creamos los nuevos
-                # (Se podría hacer un update o merge, pero recrearlos mantiene el sync si hay cambios en orden/borrados)
-                book.chapters.all().delete()
+                # Obtenemos los capítulos actuales mapeados por orden para comparar
+                existing_chapters = {c.order: c for c in book.chapters.all()}
+                new_orders = []
+
                 for chap in chapters_raw:
-                    Chapter.objects.create(
-                        book=book,
-                        title=chap.get('title', 'Sin título')[:200],
-                        order=chap.get('order', 1),
-                        content_html=chap.get('content_html', ''),
-                    )
+                    order = chap.get('order', 1)
+                    new_orders.append(order)
+                    if order in existing_chapters:
+                        # Actualizar existente
+                        c = existing_chapters[order]
+                        c.title = chap.get('title', 'Sin título')[:200]
+                        c.content_html = chap.get('content_html', '')
+                        c.save()
+                    else:
+                        # Crear nuevo
+                        Chapter.objects.create(
+                            book=book,
+                            title=chap.get('title', 'Sin título')[:200],
+                            order=order,
+                            content_html=chap.get('content_html', ''),
+                        )
+                
+                # Eliminar los que ya no vienen en la lista
+                chapters_to_delete = [c.pk for order, c in existing_chapters.items() if order not in new_orders]
+                if chapters_to_delete:
+                    Chapter.objects.filter(pk__in=chapters_to_delete).delete()
 
             backup_book_to_media(book)
 
