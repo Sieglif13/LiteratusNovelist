@@ -12,7 +12,7 @@ export interface StoreSettings {
   providedIn: 'root'
 })
 export class SettingsService {
-  private apiUrl = `${environment.apiUrl}core/settings/`;
+  private apiUrl = `${environment.apiUrl}users/profile/`;
   private currentThemeSubject = new BehaviorSubject<string>('default');
   public currentTheme$ = this.currentThemeSubject.asObservable();
 
@@ -28,8 +28,8 @@ export class SettingsService {
     );
   }
 
-  updateSettings(settings: StoreSettings): Observable<StoreSettings> {
-    return this.http.put<StoreSettings>(this.apiUrl, settings).pipe(
+  updateSettings(settings: Partial<StoreSettings>): Observable<any> {
+    return this.http.patch<any>(this.apiUrl, settings).pipe(
       tap(updatedSettings => {
         if (updatedSettings && updatedSettings.theme) {
           this.setTheme(updatedSettings.theme);
@@ -46,5 +46,8 @@ export class SettingsService {
     } else {
       document.documentElement.setAttribute('data-theme', theme);
     }
+  }
+  public setThemeDirectly(theme: string) {
+    this.setTheme(theme);
   }
 }

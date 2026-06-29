@@ -22,7 +22,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     """
     class Meta:
         model = Profile
-        fields = ['id', 'avatar_color', 'bio', 'country', 'preferred_language', 'ink_balance']
+        fields = ['id', 'avatar_color', 'bio', 'country', 'preferred_language', 'ink_balance', 'theme']
 
 class UserReadSerializer(serializers.ModelSerializer):
     """

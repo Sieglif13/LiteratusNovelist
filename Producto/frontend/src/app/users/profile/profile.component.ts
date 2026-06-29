@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { ApiService } from '../../core/services/api.service';
 import { ChatService } from '../../core/services/chat.service';
+import { SettingsService } from '../../core/services/settings.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
@@ -22,6 +23,14 @@ export class ProfileComponent implements OnInit {
   userInitials = 'V';
   avatarColor: string = '#3b82f6';
   availableColors = ['#3b82f6', '#f97316', '#10b981', '#8b5cf6', '#ef4444', '#f59e0b', '#ec4899'];
+  
+  settingsService = inject(SettingsService);
+  availableThemes = [
+    { id: 'default', label: 'Classic Dark' },
+    { id: 'neon', label: 'Cyber Neon' },
+    { id: 'light-gallery', label: 'Light Gallery' }
+  ];
+  selectedTheme = 'default';
 
   constructor() {
     this.profileForm = this.fb.group({
@@ -47,10 +56,12 @@ export class ProfileComponent implements OnInit {
             country: profile.country
           });
           this.avatarColor = profile.avatar_color || '#3b82f6';
+          this.selectedTheme = profile.theme || 'default';
           this.updateInitials();
           if (profile.ink_balance !== undefined) {
             this.chatService.updateInkBalance(profile.ink_balance);
           }
+          this.settingsService.setThemeDirectly(this.selectedTheme);
         }
       }
     });
@@ -65,6 +76,11 @@ export class ProfileComponent implements OnInit {
     // Se ha deshabilitado la subida de avatares temporalmente.
   }
 
+  previewTheme(themeId: string) {
+    this.selectedTheme = themeId;
+    this.settingsService.setThemeDirectly(themeId);
+  }
+
   onSubmit() {
     if (this.profileForm.invalid) return;
     this.loading = true;
@@ -72,7 +88,8 @@ export class ProfileComponent implements OnInit {
     const payload = {
       bio: this.profileForm.get('bio')?.value || '',
       country: this.profileForm.get('country')?.value || '',
-      avatar_color: this.avatarColor
+      avatar_color: this.avatarColor,
+      theme: this.selectedTheme
     };
 
     this.api.patch('users/profile/', payload).subscribe({

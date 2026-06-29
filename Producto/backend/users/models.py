@@ -82,6 +82,7 @@ class Profile(TimeStampedModel):
         default=50,
         help_text="Tokens de energía (Tinta) disponibles para chatear con personajes de IA."
     ) # Saldo actual de "Tinta" del usuario. Funciona como moneda virtual para interactuar con la IA o adquirir contenido.
+    theme = models.CharField(max_length=50, default='default', help_text="Tema visual preferido del usuario.")
 
     class Meta:
         verbose_name = 'Profile'

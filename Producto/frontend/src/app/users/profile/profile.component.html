@@ -34,6 +34,18 @@
         </div>
       </div>
 
+      <div class="form-group theme-picker-group">
+        <label>Tema Visual de la Aplicación</label>
+        <div class="theme-options">
+          <button type="button" *ngFor="let theme of availableThemes"
+                  class="theme-btn" 
+                  [class.selected]="theme.id === selectedTheme"
+                  (click)="previewTheme(theme.id)">
+            {{ theme.label }}
+          </button>
+        </div>
+      </div>
+
       <div class="form-group">
         <label>Biografía Breve</label>
         <textarea formControlName="bio" class="glass-input textarea" rows="4"
