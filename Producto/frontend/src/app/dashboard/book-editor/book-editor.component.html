@@ -31,9 +31,10 @@
             <button class="remove-cover" (click)="removeCover()">×</button>
           </div>
           <div class="file-upload mini" *ngIf="!coverPreview">
-            <input type="file" (change)="onCoverSelected($event)" accept="image/*" id="cover-input">
+            <input type="file" (change)="onCoverSelected($event)" accept="image/jpeg, image/png, image/webp" id="cover-input">
             <label for="cover-input">Subir Imagen</label>
           </div>
+          <p class="help-text" *ngIf="!coverPreview">Resolución recomendada: 1600x2400px (proporción 2:3). Formatos: JPG, PNG o WebP. Máx 5MB.</p>
         </div>
 
         <div class="form-group">
