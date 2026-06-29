@@ -3,14 +3,7 @@
     <div class="profile-header">
       <div class="avatar-section">
         <div class="avatar-wrapper">
-          <img *ngIf="avatarUrl" [src]="avatarUrl" class="profile-img-preview"
-            onerror="this.src='assets/images/default-avatar.png'">
-          <div *ngIf="!avatarUrl" class="initials-avatar-large">{{ userInitials }}</div>
-
-          <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none;">
-          <button type="button" class="change-avatar-btn" (click)="fileInput.click()" title="Cambiar Avatar">
-            <mat-icon>camera_alt</mat-icon>
-          </button>
+          <div class="initials-avatar-large" [style.background-color]="avatarColor">{{ userInitials }}</div>
         </div>
       </div>
       <h2>Tu Perfil</h2>
@@ -27,6 +20,18 @@
         <label>Correo Electrónico (No modificable)</label>
         <input type="email" formControlName="email" class="glass-input locked-input">
         <mat-icon class="lock-icon">lock</mat-icon>
+      </div>
+
+      <div class="form-group color-picker-group">
+        <label>Color de Avatar</label>
+        <div class="color-options">
+          <button type="button" *ngFor="let color of availableColors"
+                  class="color-circle" 
+                  [style.background-color]="color"
+                  [class.selected]="color === avatarColor"
+                  (click)="avatarColor = color"
+                  [attr.aria-label]="'Seleccionar color ' + color"></button>
+        </div>
       </div>
 
       <div class="form-group">

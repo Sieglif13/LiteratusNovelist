@@ -20,8 +20,8 @@ export class ProfileComponent implements OnInit {
 
   loading = false;
   userInitials = 'V';
-  avatarUrl: string | null = null;
-  selectedFile: File | null = null;
+  avatarColor: string = '#3b82f6';
+  availableColors = ['#3b82f6', '#f97316', '#10b981', '#8b5cf6', '#ef4444', '#f59e0b', '#ec4899'];
 
   constructor() {
     this.profileForm = this.fb.group({
@@ -46,7 +46,7 @@ export class ProfileComponent implements OnInit {
             bio: profile.bio,
             country: profile.country
           });
-          this.avatarUrl = profile.avatar;
+          this.avatarColor = profile.avatar_color || '#3b82f6';
           this.updateInitials();
           if (profile.ink_balance !== undefined) {
             this.chatService.updateInkBalance(profile.ink_balance);
@@ -62,28 +62,20 @@ export class ProfileComponent implements OnInit {
   }
 
   onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
-      // Vista previa local
-      const reader = new FileReader();
-      reader.onload = () => this.avatarUrl = reader.result as string;
-      reader.readAsDataURL(file);
-    }
+    // Se ha deshabilitado la subida de avatares temporalmente.
   }
 
   onSubmit() {
     if (this.profileForm.invalid) return;
     this.loading = true;
 
-    const formData = new FormData();
-    formData.append('bio', this.profileForm.get('bio')?.value || '');
-    formData.append('country', this.profileForm.get('country')?.value || '');
-    if (this.selectedFile) {
-      formData.append('avatar', this.selectedFile);
-    }
+    const payload = {
+      bio: this.profileForm.get('bio')?.value || '',
+      country: this.profileForm.get('country')?.value || '',
+      avatar_color: this.avatarColor
+    };
 
-    this.api.patch('users/profile/', formData).subscribe({
+    this.api.patch('users/profile/', payload).subscribe({
       next: (res) => {
         this.loading = false;
         this.snackBar.open('Perfil actualizado exitosamente', 'Cerrar', {
