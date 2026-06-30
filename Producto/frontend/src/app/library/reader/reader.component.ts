@@ -70,7 +70,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
 
   // ── UX ───────────────────────────────────────────────────────────
   fontSize: number = 18;
-  currentTheme: 'dark' | 'light' | 'sepia' = 'dark';
+  currentTheme: 'dark' | 'light' | 'sepia' | 'nocturno' = 'dark';
   currentFontFamily: 'sans' | 'serif' | 'dyslexic' | 'medieval' | 'garamond' | 'georgia' | 'palatino' | 'opensans' | 'helvetica' = 'serif';
   isTocOpen: boolean = false;
   lastScrollTop: number = 0;
@@ -281,7 +281,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
     }
 
     const savedTheme = localStorage.getItem('reader-theme');
-    const validThemes = ['dark', 'light', 'sepia'];
+    const validThemes = ['dark', 'light', 'sepia', 'nocturno'];
     if (savedTheme && validThemes.includes(savedTheme)) {
       this.currentTheme = savedTheme as any;
     }
@@ -685,7 +685,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
     localStorage.setItem('reader-font-family', font);
   }
 
-  setTheme(theme: 'dark' | 'light' | 'sepia') {
+  setTheme(theme: 'dark' | 'light' | 'sepia' | 'nocturno') {
     this.currentTheme = theme;
     this.applyTheme();
     localStorage.setItem('reader-theme', theme);
@@ -737,14 +737,11 @@ export class ReaderComponent implements OnInit, OnDestroy {
   }
 
   private applyTheme() {
-    // Aplicar en body para que los estilos globales funcionen
-    document.body.classList.remove('theme-dark', 'theme-light', 'theme-sepia');
+    document.body.classList.remove('theme-dark', 'theme-light', 'theme-sepia', 'theme-nocturno');
     document.body.classList.add(`theme-${this.currentTheme}`);
-    // Aplicar también en el workbench directamente para que los sidebars
-    // (position: fixed) hereden el tema aunque no estén dentro del flujo del body
     const workbench = document.querySelector('.workbench-container');
     if (workbench) {
-      workbench.classList.remove('theme-dark', 'theme-light', 'theme-sepia');
+      workbench.classList.remove('theme-dark', 'theme-light', 'theme-sepia', 'theme-nocturno');
       workbench.classList.add(`theme-${this.currentTheme}`);
     }
   }

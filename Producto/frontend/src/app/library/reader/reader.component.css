@@ -1,7 +1,186 @@
-:root {
-  --font-size-reader: 18px;
+﻿/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   SISTEMA DE TOKENS DE COLOR â€” CSS Variables por tema
+   ConvenciÃ³n de nombres:
+     --th-bg-*       : fondos (bg = background)
+     --th-text-*     : textos
+     --th-border-*   : bordes
+     --th-surface-*  : superficies elevadas (paneles, cards)
+     --th-btn-*      : botones y controles
+   Todo el CSS de componentes usa SÃ“LO estas variables.
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
+/* â”€â”€ TEMA OSCURO (por defecto) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.theme-dark {
+  /* Fondos */
+  --th-bg-page:        #0f172a;          /* Lienzo principal */
+  --th-bg-toolbar:     rgba(15,23,42,0.6);
+  --th-bg-sidebar:     #1a1a2e;          /* Panel flotante */
+  --th-bg-sidebar-hdr: rgba(26,26,46,0.95);
+  --th-bg-chat-footer: #1a1a2e;
+  --th-bg-input:       rgba(255,255,255,0.06);
+  --th-bg-bubble-ai:   rgba(255,255,255,0.08);
+  --th-bg-bubble-user: #7e57c2;
+  --th-bg-controls:    rgba(0,0,0,0.2);
+  --th-bg-hover:       rgba(255,255,255,0.1);
+  --th-bg-toc:         rgba(15,23,42,0.97);
+  --th-bg-overlay:     rgba(15,23,42,0.7);
+
+  /* Textos */
+  --th-text-primary:   #e2e8f0;          /* Texto de lectura */
+  --th-text-secondary: rgba(226,232,240,0.6);
+  --th-text-bubble-ai: #e2e8f0;
+  --th-text-bubble-user: #ffffff;
+  --th-text-input:     #ffffff;
+  --th-text-placeholder: rgba(255,255,255,0.35);
+  --th-text-disclaimer: rgba(255,255,255,0.35);
+  --th-text-char-name: #e2e8f0;
+  --th-text-char-role: rgba(226,232,240,0.55);
+
+  /* Bordes */
+  --th-border-base:    rgba(255,255,255,0.08);
+  --th-border-input:   rgba(255,255,255,0.1);
+  --th-border-sidebar: rgba(255,255,255,0.08);
+  --th-border-btn:     rgba(255,255,255,0.1);
+
+  /* MiscelÃ¡nea */
+  --th-lottie-filter:  brightness(0) invert(1);
+  --th-fab-bg:         rgba(15,23,42,0.85);
+  --th-fab-color:      #ffffff;
+  --th-progress-track: rgba(255,255,255,0.1);
+  --th-char-initial-bg: #7e57c2;
+  --th-char-initial-text: #ffffff;
+  --th-bg-send-btn:      #7e57c2;
+  --th-text-send-btn:    #ffffff;
+  --th-bg-send-btn-hover: #9575cd;
 }
 
+/* â”€â”€ TEMA CLARO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.theme-light {
+  --th-bg-page:        #f8fafc;
+  --th-bg-toolbar:     rgba(255,255,255,0.7);
+  --th-bg-sidebar:     rgba(255,255,255,0.98);
+  --th-bg-sidebar-hdr: rgba(240,240,240,0.95);
+  --th-bg-chat-footer: rgba(248,250,252,0.98);
+  --th-bg-input:       rgba(0,0,0,0.05);
+  --th-bg-bubble-ai:   rgba(0,0,0,0.05);
+  --th-bg-bubble-user: #3b82f6;
+  --th-bg-controls:    rgba(0,0,0,0.05);
+  --th-bg-hover:       rgba(0,0,0,0.08);
+  --th-bg-toc:         rgba(248,250,252,0.98);
+  --th-bg-overlay:     rgba(248,250,252,0.7);
+
+  --th-text-primary:   #1e293b;
+  --th-text-secondary: rgba(30,41,59,0.6);
+  --th-text-bubble-ai: #1e293b;
+  --th-text-bubble-user: #ffffff;
+  --th-text-input:     #1e293b;
+  --th-text-placeholder: #888;
+  --th-text-disclaimer: #888;
+  --th-text-char-name: #1e293b;
+  --th-text-char-role: rgba(30,41,59,0.55);
+
+  --th-border-base:    rgba(0,0,0,0.08);
+  --th-border-input:   rgba(0,0,0,0.1);
+  --th-border-sidebar: rgba(0,0,0,0.1);
+  --th-border-btn:     rgba(0,0,0,0.1);
+
+  --th-lottie-filter:  brightness(0);
+  --th-fab-bg:         rgba(255,255,255,0.95);
+  --th-fab-color:      #333;
+  --th-progress-track: rgba(0,0,0,0.1);
+  --th-char-initial-bg: #3b82f6;
+  --th-char-initial-text: #ffffff;
+  --th-bg-send-btn:      #3b82f6;
+  --th-text-send-btn:    #ffffff;
+  --th-bg-send-btn-hover: #2563eb;
+}
+
+/* â”€â”€ TEMA SEPIA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+.theme-sepia {
+  --th-bg-page:        #f4ecd8;
+  --th-bg-toolbar:     rgba(244,236,216,0.85);
+  --th-bg-sidebar:     rgba(244,236,216,0.98);
+  --th-bg-sidebar-hdr: rgba(234,226,206,0.95);
+  --th-bg-chat-footer: rgba(244,236,216,0.98);
+  --th-bg-input:       rgba(91,70,54,0.05);
+  --th-bg-bubble-ai:   rgba(91,70,54,0.08);
+  --th-bg-bubble-user: #4a3b32;
+  --th-bg-controls:    rgba(91,70,54,0.08);
+  --th-bg-hover:       rgba(91,70,54,0.15);
+  --th-bg-toc:         rgba(244,236,216,0.98);
+  --th-bg-overlay:     rgba(244,236,216,0.7);
+
+  --th-text-primary:   #5b4636;
+  --th-text-secondary: rgba(74,59,50,0.6);
+  --th-text-bubble-ai: #4a3b32;
+  --th-text-bubble-user: #f4ecd8;
+  --th-text-input:     #4a3b32;
+  --th-text-placeholder: rgba(74,59,50,0.55);
+  --th-text-disclaimer: rgba(74,59,50,0.55);
+  --th-text-char-name: #3b2a1a;
+  --th-text-char-role: rgba(91,70,54,0.6);
+
+  --th-border-base:    rgba(91,70,54,0.12);
+  --th-border-input:   rgba(91,70,54,0.1);
+  --th-border-sidebar: rgba(91,70,54,0.15);
+  --th-border-btn:     rgba(91,70,54,0.15);
+
+  --th-lottie-filter:  brightness(0);
+  --th-fab-bg:         rgba(244,236,216,0.95);
+  --th-fab-color:      #4a3b32;
+  --th-progress-track: rgba(91,70,54,0.15);
+  --th-char-initial-bg: #4a3b32;
+  --th-char-initial-text: #f4ecd8;
+  --th-bg-send-btn:      #4a3b32;
+  --th-text-send-btn:    #f4ecd8;
+  --th-bg-send-btn-hover: #3b2a1a;
+}
+
+/* â”€â”€ TEMA NOCTURNO (OLED) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* Negro puro en superficies de lectura, casi-negro en paneles
+   Texto #e8e8e8 (off-white) para no cansar la vista en la oscuridad */
+.theme-nocturno {
+  --th-bg-page:        #000000;          /* OLED puro â€” apaga pÃ­xeles */
+  --th-bg-toolbar:     rgba(0,0,0,0.75);
+  --th-bg-sidebar:     #0a0a0a;          /* Ligeramente elevado respecto al canvas */
+  --th-bg-sidebar-hdr: #0d0d0d;
+  --th-bg-chat-footer: #0a0a0a;
+  --th-bg-input:       rgba(255,255,255,0.04);
+  --th-bg-bubble-ai:   rgba(255,255,255,0.05);
+  --th-bg-bubble-user: #4a3fa8;          /* Violeta apagado, suave en oscuridad */
+  --th-bg-controls:    rgba(255,255,255,0.04);
+  --th-bg-hover:       rgba(255,255,255,0.07);
+  --th-bg-toc:         #0a0a0a;
+  --th-bg-overlay:     rgba(0,0,0,0.8);
+
+  /* Off-white suave â€” no cansa la vista, contraste Ã³ptimo en oscuridad */
+  --th-text-primary:   #e8e8e8;
+  --th-text-secondary: rgba(232,232,232,0.5);
+  --th-text-bubble-ai: #e8e8e8;
+  --th-text-bubble-user: #ffffff;
+  --th-text-input:     #e8e8e8;
+  --th-text-placeholder: rgba(232,232,232,0.3);
+  --th-text-disclaimer: rgba(232,232,232,0.3);
+  --th-text-char-name: #e8e8e8;
+  --th-text-char-role: rgba(232,232,232,0.45);
+
+  --th-border-base:    rgba(255,255,255,0.06);
+  --th-border-input:   rgba(255,255,255,0.08);
+  --th-border-sidebar: rgba(255,255,255,0.05);
+  --th-border-btn:     rgba(255,255,255,0.07);
+
+  --th-lottie-filter:  brightness(0) invert(1);
+  --th-fab-bg:         #0a0a0a;
+  --th-fab-color:      #e8e8e8;
+  --th-progress-track: rgba(255,255,255,0.06);
+  --th-char-initial-bg: #4a3fa8;
+  --th-char-initial-text: #e8e8e8;
+  --th-bg-send-btn:      #4a3fa8;
+  --th-text-send-btn:    #e8e8e8;
+  --th-bg-send-btn-hover: #5a4fc0;
+}
+
+/* â”€â”€ Aplicar tokens al workbench â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .workbench-container {
   position: fixed;
   top: 0;
@@ -13,20 +192,12 @@
   flex-direction: column;
   transition: background 0.3s ease, color 0.3s ease;
   overflow: hidden; /* Evita scroll horizontal que desfasa la barra de progreso */
+  background: var(--th-bg-page);
+  color: var(--th-text-primary);
 }
 
-/* TEMAS */
-.theme-dark {
-  background: #0f172a;
-  color: #e2e8f0;
-}
-.theme-light {
-  background: #f8fafc;
-  color: #1e293b;
-}
-.theme-sepia {
-  background: #f4ecd8;
-  color: #5b4636;
+:root {
+  --font-size-reader: 18px;
 }
 
 /* BARRA DE HERRAMIENTAS */
@@ -37,7 +208,7 @@
   padding: 0.75rem 2rem;
   border-radius: 0;
   border: none;
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--th-bg-toolbar);
   backdrop-filter: blur(12px);
   z-index: 1100;
   position: absolute; /* Posicionamiento absoluto para que no altere el flujo al ocultarse */
@@ -51,14 +222,6 @@
   transform: translateY(-100%);
 }
 
-.theme-light .toolbar {
-  background: rgba(255, 255, 255, 0.7);
-}
-
-.theme-sepia .toolbar {
-  background: rgba(244, 236, 216, 0.85);
-}
-
 /* BARRA DE PROGRESO DE LECTURA (Estilo Wattpad) */
 .reading-progress-container {
   position: fixed;
@@ -66,7 +229,7 @@
   left: 0;
   width: 100%;
   height: 3px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--th-progress-track);
   overflow: hidden;
   z-index: 1099;
   transition: top 0.3s cubic-bezier(0.165, 0.84, 0.44, 1),
@@ -75,10 +238,6 @@
   opacity: 1;
   transform: scaleY(1);
   transform-origin: top;
-}
-
-.theme-light .reading-progress-container {
-  background: rgba(0, 0, 0, 0.1);
 }
 
 .reading-progress-bar {
@@ -94,7 +253,7 @@
   top: 0px;
 }
 
-/* Ocultar línea: desaparece con opacidad en vez de top:-3px (más estable) */
+/* Ocultar lÃ­nea: desaparece con opacidad en vez de top:-3px (mÃ¡s estable) */
 .reading-progress-container.hide-on-scroll {
   opacity: 0;
   transform: scaleY(0);
@@ -107,8 +266,8 @@
 }
 
 .back-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--th-bg-input);
+  border: 1px solid var(--th-border-btn);
   color: inherit;
   width: 36px;
   height: 36px;
@@ -121,25 +280,50 @@
   font-size: 1.2rem;
 }
 
-.theme-light .back-btn {
-  background: rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.theme-sepia .back-btn {
-  background: rgba(91, 70, 54, 0.05);
-  border: 1px solid rgba(91, 70, 54, 0.15);
-}
-
 .back-btn:hover {
   background: rgba(59, 130, 246, 0.4);
   transform: translateX(-3px);
   border-color: var(--glow-accent);
 }
 
+.font-family-dropdown,
+.theme-dropdown,
+.progress-hide-dropdown {
+  background: var(--th-bg-controls);
+  border: 1px solid var(--th-border-btn);
+  color: inherit;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+}
+
+.font-family-dropdown:hover,
+.font-family-dropdown:focus,
+.theme-dropdown:hover,
+.theme-dropdown:focus,
+.progress-hide-dropdown:hover,
+.progress-hide-dropdown:focus {
+  border-color: var(--glow-accent, #3b82f6);
+  background: var(--th-bg-hover);
+}
+
+/* Opciones del select â€” usan colores del sistema operativo por defecto,
+   pero aqui aseguramos coherencia donde el navegador lo permite */
+.font-family-dropdown option,
+.theme-dropdown option,
+.progress-hide-dropdown option {
+  background: var(--th-bg-sidebar);
+  color: var(--th-text-primary);
+}
+
 .book-info {
   display: flex;
-  flex-direction: column;
   overflow: hidden;
   max-width: 250px;
 }
@@ -194,17 +378,9 @@
 
 .font-controls {
   display: flex;
-  background: rgba(0,0,0,0.2);
+  background: var(--th-bg-controls);
   border-radius: 8px;
   padding: 2px;
-}
-
-.theme-light .font-controls {
-  background: rgba(0,0,0,0.05);
-}
-
-.theme-sepia .font-controls {
-  background: rgba(91, 70, 54, 0.08);
 }
 
 .font-controls button {
@@ -219,15 +395,7 @@
 }
 
 .font-controls button:hover {
-  background: rgba(255,255,255,0.1);
-}
-
-.theme-light .font-controls button:hover {
-  background: rgba(0,0,0,0.08);
-}
-
-.theme-sepia .font-controls button:hover {
-  background: rgba(91, 70, 54, 0.15);
+  background: var(--th-bg-hover);
 }
 
 .theme-selector {
@@ -258,7 +426,7 @@
 
 .toc-trigger-btn {
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid var(--th-border-btn);
   color: inherit;
   width: 36px;
   height: 36px;
@@ -271,21 +439,13 @@
   font-size: 1.2rem;
 }
 
-.theme-light .toc-trigger-btn {
-  border-color: rgba(0,0,0,0.1);
-}
-
-.theme-sepia .toc-trigger-btn {
-  border-color: rgba(91, 70, 54, 0.15);
-}
-
 .toc-trigger-btn:hover,
 .toc-trigger-btn.active {
   background: rgba(59, 130, 246, 0.4);
   border-color: var(--glow-accent);
 }
 
-/* BOTÓN PERSONAJES */
+/* BOTÃ“N PERSONAJES */
 .char-trigger-btn {
   position: relative;
   background: transparent;
@@ -376,21 +536,21 @@
   height: 100dvh;
   z-index: 1100;
   border-radius: 0;
-  border-right: 1px solid rgba(255,255,255,0.08);
-  background: #1a1a2e;
-  padding: 0; /* Espacio de seguridad para el botón inferior */
+  border-right: 1px solid var(--th-border-sidebar);
+  background: var(--th-bg-sidebar);
+  padding: 0;
   box-shadow: 6px 0 40px rgba(0,0,0,0.6);
   display: flex;
   flex-direction: column;
   transition: width 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-  overflow: hidden; /* CRITICAL: flex children scroll internally */
+  overflow: hidden;
 }
 
 .char-sidebar.is-chat-active {
   width: 420px;
 }
 
-/* ─── HEADER GENÉRICO DEL SIDEBAR ─────────────────── */
+/* â”€â”€â”€ HEADER GENÃ‰RICO DEL SIDEBAR â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .sidebar-header {
   position: absolute; /* Flotar sobre la imagen */
   top: 0;
@@ -410,13 +570,13 @@
   font-size: 1rem;
   font-weight: 700;
   margin: 0;
-  color: #e2e8f0;
+  color: var(--th-text-char-name);
 }
 
 .sidebar-close-btn {
   background: rgba(0,0,0,0.2);
   border: none;
-  color: white;
+  color: var(--th-text-primary);
   font-size: 1.1rem;
   cursor: pointer;
   padding: 6px 10px;
@@ -431,7 +591,7 @@
   gap: 4px;
   background: rgba(0,0,0,0.2);
   border: none;
-  color: white;
+  color: var(--th-text-primary);
   font-size: 0.9rem;
   cursor: pointer;
   padding: 6px 12px;
@@ -440,7 +600,7 @@
   transition: all 0.2s;
 }
 
-/* ─── LISTA DE PERSONAJES ─────────────────────────── */
+/* â”€â”€â”€ LISTA DE PERSONAJES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .char-list {
   flex: 1;
   overflow-y: auto;
@@ -463,7 +623,7 @@
 }
 
 .char-list-item:hover {
-  background: rgba(255,255,255,0.06);
+  background: var(--th-bg-hover);
 }
 
 .char-list-item.locked-item {
@@ -537,10 +697,10 @@
   font-size: 1.3rem;
 }
 
-/* ─── PERFIL DEL PERSONAJE ─────────────────────────── */
+/* â”€â”€â”€ PERFIL DEL PERSONAJE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .profile-hero {
   width: 100%;
-  height: 300px; /* Imagen más grande y envolvente */
+  height: 300px; /* Imagen mÃ¡s grande y envolvente */
   flex-shrink: 0;
   overflow: hidden;
   position: relative;
@@ -623,7 +783,7 @@
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
-  /* Eliminado el margin-top: auto para evitar el espacio vacío */
+  /* Eliminado el margin-top: auto para evitar el espacio vacÃ­o */
 }
 
 .mode-pills {
@@ -669,7 +829,7 @@
   box-shadow: 0 8px 30px rgba(126, 87, 194, 0.6);
 }
 
-/* ─── TOPBAR DEL CHAT (estilo c.ai) ─────────────────── */
+/* â”€â”€â”€ TOPBAR DEL CHAT (estilo c.ai) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .chat-topbar {
   display: flex;
   align-items: center;
@@ -879,7 +1039,7 @@
 }
 .topbar-close-btn:hover { background: rgba(255,255,255,0.08); color: white; }
 
-/* ─── PANEL DE VIDEO (aparece al activar el teléfono) ── */
+/* â”€â”€â”€ PANEL DE VIDEO (aparece al activar el telÃ©fono) â”€â”€ */
 .chat-video-panel {
   width: 100%;
   height: 230px;
@@ -923,7 +1083,7 @@
   pointer-events: none;
 }
 
-/* ─── ÁREA DE MENSAJES ─────────────────────────────── */
+/* â”€â”€â”€ ÃREA DE MENSAJES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .chat-messages-area {
   flex: 1;
   overflow-y: auto;
@@ -970,23 +1130,23 @@
 }
 
 .ai-bubble {
-  background: rgba(255,255,255,0.08);
-  color: #e2e8f0;
+  background: var(--th-bg-bubble-ai);
+  color: var(--th-text-bubble-ai);
   border-radius: 18px 18px 18px 4px;
 }
 
 .user-bubble {
-  background: #7e57c2;
-  color: white;
+  background: var(--th-bg-bubble-user);
+  color: var(--th-text-bubble-user);
   border-radius: 18px 18px 4px 18px;
 }
 
-/* ─── FOOTER / INPUT ───────────────────────────────── */
+/* â”€â”€â”€ FOOTER / INPUT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .chat-footer {
   flex-shrink: 0;
   padding: 0.75rem 1rem;
-  border-top: 1px solid rgba(255,255,255,0.07);
-  background: #1a1a2e; /* Solid bg so keyboard doesn't show through */
+  border-top: 1px solid var(--th-border-base);
+  background: var(--th-bg-chat-footer);
   position: sticky;
   bottom: 0;
   z-index: 10;
@@ -1006,8 +1166,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--th-bg-input);
+  border: 1px solid var(--th-border-input);
   border-radius: 24px;
   padding: 8px 8px 8px 16px;
 }
@@ -1016,18 +1176,18 @@
   flex: 1;
   background: transparent;
   border: none;
-  color: white;
+  color: var(--th-text-input);
   outline: none;
   font-size: 0.9rem;
   font-family: 'Outfit', sans-serif;
 }
 
-.chat-text-input::placeholder { color: rgba(255,255,255,0.35); }
+.chat-text-input::placeholder { color: var(--th-text-placeholder); }
 
 .chat-send-btn {
-  background: #7e57c2;
+  background: var(--th-bg-send-btn);
   border: none;
-  color: white;
+  color: var(--th-text-send-btn);
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -1041,7 +1201,7 @@
 }
 
 .chat-send-btn:hover:not(:disabled) {
-  background: #9575cd;
+  background: var(--th-bg-send-btn-hover);
   transform: scale(1.05);
 }
 
@@ -1050,55 +1210,9 @@
 .chat-disclaimer {
   text-align: center;
   font-size: 0.72rem;
-  color: rgba(255,255,255,0.3);
+  color: var(--th-text-disclaimer);
   margin: 6px 0 0;
 }
-
-.theme-light .char-sidebar {
-  background: #f8fafc;
-  border-right: 1px solid rgba(0,0,0,0.08);
-  box-shadow: 6px 0 40px rgba(0, 0, 0, 0.06);
-}
-
-.theme-light .char-sidebar .sidebar-title {
-  color: #0f172a;
-}
-
-.theme-light .char-sidebar .char-name {
-  color: #0f172a;
-}
-
-.theme-light .char-sidebar .char-role,
-.theme-light .char-sidebar .char-status {
-  color: #475569;
-}
-
-.theme-light .char-sidebar .char-arrow {
-  color: rgba(0, 0, 0, 0.35);
-}
-
-.theme-light .char-sidebar .char-list-item:hover {
-  background: rgba(0, 0, 0, 0.04);
-}
-
-.theme-light .char-sidebar .profile-name {
-  color: #0f172a;
-  text-shadow: none;
-}
-
-.theme-light .char-sidebar .profile-desc {
-  color: #334155;
-}
-
-.theme-light .char-sidebar .profile-locked {
-  background: rgba(0, 0, 0, 0.03);
-  color: #475569;
-}
-
-.theme-light .char-sidebar .profile-hero::after {
-  background: linear-gradient(to top, #f8fafc, transparent);
-}
-
 
 /* LISTA DE AVATARES */
 .avatar-list {
@@ -1108,7 +1222,7 @@
   overflow-y: auto;
 }
 
-/* ETIQUETAS DE SECCIÓN */
+/* ETIQUETAS DE SECCIÃ“N */
 .section-label {
   display: block;
   font-size: 0.7rem;
@@ -1120,14 +1234,14 @@
   font-family: 'Outfit', sans-serif;
 }
 
-/* SECCIÓN AUTOR */
+/* SECCIÃ“N AUTOR */
 .author-section {
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid rgba(255, 200, 70, 0.2);
 }
 
-/* SECCIÓN PERSONAJES */
+/* SECCIÃ“N PERSONAJES */
 .characters-section {
   display: flex;
   flex-direction: column;
@@ -1458,7 +1572,7 @@
   transition: background 0.3s ease;
 }
 
-/* CONFIGURACIÓN DINÁMICA DE FUENTES */
+/* CONFIGURACIÃ“N DINÃMICA DE FUENTES */
 .reading-canvas.font-serif {
   font-family: 'Merriweather', 'Georgia', serif;
 }
@@ -1492,7 +1606,7 @@
   line-height: 1.8;
   margin-bottom: 0.8em;
   text-align: justify;
-  text-indent: 2em; /* Sangría de primera línea */
+  text-indent: 2em; /* SangrÃ­a de primera lÃ­nea */
   font-family: inherit; /* Hereda de la clase del canvas */
 }
 
@@ -1501,7 +1615,7 @@
 .html-reader ::ng-deep h3 + p,
 .chapter-heading + p,
 .chapter-title-main + p {
-  text-indent: 0; /* Remover sangría después de un título (convención editorial) */
+  text-indent: 0; /* Remover sangrÃ­a despuÃ©s de un tÃ­tulo (convenciÃ³n editorial) */
 }
 
 .html-reader ::ng-deep img {
@@ -1536,7 +1650,7 @@
   color: inherit;
 }
 
-/* NAVEGACIÓN OVERLAY */
+/* NAVEGACIÃ“N OVERLAY */
 .navigation-overlay {
   position: absolute;
   top: 50%;
@@ -1576,7 +1690,7 @@
   cursor: not-allowed;
 }
 
-/* BOTÓN SIGUIENTE CAPÍTULO (AL FINAL DEL SCROLL) */
+/* BOTÃ“N SIGUIENTE CAPÃTULO (AL FINAL DEL SCROLL) */
 .next-chapter-container {
   position: fixed;
   bottom: 2rem;
@@ -1871,7 +1985,7 @@
   border-top: 1px solid rgba(239, 68, 68, 0.2);
 }
 
-/* ── OVERLAY DE CARGA DEL LIBRO ── */
+/* â”€â”€ OVERLAY DE CARGA DEL LIBRO â”€â”€ */
 .reader-loading-overlay {
   position: fixed;
   top: 0;
@@ -1986,7 +2100,7 @@
   backdrop-filter: blur(16px);
   border: 1px solid #3f4248;
   border-top: 1px solid #5a5d63;
-  border-radius: 8px; /* Bordes más rectos */
+  border-radius: 8px; /* Bordes mÃ¡s rectos */
   padding: 0.6rem;
   display: flex;
   flex-direction: column;
@@ -2234,7 +2348,7 @@
 
 /* Modo Expandido con Avatar al lado */
 .chat-window.layout-with-avatar {
-  width: 900px; /* Un poco más ancho */
+  width: 900px; /* Un poco mÃ¡s ancho */
   flex-direction: row;
 }
 
@@ -2279,7 +2393,7 @@
   pointer-events: none;
 }
 
-/* Video Avatar Container - Rediseño Circular y Grande */
+/* Video Avatar Container - RediseÃ±o Circular y Grande */
 .video-avatar-container {
   width: 100%;
   height: 320px; /* Aumentamos la altura del contenedor */
@@ -2340,7 +2454,7 @@
   white-space: nowrap;
 }
 
-/* BADGE cuando la Voz Premium ya está desbloqueada */
+/* BADGE cuando la Voz Premium ya estÃ¡ desbloqueada */
 .unlocked-badge {
   color: #22d3ee !important;
   text-shadow: 0 0 8px rgba(34, 211, 238, 0.7);
@@ -2396,7 +2510,7 @@
   transform: none;
 }
 
-/* IMÁGENES DEL CAPÍTULO */
+/* IMÃGENES DEL CAPÃTULO */
 .chapter-image {
   margin: 2rem 0;
   text-align: center;
@@ -2417,7 +2531,7 @@
   display: block;
 }
 
-/* NEON WORD HIGHLIGHTING — EFECTO SPOTIFY */
+/* NEON WORD HIGHLIGHTING â€” EFECTO SPOTIFY */
 .word {
   transition: color 0.15s ease, text-shadow 0.15s ease, background 0.15s ease;
   display: inline;
@@ -2431,16 +2545,16 @@
   text-shadow: 0 0 4px rgba(34, 211, 238, 0.4);
 }
 
-/* ↓ Resaltado sutil tipo ReadEra (sin distorsión ni reflow) */
+/* â†“ Resaltado sutil tipo ReadEra (sin distorsiÃ³n ni reflow) */
 .active-word {
-  background-color: rgba(234, 179, 8, 0.4) !important; /* Amarillo suave/cálido */
+  background-color: rgba(234, 179, 8, 0.4) !important; /* Amarillo suave/cÃ¡lido */
   border-radius: 3px;
   color: inherit !important;
   transition: background-color 0.1s ease;
-  /* Eliminados padding, font-weight y animaciones de escala para EVITAR saltos de línea */
+  /* Eliminados padding, font-weight y animaciones de escala para EVITAR saltos de lÃ­nea */
 }
 
-/* ↓ Resaltado desactivado para Kokoro TTS a petición del usuario (ya que no tiene tiempos exactos) */
+/* â†“ Resaltado desactivado para Kokoro TTS a peticiÃ³n del usuario (ya que no tiene tiempos exactos) */
 .kokoro-active {
   /* Se elimina el subrayado/resaltado amarillo para evitar desincronizaciones visuales */
 }
@@ -2674,7 +2788,7 @@
   box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 20px rgba(168, 85, 247, 0.25);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  /* Animación de entrada Pop */
+  /* AnimaciÃ³n de entrada Pop */
   animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
   transform-origin: center bottom;
 }
@@ -2684,7 +2798,7 @@
   100% { transform: translate(-50%, -100%) scale(1); opacity: 1; }
 }
 
-/* Variantes de posición (arriba o abajo) */
+/* Variantes de posiciÃ³n (arriba o abajo) */
 .word-action-menu.menu-above {
   transform: translate(-50%, -100%);
   transform-origin: center bottom;
@@ -2707,7 +2821,7 @@
   box-shadow: 0 10px 25px rgba(0,0,0,0.1), 0 0 15px rgba(168, 85, 247, 0.15);
 }
 
-/* Indicador (Triángulo) */
+/* Indicador (TriÃ¡ngulo) */
 .word-action-menu::after {
   content: '';
   position: absolute;
@@ -2716,14 +2830,14 @@
   border-style: solid;
 }
 
-/* Triángulo apuntando hacia abajo (menú arriba) */
+/* TriÃ¡ngulo apuntando hacia abajo (menÃº arriba) */
 .word-action-menu.menu-above::after {
   bottom: -7px;
   border-width: 7px 7px 0;
   border-color: rgba(168, 85, 247, 0.5) transparent transparent transparent;
 }
 
-/* Triángulo apuntando hacia arriba (menú abajo) */
+/* TriÃ¡ngulo apuntando hacia arriba (menÃº abajo) */
 .word-action-menu.menu-below::after {
   top: -7px;
   border-width: 0 7px 7px;
@@ -2743,7 +2857,7 @@
   border: none;
   color: inherit;
   padding: 0 20px;
-  height: 44px; /* Touch target móvil */
+  height: 44px; /* Touch target mÃ³vil */
   text-align: left;
   border-radius: 10px;
   cursor: pointer;
@@ -2885,7 +2999,7 @@
   color: #7c3aed;
 }
 
-/* ── ANIMACIONES Y ESTILOS PARA MARCADOR ── */
+/* â”€â”€ ANIMACIONES Y ESTILOS PARA MARCADOR â”€â”€ */
 .bookmark-toast {
   position: fixed;
   top: 100px;
@@ -3137,7 +3251,7 @@
   to { transform: rotate(0); }
 }
 
-/* Resaltado estilo ReadEra por párrafo (INLINE TEXT) */
+/* Resaltado estilo ReadEra por pÃ¡rrafo (INLINE TEXT) */
 .active-paragraph-text {
   background-color: rgba(234, 179, 8, 0.25) !important;
   border-radius: 4px;
@@ -3152,19 +3266,19 @@
   background-color: rgba(234, 179, 8, 0.15) !important;
 }
 
-/* Sangría y espaciado de párrafos para evitar acoplamiento */
+/* SangrÃ­a y espaciado de pÃ¡rrafos para evitar acoplamiento */
 .reader-content p {
   text-indent: 1.5rem;
   margin-bottom: 1.2rem;
   line-height: 1.7;
 }
 
-/* El primer párrafo usualmente no lleva sangría en los libros */
+/* El primer pÃ¡rrafo usualmente no lleva sangrÃ­a en los libros */
 .reader-content p:first-of-type {
   text-indent: 0;
 }
 
-/* ── ESTILOS EXCLUSIVOS MANGA / NOVELA VISUAL ── */
+/* â”€â”€ ESTILOS EXCLUSIVOS MANGA / NOVELA VISUAL â”€â”€ */
 .chat-manga-panel {
   position: relative;
   width: 100%;
@@ -3188,7 +3302,7 @@
 }
 
 .chat-manga-panel.immersive-manga {
-  height: 45vh; /* Panel más grande y dramático en Modo Llamada */
+  height: 45vh; /* Panel mÃ¡s grande y dramÃ¡tico en Modo Llamada */
   border-bottom: none;
 }
 
@@ -3216,7 +3330,7 @@
 .chat-manga-panel.immersive-manga .manga-portrait-container {
   width: 260px;
   height: 260px;
-  border-radius: 24px; /* Cuadrado con esquinas redondeadas tipo carta de colección */
+  border-radius: 24px; /* Cuadrado con esquinas redondeadas tipo carta de colecciÃ³n */
   border: 4px solid rgba(168, 85, 247, 0.6);
   box-shadow: 0 12px 48px rgba(168, 85, 247, 0.5);
 }
@@ -3240,7 +3354,7 @@
   50% { transform: scale(1.08); }
 }
 
-/* Pose Pensando: Añadir un suave desenfoque y efecto glow violeta */
+/* Pose Pensando: AÃ±adir un suave desenfoque y efecto glow violeta */
 .chat-manga-img.thinking {
   animation: thinkingPulse 2s infinite ease-in-out;
   filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.8)) brightness(1.1);
@@ -3251,7 +3365,7 @@
   50% { transform: scale(1.06) rotate(1deg); filter: drop-shadow(0 0 18px rgba(168, 85, 247, 0.9)); }
 }
 
-/* Pose Hablando: Pose estática con iluminación y sombreado cian */
+/* Pose Hablando: Pose estÃ¡tica con iluminaciÃ³n y sombreado cian */
 .chat-manga-img.speaking {
   filter: brightness(1.05) drop-shadow(0 4px 12px rgba(6, 182, 212, 0.5));
   border-color: rgba(6, 182, 212, 0.8);
@@ -3317,20 +3431,6 @@
   backdrop-filter: blur(8px);
 }
 
-.theme-light .font-family-dropdown,
-.theme-light .theme-dropdown,
-.theme-light .progress-hide-dropdown {
-  background: rgba(0, 0, 0, 0.05);
-  border-color: rgba(0, 0, 0, 0.12);
-}
-
-.theme-sepia .font-family-dropdown,
-.theme-sepia .theme-dropdown,
-.theme-sepia .progress-hide-dropdown {
-  background: rgba(91, 70, 54, 0.08);
-  border-color: rgba(91, 70, 54, 0.18);
-}
-
 .font-family-dropdown:hover,
 .font-family-dropdown:focus,
 .theme-dropdown:hover,
@@ -3341,8 +3441,6 @@
   background: rgba(0, 0, 0, 0.4);
 }
 
-.theme-light .font-family-dropdown:hover,
-.theme-light .font-family-dropdown:focus,
 .theme-light .theme-dropdown:hover,
 .theme-light .theme-dropdown:focus,
 .theme-light .progress-hide-dropdown:hover,
@@ -3382,7 +3480,7 @@
 }
 
 
-/* LECTURA BIÓNICA Y COLORES DE CONTRASTE (SIN DESPLAZAMIENTO DE TEXTO) */
+/* LECTURA BIÃ“NICA Y COLORES DE CONTRASTE (SIN DESPLAZAMIENTO DE TEXTO) */
 .html-reader .bionic-bold {
   display: inline;
   font-weight: normal; /* Mantiene el ancho original de la fuente para que el texto NO salte */
@@ -3392,7 +3490,7 @@
 /* Modo Oscuro */
 .theme-dark .html-reader .bionic-bold {
   color: #60a5fa; /* Azul brillante premium con excelente contraste en fondo oscuro */
-  text-shadow: 0.8px 0 0 currentColor; /* Un poco más de contraste simulado en oscuro */
+  text-shadow: 0.8px 0 0 currentColor; /* Un poco mÃ¡s de contraste simulado en oscuro */
 }
 .theme-dark .html-reader .bionic-muted {
   opacity: 0.55;
@@ -3410,16 +3508,16 @@
 
 /* Modo Sepia */
 .theme-sepia .html-reader .bionic-bold {
-  color: #1e110a; /* Marrón oscuro muy profundo para contraste */
+  color: #1e110a; /* MarrÃ³n oscuro muy profundo para contraste */
 }
 .theme-sepia .html-reader .bionic-muted {
   opacity: 0.55;
   color: #796a5f;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    FIXES DE TEMA: sidebars hardcoded ahora respetan el tema activo
-═══════════════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .theme-light .char-sidebar {
   background: #f0f4f8;
@@ -3459,20 +3557,20 @@
   color: rgba(91, 70, 54, 0.6);
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   RESPONSIVE MÓVIL — Breakpoint principal: 768px
-═══════════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   RESPONSIVE MÃ“VIL â€” Breakpoint principal: 768px
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 @media (max-width: 768px) {
 
-  /* ── LIENZO DE LECTURA: eliminar scroll horizontal ── */
+  /* â”€â”€ LIENZO DE LECTURA: eliminar scroll horizontal â”€â”€ */
   .reading-canvas {
     overflow-x: hidden;
-    padding: 72px 16px 100px; /* top para toolbar, bottom para botón siguiente */
+    padding: 72px 16px 100px; /* top para toolbar, bottom para botÃ³n siguiente */
     max-width: 100vw;
   }
 
-  /* ── TOOLBAR: Colapsar en 2 filas compactas ── */
+  /* â”€â”€ TOOLBAR: Colapsar en 2 filas compactas â”€â”€ */
   .toolbar {
     flex-wrap: wrap;
     padding: 6px 12px;
@@ -3481,13 +3579,13 @@
     min-height: 56px;
   }
 
-  /* Fila 1: volver + título + personajes (ocupa todo el ancho) */
+  /* Fila 1: volver + tÃ­tulo + personajes (ocupa todo el ancho) */
   .toolbar-left {
     flex: 1 1 100%;
     gap: 8px;
   }
 
-  /* Ocultar texto del título del capítulo en móvil para ahorrar espacio */
+  /* Ocultar texto del tÃ­tulo del capÃ­tulo en mÃ³vil para ahorrar espacio */
   .chapter-label {
     font-size: 0.8rem;
     white-space: nowrap;
@@ -3515,45 +3613,45 @@
     display: none; /* Chrome/Safari */
   }
 
-  /* Ocultar selector de fuente en móvil (es un control secundario) */
+  /* Ocultar selector de fuente en mÃ³vil (es un control secundario) */
   .font-family-selector {
     display: none;
   }
 
-  /* Ocultar el selector de "Fijar/Ocultar línea" en móvil */
+  /* Ocultar el selector de "Fijar/Ocultar lÃ­nea" en mÃ³vil */
   .progress-hide-selector {
     display: none;
   }
 
-  /* Tinta más compacta */
+  /* Tinta mÃ¡s compacta */
   .ink-counter {
     padding: 4px 8px;
     font-size: 0.8rem;
   }
 
-  /* Controles de fuente más compactos */
+  /* Controles de fuente mÃ¡s compactos */
   .font-controls button {
     padding: 4px 8px;
     font-size: 0.85rem;
   }
 
-  /* Dropdowns más pequeños */
+  /* Dropdowns mÃ¡s pequeÃ±os */
   .theme-dropdown,
   .font-family-dropdown {
     padding: 4px 8px;
     font-size: 0.8rem;
   }
 
-  /* ── BARRA DE PROGRESO: ajustar al alto real de la toolbar en móvil ── */
+  /* â”€â”€ BARRA DE PROGRESO: ajustar al alto real de la toolbar en mÃ³vil â”€â”€ */
   .reading-progress-container {
-    top: 86px; /* toolbar 2 filas ≈ 86px en móvil */
+    top: 86px; /* toolbar 2 filas â‰ˆ 86px en mÃ³vil */
   }
 
   .reading-progress-container.toolbar-hidden {
     top: 0px;
   }
 
-  /* ── SIDEBAR DE PERSONAJES: pantalla completa en móvil ── */
+  /* â”€â”€ SIDEBAR DE PERSONAJES: pantalla completa en mÃ³vil â”€â”€ */
   .char-sidebar {
     width: 100vw !important; /* Pantalla completa en lugar de 380px */
     max-width: 100vw;
@@ -3565,14 +3663,14 @@
     width: 100vw !important;
   }
 
-  /* ── SIDEBAR TOC: pantalla completa en móvil ── */
+  /* â”€â”€ SIDEBAR TOC: pantalla completa en mÃ³vil â”€â”€ */
   .toc-sidebar {
     width: 100vw !important;
     right: 0;
     left: 0;
   }
 
-  /* ── BOTÓN SIGUIENTE CAPÍTULO: centrado y con buen tamaño táctil ── */
+  /* â”€â”€ BOTÃ“N SIGUIENTE CAPÃTULO: centrado y con buen tamaÃ±o tÃ¡ctil â”€â”€ */
   .next-chapter-container {
     bottom: 20px;
     width: calc(100vw - 48px);
@@ -3587,7 +3685,7 @@
     border-radius: 16px;
   }
 
-  /* ── PANEL DE AUDIO: adaptado a móvil ── */
+  /* â”€â”€ PANEL DE AUDIO: adaptado a mÃ³vil â”€â”€ */
   .audio-controls-panel {
     width: calc(100vw - 24px) !important;
     left: 12px !important;
@@ -3596,14 +3694,14 @@
     overflow-y: auto;
   }
 
-  /* ── IMÁGENES INLINE: no desbordar ── */
+  /* â”€â”€ IMÃGENES INLINE: no desbordar â”€â”€ */
   .inline-img,
   .chapter-image img {
     max-width: 100%;
     height: auto;
   }
 
-  /* ── MENÚ FLOTANTE DE PALABRAS: centrado en móvil ── */
+  /* â”€â”€ MENÃš FLOTANTE DE PALABRAS: centrado en mÃ³vil â”€â”€ */
   .word-action-menu {
     left: 50% !important;
     transform: translateX(-50%) !important;
@@ -3612,7 +3710,201 @@
   }
 }
 
-/* Breakpoint extra pequeño (iPhone SE, 375px) */
+/* Breakpoint extra pequeÃ±o (iPhone SE, 375px) */
+@media (max-width: 400px) {
+  .chapter-label {
+    max-width: 120px;
+  }
+
+  .ink-counter .ink-number {
+    display: none; /* Solo mostrar el icono de tinta para ahorrar espacio */
+  }
+
+  .font-controls button {
+    padding: 4px 6px;
+  }
+}
+
+/* EFECTO DE RESALTADO AL HACER TAP-TO-SCROLL */
+.tap-highlight-fade {
+  animation: highlightFade 2.5s ease-out forwards;
+  border-radius: 4px;
+}
+
+.theme-light .char-name,
+.theme-light .sidebar-title,
+.theme-light .profile-name {
+  color: #1e293b;
+}
+.theme-light .char-role,
+.theme-light .char-status {
+  color: rgba(30, 41, 59, 0.5);
+}
+
+.theme-sepia .char-name,
+.theme-sepia .sidebar-title,
+.theme-sepia .profile-name {
+  color: #3b2a1a;
+}
+.theme-sepia .char-role,
+.theme-sepia .char-status {
+  color: rgba(91, 70, 54, 0.6);
+}
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   RESPONSIVE MÃ“VIL â€” Breakpoint principal: 768px
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
+@media (max-width: 768px) {
+
+  /* â”€â”€ LIENZO DE LECTURA: eliminar scroll horizontal â”€â”€ */
+  .reading-canvas {
+    overflow-x: hidden;
+    padding: 72px 16px 100px; /* top para toolbar, bottom para botÃ³n siguiente */
+    max-width: 100vw;
+  }
+
+  /* â”€â”€ TOOLBAR: Colapsar en 2 filas compactas â”€â”€ */
+  .toolbar {
+    flex-wrap: wrap;
+    padding: 6px 12px;
+    gap: 6px;
+    height: auto;
+    min-height: 56px;
+  }
+
+  /* Fila 1: volver + tÃ­tulo + personajes (ocupa todo el ancho) */
+  .toolbar-left {
+    flex: 1 1 100%;
+    gap: 8px;
+  }
+
+  /* Ocultar texto del tÃ­tulo del capÃ­tulo en mÃ³vil para ahorrar espacio */
+  .chapter-label {
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+  }
+
+  .progress-label {
+    font-size: 0.65rem;
+  }
+
+  /* Fila 2: todos los controles de lectura */
+  .reader-settings {
+    flex: 1 1 100%;
+    gap: 6px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE/Edge */
+    padding-bottom: 2px;
+  }
+
+  .reader-settings::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
+
+  /* Ocultar selector de fuente en mÃ³vil (es un control secundario) */
+  .font-family-selector {
+    display: none;
+  }
+
+  /* Ocultar el selector de "Fijar/Ocultar lÃ­nea" en mÃ³vil */
+  .progress-hide-selector {
+    display: none;
+  }
+
+  /* Tinta mÃ¡s compacta */
+  .ink-counter {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+  }
+
+  /* Controles de fuente mÃ¡s compactos */
+  .font-controls button {
+    padding: 4px 8px;
+    font-size: 0.85rem;
+  }
+
+  /* Dropdowns mÃ¡s pequeÃ±os */
+  .theme-dropdown,
+  .font-family-dropdown {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+  }
+
+  /* â”€â”€ BARRA DE PROGRESO: ajustar al alto real de la toolbar en mÃ³vil â”€â”€ */
+  .reading-progress-container {
+    top: 86px; /* toolbar 2 filas â‰ˆ 86px en mÃ³vil */
+  }
+
+  .reading-progress-container.toolbar-hidden {
+    top: 0px;
+  }
+
+  /* â”€â”€ SIDEBAR DE PERSONAJES: pantalla completa en mÃ³vil â”€â”€ */
+  .char-sidebar {
+    width: 100vw !important; /* Pantalla completa en lugar de 380px */
+    max-width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  .char-sidebar.is-chat-active {
+    width: 100vw !important;
+  }
+
+  /* â”€â”€ SIDEBAR TOC: pantalla completa en mÃ³vil â”€â”€ */
+  .toc-sidebar {
+    width: 100vw !important;
+    right: 0;
+    left: 0;
+  }
+
+  /* â”€â”€ BOTÃ“N SIGUIENTE CAPÃTULO: centrado y con buen tamaÃ±o tÃ¡ctil â”€â”€ */
+  .next-chapter-container {
+    bottom: 20px;
+    width: calc(100vw - 48px);
+    max-width: 400px;
+  }
+
+  .next-chapter-btn {
+    width: 100%;
+    justify-content: center;
+    font-size: 1rem;
+    padding: 14px 20px;
+    border-radius: 16px;
+  }
+
+  /* â”€â”€ PANEL DE AUDIO: adaptado a mÃ³vil â”€â”€ */
+  .audio-controls-panel {
+    width: calc(100vw - 24px) !important;
+    left: 12px !important;
+    right: 12px !important;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  /* â”€â”€ IMÃGENES INLINE: no desbordar â”€â”€ */
+  .inline-img,
+  .chapter-image img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* â”€â”€ MENÃš FLOTANTE DE PALABRAS: centrado en mÃ³vil â”€â”€ */
+  .word-action-menu {
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: calc(100vw - 32px);
+    max-width: 340px;
+  }
+}
+
+/* Breakpoint extra pequeÃ±o (iPhone SE, 375px) */
 @media (max-width: 400px) {
   .chapter-label {
     max-width: 120px;
@@ -3660,426 +3952,100 @@
   justify-content: center;
 }
 
-.theme-light .floating-audio-control {
-  /* No background on container anymore, button holds it */
-}
-.theme-sepia .floating-audio-control {
-  /* No background on container anymore, button holds it */
-}
-
-.fab-btn {
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.5);
-  color: white;
-  border-radius: 50%;
-  width: 56px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.theme-light .fab-btn {
-  background: rgba(255, 255, 255, 0.95);
-  border-color: rgba(0, 0, 0, 0.1);
-  color: #333;
-}
-
-.theme-sepia .fab-btn {
-  background: rgba(244, 236, 216, 0.95);
-  border-color: rgba(91, 70, 54, 0.15);
-  color: #4a3b32;
-}
-
-.fab-btn:hover {
-  transform: scale(1.05);
-  background: #3b82f6;
-  color: white;
-  border-color: #3b82f6;
-}
-
-.lottie-theme-filter { filter: brightness(0) invert(1); } /* Dark theme (default) */
-.theme-light .lottie-theme-filter { filter: brightness(0); } /* Black in light theme */
-.theme-sepia .lottie-theme-filter { filter: brightness(0); } /* Black in sepia theme */
-
 .audio-controls-panel .toc-header {
   margin-bottom: 0.5rem;
 }
 
-/* THEME LIGHT FOR CHARACTER CHAT */
-.theme-light .char-sidebar,
-.theme-light .sidebar-chat-view {
-  background: rgba(255, 255, 255, 0.95);
-  border-left: 1px solid rgba(0, 0, 0, 0.1);
-  color: #333;
-}
-.theme-light .chat-topbar,
-.theme-light .sidebar-chat-header,
-.theme-light .sidebar-header {
-  background: rgba(240, 240, 240, 0.9);
-  border-bottom: 1px solid rgba(0,0,0,0.1);
-  color: #333;
-}
-.theme-light .ai-bubble {
-  background: rgba(0,0,0,0.05);
-  color: #333 !important;
-}
-.theme-light .user-bubble {
-  background: #3b82f6;
-  color: white !important;
-}
-.theme-light .chat-footer {
-  border-top: 1px solid rgba(0,0,0,0.1);
-}
-.theme-light .chat-input-box {
-  background: rgba(0,0,0,0.05);
-  border-color: rgba(0,0,0,0.1);
-}
-.theme-light .chat-text-input {
-  color: #333;
-}
-.theme-light .chat-text-input::placeholder {
-  color: #888;
-}
-.theme-light .chat-disclaimer {
-  color: #888;
-}
-.theme-light .topbar-name,
-.theme-light .sidebar-chat-title,
-.theme-light .sidebar-title,
-.theme-light .char-name,
-.theme-light .profile-name,
-.theme-light .profile-desc {
-  color: #333;
+/* CHAT TOPBAR â€” Variables unificadas (funciona para todos los temas)
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+.chat-topbar,
+.sidebar-chat-header,
+.sidebar-header {
+  background: var(--th-bg-sidebar-hdr);
+  border-bottom: 1px solid var(--th-border-base);
+  color: var(--th-text-primary);
 }
 
-/* THEME SEPIA FOR CHARACTER CHAT */
-.theme-sepia .char-sidebar,
-.theme-sepia .sidebar-chat-view {
-  background: rgba(244, 236, 216, 0.95);
-  border-left: 1px solid rgba(91, 70, 54, 0.15);
-  color: #4a3b32;
-}
-.theme-sepia .chat-topbar,
-.theme-sepia .sidebar-chat-header,
-.theme-sepia .sidebar-header {
-  background: rgba(234, 226, 206, 0.9);
-  border-bottom: 1px solid rgba(91, 70, 54, 0.1);
-  color: #4a3b32;
-}
-.theme-sepia .ai-bubble {
-  background: rgba(91, 70, 54, 0.08);
-  color: #4a3b32 !important;
-}
-.theme-sepia .user-bubble {
-  background: #4a3b32;
-  color: #f4ecd8 !important;
-}
-.theme-sepia .chat-footer {
-  border-top: 1px solid rgba(91, 70, 54, 0.1);
-}
-.theme-sepia .chat-input-box {
-  background: rgba(91, 70, 54, 0.05);
-  border-color: rgba(91, 70, 54, 0.1);
-}
-.theme-sepia .chat-text-input {
-  color: #4a3b32;
-}
-.theme-sepia .chat-text-input::placeholder {
-  color: rgba(74, 59, 50, 0.6);
-}
-.theme-sepia .chat-disclaimer {
-  color: rgba(74, 59, 50, 0.6);
-}
-.theme-sepia .topbar-name,
-.theme-sepia .sidebar-chat-title,
-.theme-sepia .sidebar-title,
-.theme-sepia .char-name,
-.theme-sepia .profile-name,
-.theme-sepia .profile-desc,
-.theme-sepia .topbar-initial {
-  color: #4a3b32;
-}
-.theme-sepia .topbar-mode,
-.theme-sepia .ai-label,
-.theme-sepia .listening-status {
-  color: rgba(74, 59, 50, 0.7);
-}
-.theme-sepia .topbar-close-btn,
-.theme-sepia .topbar-back-btn,
-.theme-sepia .topbar-call-btn,
-.theme-sepia .sidebar-close-btn,
-.theme-sepia .sidebar-back-btn {
-  color: rgba(74, 59, 50, 0.7);
-}
-.theme-sepia .topbar-close-btn:hover,
-.theme-sepia .topbar-back-btn:hover,
-.theme-sepia .topbar-call-btn:hover,
-.theme-sepia .sidebar-close-btn:hover,
-.theme-sepia .sidebar-back-btn:hover {
-  background: rgba(91, 70, 54, 0.1);
-  color: #4a3b32;
+.topbar-name,
+.sidebar-chat-title,
+.sidebar-title,
+.char-name,
+.profile-name {
+  color: var(--th-text-char-name);
 }
 
-/* THEME LIGHT EXTENSIONS FOR CHAT BUTTONS */
-.theme-light .topbar-initial {
-  color: #333;
-}
-.theme-light .topbar-mode,
-.theme-light .ai-label,
-.theme-light .listening-status {
-  color: rgba(0, 0, 0, 0.6);
-}
-.theme-light .topbar-close-btn,
-.theme-light .topbar-back-btn,
-.theme-light .topbar-call-btn,
-.theme-light .sidebar-close-btn,
-.theme-light .sidebar-back-btn {
-  color: rgba(0, 0, 0, 0.6);
-}
-.theme-light .topbar-close-btn:hover,
-.theme-light .topbar-back-btn:hover,
-.theme-light .topbar-call-btn:hover,
-.theme-light .sidebar-close-btn:hover,
-.theme-light .sidebar-back-btn:hover {
-  background: rgba(0, 0, 0, 0.08);
-  color: #000;
+.profile-desc {
+  color: var(--th-text-secondary);
 }
 
-/* FORZAR COLORES CLAROS EN MODO LLAMADA PARA TODOS LOS TEMAS */
-/* Como el modo llamada (immersive) siempre tiene fondo oscuro, forzamos texto claro */
+.topbar-initial {
+  color: var(--th-text-primary);
+}
+
+.topbar-mode,
+.ai-label,
+.listening-status {
+  color: var(--th-text-secondary);
+}
+
+.topbar-close-btn,
+.topbar-back-btn,
+.topbar-call-btn,
+.sidebar-close-btn,
+.sidebar-back-btn {
+  color: var(--th-text-secondary);
+}
+
+.topbar-close-btn:hover,
+.topbar-back-btn:hover,
+.topbar-call-btn:hover,
+.sidebar-close-btn:hover,
+.sidebar-back-btn:hover {
+  background: var(--th-bg-hover);
+  color: var(--th-text-primary);
+}
+
+/* Modo llamada (immersive): siempre fondo oscuro, texto blanco obligatorio */
 .immersive-footer .chat-input-box {
   background: rgba(255, 255, 255, 0.08) !important;
   border-color: rgba(255, 255, 255, 0.15) !important;
 }
-.theme-light .immersive-footer .chat-text-input,
-.theme-sepia .immersive-footer .chat-text-input,
 .immersive-footer .chat-text-input {
   color: white !important;
 }
-.theme-light .immersive-footer .chat-text-input::placeholder,
-.theme-sepia .immersive-footer .chat-text-input::placeholder,
 .immersive-footer .chat-text-input::placeholder {
   color: rgba(255, 255, 255, 0.5) !important;
 }
-.theme-light .immersive-footer .chat-disclaimer,
-.theme-sepia .immersive-footer .chat-disclaimer,
 .immersive-footer .chat-disclaimer {
   color: rgba(255, 255, 255, 0.4) !important;
 }
-.theme-light .immersive-footer .listening-status,
-.theme-sepia .immersive-footer .listening-status,
 .immersive-footer .listening-status {
   color: rgba(255, 255, 255, 0.6) !important;
   transition: all 0.2s;
-}
-
-.theme-light .fab-btn {
-  background: rgba(255, 255, 255, 0.95);
-  border-color: rgba(0, 0, 0, 0.1);
-  color: #333;
-}
-
-.theme-sepia .fab-btn {
-  background: rgba(244, 236, 216, 0.95);
-  border-color: rgba(91, 70, 54, 0.15);
-  color: #4a3b32;
-}
-
-.fab-btn:hover {
-  transform: scale(1.05);
-  background: #3b82f6;
-  color: white;
-  border-color: #3b82f6;
-}
-
-.lottie-theme-filter { filter: brightness(0) invert(1); } /* Dark theme (default) */
-.theme-light .lottie-theme-filter { filter: brightness(0); } /* Black in light theme */
-.theme-sepia .lottie-theme-filter { filter: brightness(0); } /* Black in sepia theme */
-
-.audio-controls-panel .toc-header {
-  margin-bottom: 0.5rem;
-}
-
-/* THEME LIGHT FOR CHARACTER CHAT */
-.theme-light .char-sidebar,
-.theme-light .sidebar-chat-view {
-  background: rgba(255, 255, 255, 0.95);
-  border-left: 1px solid rgba(0, 0, 0, 0.1);
-  color: #333;
-}
-.theme-light .chat-topbar,
-.theme-light .sidebar-chat-header,
-.theme-light .sidebar-header {
-  background: rgba(240, 240, 240, 0.9);
-  border-bottom: 1px solid rgba(0,0,0,0.1);
-  color: #333;
-}
-.theme-light .ai-bubble {
-  background: rgba(0,0,0,0.05);
-  color: #333 !important;
-}
-.theme-light .user-bubble {
-  background: #3b82f6;
-  color: white !important;
-}
-.theme-light .chat-footer {
-  border-top: 1px solid rgba(0,0,0,0.1);
-}
-.theme-light .chat-input-box {
-  background: rgba(0,0,0,0.05);
-  border-color: rgba(0,0,0,0.1);
-}
-.theme-light .chat-text-input {
-  color: #333;
-}
-.theme-light .chat-text-input::placeholder {
-  color: #888;
-}
-.theme-light .chat-disclaimer {
-  color: #888;
-}
-.theme-light .topbar-name,
-.theme-light .sidebar-chat-title,
-.theme-light .sidebar-title,
-.theme-light .char-name,
-.theme-light .profile-name,
-.theme-light .profile-desc {
-  color: #333;
-}
-
-/* THEME SEPIA FOR CHARACTER CHAT */
-.theme-sepia .char-sidebar,
-.theme-sepia .sidebar-chat-view {
-  background: rgba(244, 236, 216, 0.95);
-  border-left: 1px solid rgba(91, 70, 54, 0.15);
-  color: #4a3b32;
-}
-.theme-sepia .chat-topbar,
-.theme-sepia .sidebar-chat-header,
-.theme-sepia .sidebar-header {
-  background: rgba(234, 226, 206, 0.9);
-  border-bottom: 1px solid rgba(91, 70, 54, 0.1);
-  color: #4a3b32;
-}
-.theme-sepia .ai-bubble {
-  background: rgba(91, 70, 54, 0.08);
-  color: #4a3b32 !important;
-}
-.theme-sepia .user-bubble {
-  background: #4a3b32;
-  color: #f4ecd8 !important;
-}
-.theme-sepia .chat-footer {
-  border-top: 1px solid rgba(91, 70, 54, 0.1);
-}
-.theme-sepia .chat-input-box {
-  background: rgba(91, 70, 54, 0.05);
-  border-color: rgba(91, 70, 54, 0.1);
-}
-.theme-sepia .chat-text-input {
-  color: #4a3b32;
-}
-.theme-sepia .chat-text-input::placeholder {
-  color: rgba(74, 59, 50, 0.6);
-}
-.theme-sepia .chat-disclaimer {
-  color: rgba(74, 59, 50, 0.6);
-}
-.theme-sepia .topbar-name,
-.theme-sepia .sidebar-chat-title,
-.theme-sepia .sidebar-title,
-.theme-sepia .char-name,
-.theme-sepia .profile-name,
-.theme-sepia .profile-desc,
-.theme-sepia .topbar-initial {
-  color: #4a3b32;
-}
-.theme-sepia .topbar-mode,
-.theme-sepia .ai-label,
-.theme-sepia .listening-status {
-  color: rgba(74, 59, 50, 0.7);
-}
-.theme-sepia .topbar-close-btn,
-.theme-sepia .topbar-back-btn,
-.theme-sepia .topbar-call-btn,
-.theme-sepia .sidebar-close-btn,
-.theme-sepia .sidebar-back-btn {
-  color: rgba(74, 59, 50, 0.7);
-}
-.theme-sepia .topbar-close-btn:hover,
-.theme-sepia .topbar-back-btn:hover,
-.theme-sepia .topbar-call-btn:hover,
-.theme-sepia .sidebar-close-btn:hover,
-.theme-sepia .sidebar-back-btn:hover {
-  background: rgba(91, 70, 54, 0.1);
-  color: #4a3b32;
-}
-
-/* THEME LIGHT EXTENSIONS FOR CHAT BUTTONS */
-.theme-light .topbar-initial {
-  color: #333;
-}
-.theme-light .topbar-mode,
-.theme-light .ai-label,
-.theme-light .listening-status {
-  color: rgba(0, 0, 0, 0.6);
-}
-.theme-light .topbar-close-btn,
-.theme-light .topbar-back-btn,
-.theme-light .topbar-call-btn,
-.theme-light .sidebar-close-btn,
-.theme-light .sidebar-back-btn {
-  color: rgba(0, 0, 0, 0.6);
-}
-.theme-light .topbar-close-btn:hover,
-.theme-light .topbar-back-btn:hover,
-.theme-light .topbar-call-btn:hover,
-.theme-light .sidebar-close-btn:hover,
-.theme-light .sidebar-back-btn:hover {
-  background: rgba(0, 0, 0, 0.08);
-  color: #000;
-}
-
-/* FORZAR COLORES CLAROS EN MODO LLAMADA PARA TODOS LOS TEMAS */
-/* Como el modo llamada (immersive) siempre tiene fondo oscuro, forzamos texto claro */
-.immersive-footer .chat-input-box {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
-}
-.theme-light .immersive-footer .chat-text-input,
-.theme-sepia .immersive-footer .chat-text-input,
-.immersive-footer .chat-text-input {
-  color: white !important;
-}
-.theme-light .immersive-footer .chat-text-input::placeholder,
-.theme-sepia .immersive-footer .chat-text-input::placeholder,
-.immersive-footer .chat-text-input::placeholder {
-  color: rgba(255, 255, 255, 0.5) !important;
-}
-.theme-light .immersive-footer .chat-disclaimer,
-.theme-sepia .immersive-footer .chat-disclaimer,
-.immersive-footer .chat-disclaimer {
-  color: rgba(255, 255, 255, 0.4) !important;
-}
-.theme-light .immersive-footer .listening-status,
-.theme-sepia .immersive-footer .listening-status,
-.immersive-footer .listening-status {
-  color: rgba(255, 255, 255, 0.6) !important;
 }
 .immersive-footer .partial-transcript {
   color: #a855f7 !important;
 }
 
-/* Toque Fluido: evitar selección accidental en tap simple sin bloquear long-press del diccionario.
-   - touch-action: pan-y → permite scroll vertical, previene zoom/selección en tap rápido
-   - user-select: none en .word → evita que el tap en palabras las seleccione visualmente
-   La selección manual mediante long-press sigue funcionando a nivel del navegador. */
+/* FAB (Floating Audio Button) */
+.fab-btn {
+  background: var(--th-fab-bg);
+  color: var(--th-fab-color);
+  border-color: var(--th-border-btn);
+}
+.fab-btn:hover {
+  transform: scale(1.05);
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+
+
+/* Toque Fluido: evitar selecciÃ³n accidental en tap simple sin bloquear long-press del diccionario.
+   - touch-action: pan-y â†’ permite scroll vertical, previene zoom/selecciÃ³n en tap rÃ¡pido
+   - user-select: none en .word â†’ evita que el tap en palabras las seleccione visualmente
+   La selecciÃ³n manual mediante long-press sigue funcionando a nivel del navegador. */
 .reading-canvas.tap-to-scroll-active {
   touch-action: pan-y;
 }
@@ -4089,7 +4055,7 @@
   pointer-events: none; /* El tap va al canvas, no a la palabra, para que onCanvasClick maneje el scroll */
 }
 
-/* Botón de modo inmersivo en el toolbar */
+/* BotÃ³n de modo inmersivo en el toolbar */
 .immersive-toggle-btn {
   position: relative;
 }
@@ -4109,9 +4075,9 @@
 .btn-kokoro-local { background: #333; color: #ff5555; border: 1px solid #ff5555; padding: 6px 12px; border-radius: 6px; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 0 5px rgba(255,85,85,0.2); margin-top: 10px; width: 100%; } .btn-kokoro-local.active { background: #1a4a1a; color: #55ff55; border-color: #55ff55; box-shadow: 0 0 8px rgba(85,255,85,0.4); cursor: pointer; } .btn-kokoro-local.downloading { background: #4a4a1a; color: #ffff55; border-color: #ffff55; pointer-events: none; } .kokoro-progress-bar { width: 100%; height: 6px; background: #222; border-radius: 3px; margin-top: 8px; overflow: hidden; } .kokoro-progress-fill { height: 100%; background: #ffff55; transition: width 0.2s ease; }
 
 /* Immersive Mode: NO cambiamos padding-top para evitar el layout shift (salto).
-   El toolbar usa position:absolute, no afecta el flujo, así que el padding es siempre constante. */
+   El toolbar usa position:absolute, no afecta el flujo, asÃ­ que el padding es siempre constante. */
 .workbench-container.immersive .reading-canvas {
-  /* padding-top intencionalente NO se modifica aquí */
+  /* padding-top intencionalente NO se modifica aquÃ­ */
   padding-bottom: 24px !important;
 }
 
@@ -4153,7 +4119,7 @@
   .sidebar-header {
     padding: 0.75rem !important;
     background: rgba(26,26,46,0.95) !important;
-    position: relative !important; /* Evitar solapamiento en móvil */
+    position: relative !important; /* Evitar solapamiento en mÃ³vil */
   }
 }
 /* MOVILES (Teclado abierto o pantallas bajas): Maximizar espacio para el chat */
