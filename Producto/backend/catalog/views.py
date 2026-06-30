@@ -82,7 +82,7 @@ class BookViewSet(viewsets.ReadOnlyModelViewSet):
         
         has_ai = self.request.query_params.get('has_ai_avatars', None)
         if has_ai and has_ai.lower() == 'true':
-            qs = qs.filter(ai_character_count__gt=0)
+            qs = qs.filter(ai_character_count__gt=0).order_by('-ai_character_count', '-is_featured', '-created_at')
         
         genre_name = self.request.query_params.get('genres__name', None)
         if genre_name:
