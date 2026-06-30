@@ -1959,9 +1959,9 @@ font-family: 'Outfit', sans-serif;
 
 .sidebar-divider {
   height: 1px;
-  background-color: var(--th-border-sidebar);
+  background: linear-gradient(90deg, transparent, var(--th-text-secondary), transparent);
   margin: 0.5rem 1.5rem;
-  opacity: 0.5;
+  opacity: 0.3;
 }
 
 .chat-header {
