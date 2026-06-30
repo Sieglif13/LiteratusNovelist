@@ -43,8 +43,8 @@ export class AppComponent implements OnInit {
   }
   
   userAvatarUrl: string | null = null;
-  userAvatarColor: string = '#7c3aed'; // default purple, synced from profile
-  
+  userAvatarColor: string = localStorage.getItem('user_avatar_color') || '#7c3aed'; // default purple or cached
+
   // Animación Tinta
   shakeState = 'default';
   inkBalance$ = this.chatService.inkBalance$;
@@ -117,6 +117,7 @@ export class AppComponent implements OnInit {
         }
         if (profile && profile.avatar_color) {
           this.userAvatarColor = profile.avatar_color;
+          localStorage.setItem('user_avatar_color', profile.avatar_color);
         }
       }
     });

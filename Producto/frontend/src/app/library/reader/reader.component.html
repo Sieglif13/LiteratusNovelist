@@ -566,7 +566,7 @@
       <ng-container *ngIf="titleTokens.length === 0">{{ chapterTitle }}</ng-container>
     </h1>
 
-    <ng-container *ngFor="let block of parsedBlocks; trackBy: trackByBlock">
+    <ng-container *ngFor="let block of renderedBlocks; trackBy: trackByBlock">
 
       <!-- Imagen a nivel raíz (standalone) -->
       <figure *ngIf="block.tag === 'img-block'" class="chapter-image">

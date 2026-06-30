@@ -164,6 +164,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
       }>;
     }>;
   }> = [];
+  renderedBlocks: typeof this.parsedBlocks = [];
   titleTokens: any[] = [];
   private totalWordCount: number = 0;
 
@@ -995,27 +996,44 @@ export class ReaderComponent implements OnInit, OnDestroy {
     const viewer = document.querySelector('.reading-canvas');
     if (viewer) viewer.scrollTop = 0;
 
-    // Restore scroll position once Angular has rendered *ngFor tokens
-    setTimeout(() => {
-      if (this.savedProgressData) {
-        if (this.savedProgressData.wordId) {
-          const idx = parseInt(this.savedProgressData.wordId.split('-')[1]);
-          if (!isNaN(idx)) this.scrollWordIntoView(idx, true);
-        } else if (this.savedProgressData.scrollPercent && viewer) {
-          viewer.scrollTop = this.savedProgressData.scrollPercent * (viewer.scrollHeight - viewer.clientHeight);
-        }
-        this.savedProgressData = null;
-      } else if (this.currentWordIndex > 0) {
-        this.scrollWordIntoView(this.currentWordIndex, true);
-      }
-
-      // Dismiss loading overlay after scroll settles
-      setTimeout(() => {
-        this.isOverlayActive = false;
-        this.checkIfNearEnd();
+    // Iniciar renderizado progresivo para evitar bloquear el hilo principal
+    this.renderedBlocks = [];
+    
+    const renderChunks = (startIndex: number) => {
+      const chunkSize = 15;
+      const chunk = this.parsedBlocks.slice(startIndex, startIndex + chunkSize);
+      
+      if (chunk.length > 0) {
+        this.renderedBlocks = [...this.renderedBlocks, ...chunk];
         this.cdr.detectChanges();
-      }, 350); // enough time for smooth scroll to finish
-    }, 200); // enough time for Angular *ngFor to render
+        
+        // Una vez que se pinta el primer trozo, restaurar scroll y ocultar Lottie
+        if (startIndex === 0) {
+          setTimeout(() => {
+            if (this.savedProgressData) {
+              if (this.savedProgressData.wordId) {
+                const idx = parseInt(this.savedProgressData.wordId.split('-')[1]);
+                if (!isNaN(idx)) this.scrollWordIntoView(idx, true);
+              } else if (this.savedProgressData.scrollPercent && viewer) {
+                viewer.scrollTop = this.savedProgressData.scrollPercent * (viewer.scrollHeight - viewer.clientHeight);
+              }
+              this.savedProgressData = null;
+            } else if (this.currentWordIndex > 0) {
+              this.scrollWordIntoView(this.currentWordIndex, true);
+            }
+            
+            this.isOverlayActive = false;
+            this.checkIfNearEnd();
+            this.cdr.detectChanges();
+          }, 50);
+        }
+        
+        // Continuar pintando el resto en el siguiente frame
+        setTimeout(() => renderChunks(startIndex + chunkSize), 20);
+      }
+    };
+    
+    renderChunks(0);
   }
 
   /**
