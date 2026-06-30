@@ -702,31 +702,46 @@ export class ReaderComponent implements OnInit, OnDestroy {
     localStorage.setItem('reader-bionic-reading', String(value));
   }
 
+  isAlphanumeric(c: string): boolean {
+    const code = c.charCodeAt(0);
+    return (code >= 48 && code <= 57) || // 0-9
+           (code >= 65 && code <= 90) || // A-Z
+           (code >= 97 && code <= 122) || // a-z
+           code >= 128; // Acentos y español
+  }
+
   getBionicSplit(word: string): { bold: string; normal: string } {
     if (!word) return { bold: '', normal: '' };
-    let cleanWord = word;
-    let prefix = '';
-    let suffix = '';
-    const match = word.match(/^([^\w]*)(.*?)([^\w]*)$/);
-    if (match) {
-      prefix = match[1];
-      cleanWord = match[2];
-      suffix = match[3];
+    const len = word.length;
+    
+    let start = 0;
+    while (start < len && !this.isAlphanumeric(word[start])) {
+      start++;
     }
-    if (cleanWord.length === 0) {
-      return { bold: prefix, normal: suffix };
+    
+    let end = len - 1;
+    while (end >= start && !this.isAlphanumeric(word[end])) {
+      end--;
     }
+    
+    if (start > end) {
+      return { bold: word, normal: '' };
+    }
+    
+    const prefix = word.substring(0, start);
+    const cleanWord = word.substring(start, end + 1);
+    const suffix = word.substring(end + 1);
+    
+    const cleanLen = cleanWord.length;
     let boldLength = 1;
-    const len = cleanWord.length;
-    if (len === 1) {
+    if (cleanLen === 1 || cleanLen === 2) {
       boldLength = 1;
-    } else if (len === 2) {
-      boldLength = 1;
-    } else if (len === 3) {
+    } else if (cleanLen === 3) {
       boldLength = 2;
     } else {
-      boldLength = Math.ceil(len * 0.45);
+      boldLength = Math.ceil(cleanLen * 0.45);
     }
+    
     return {
       bold: prefix + cleanWord.substring(0, boldLength),
       normal: cleanWord.substring(boldLength) + suffix
@@ -999,16 +1014,41 @@ export class ReaderComponent implements OnInit, OnDestroy {
     // Iniciar renderizado progresivo para evitar bloquear el hilo principal
     this.renderedBlocks = [];
     
+    // Determinar en qué bloque está el progreso guardado para restaurarlo correctamente
+    let targetBlockIndex = 0;
+    let needsFullRender = false;
+    
+    if (this.savedProgressData) {
+      if (this.savedProgressData.wordId) {
+        const targetIdx = parseInt(this.savedProgressData.wordId.split('-')[1]);
+        if (!isNaN(targetIdx)) {
+          targetBlockIndex = this.parsedBlocks.findIndex(b => b.tokens.some((t: any) => t.idx === targetIdx));
+        }
+      } else if (this.savedProgressData.scrollPercent) {
+        needsFullRender = true; // Para porcentaje de scroll necesitamos todo el alto del documento
+      }
+    } else if (this.currentWordIndex > 0) {
+      targetBlockIndex = this.parsedBlocks.findIndex(b => b.tokens.some((t: any) => t.idx === this.currentWordIndex));
+    }
+    
+    if (targetBlockIndex === -1) targetBlockIndex = 0;
+    let lottieDismissed = false;
+
     const renderChunks = (startIndex: number) => {
-      const chunkSize = 15;
+      // Usar un chunk más grande si estamos tratando de alcanzar rápido el progreso
+      const chunkSize = (startIndex <= targetBlockIndex || needsFullRender) ? 50 : 15;
       const chunk = this.parsedBlocks.slice(startIndex, startIndex + chunkSize);
       
       if (chunk.length > 0) {
         this.renderedBlocks = [...this.renderedBlocks, ...chunk];
         this.cdr.detectChanges();
         
-        // Una vez que se pinta el primer trozo, restaurar scroll y ocultar Lottie
-        if (startIndex === 0) {
+        const nextIndex = startIndex + chunkSize;
+        const reachedTarget = needsFullRender ? (nextIndex >= this.parsedBlocks.length) : (nextIndex > targetBlockIndex);
+        
+        // Una vez alcanzado el bloque del progreso, restaurar scroll y ocultar Lottie
+        if (reachedTarget && !lottieDismissed) {
+          lottieDismissed = true;
           setTimeout(() => {
             if (this.savedProgressData) {
               if (this.savedProgressData.wordId) {
@@ -1029,7 +1069,14 @@ export class ReaderComponent implements OnInit, OnDestroy {
         }
         
         // Continuar pintando el resto en el siguiente frame
-        setTimeout(() => renderChunks(startIndex + chunkSize), 20);
+        if (nextIndex < this.parsedBlocks.length) {
+          setTimeout(() => renderChunks(nextIndex), 16);
+        }
+      } else if (!lottieDismissed) {
+        lottieDismissed = true;
+        this.isOverlayActive = false;
+        this.checkIfNearEnd();
+        this.cdr.detectChanges();
       }
     };
     
