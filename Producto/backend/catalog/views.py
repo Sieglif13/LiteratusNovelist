@@ -73,7 +73,7 @@ class BookViewSet(viewsets.ReadOnlyModelViewSet):
     search_fields = ['title', 'synopsis', 'book_authors__author__full_name', 'genres__name']
     
     # Ordenamiento DRF: ?ordering=-created_at
-    ordering_fields = ['title', 'created_at', 'is_featured', '?']
+    ordering_fields = ['title', 'created_at', 'is_featured', 'ai_character_count', '?']
     ordering = ['-is_featured', '-created_at'] # Por defecto los destacados y luego más nuevos
 
     def get_queryset(self):
@@ -82,7 +82,7 @@ class BookViewSet(viewsets.ReadOnlyModelViewSet):
         
         has_ai = self.request.query_params.get('has_ai_avatars', None)
         if has_ai and has_ai.lower() == 'true':
-            qs = qs.filter(ai_character_count__gt=0).order_by('-ai_character_count', '-is_featured', '-created_at')
+            qs = qs.filter(ai_character_count__gt=0)
         
         genre_name = self.request.query_params.get('genres__name', None)
         if genre_name:
