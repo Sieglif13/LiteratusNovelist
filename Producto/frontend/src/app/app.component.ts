@@ -43,6 +43,7 @@ export class AppComponent implements OnInit {
   }
   
   userAvatarUrl: string | null = null;
+  userAvatarColor: string = '#7c3aed'; // default purple, synced from profile
   
   // Animación Tinta
   shakeState = 'default';
@@ -113,6 +114,9 @@ export class AppComponent implements OnInit {
       next: (profile) => {
         if (profile && profile.avatar) {
           this.userAvatarUrl = profile.avatar;
+        }
+        if (profile && profile.avatar_color) {
+          this.userAvatarColor = profile.avatar_color;
         }
       }
     });

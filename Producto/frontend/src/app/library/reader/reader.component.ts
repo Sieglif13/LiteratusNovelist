@@ -792,7 +792,9 @@ export class ReaderComponent implements OnInit, OnDestroy {
   }
 
   renderCurrentChapter() {
-    this.parseAndRenderChapter();
+    // Defer to next task so the Lottie animation keeps running
+    // (avoids blocking the main thread during heavy chapter tokenization)
+    setTimeout(() => this.parseAndRenderChapter(), 0);
   }
 
   isActiveSentence(sentence: any): boolean {
@@ -993,7 +995,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
     const viewer = document.querySelector('.reading-canvas');
     if (viewer) viewer.scrollTop = 0;
 
-    // Restaurar posición si hay datos guardados para esta página
+    // Restore scroll position once Angular has rendered *ngFor tokens
     setTimeout(() => {
       if (this.savedProgressData) {
         if (this.savedProgressData.wordId) {
@@ -1002,17 +1004,18 @@ export class ReaderComponent implements OnInit, OnDestroy {
         } else if (this.savedProgressData.scrollPercent && viewer) {
           viewer.scrollTop = this.savedProgressData.scrollPercent * (viewer.scrollHeight - viewer.clientHeight);
         }
-        this.savedProgressData = null; // Limpiar después de restaurar
+        this.savedProgressData = null;
       } else if (this.currentWordIndex > 0) {
         this.scrollWordIntoView(this.currentWordIndex, true);
       }
 
+      // Dismiss loading overlay after scroll settles
       setTimeout(() => {
         this.isOverlayActive = false;
-        this.checkIfNearEnd(); // Validar si el capítulo es muy corto para mostrar el botón
+        this.checkIfNearEnd();
         this.cdr.detectChanges();
-      }, 800); // Dar tiempo a que termine el smooth scroll
-    }, 500); // Dar tiempo a Angular a renderizar el *ngFor
+      }, 350); // enough time for smooth scroll to finish
+    }, 200); // enough time for Angular *ngFor to render
   }
 
   /**

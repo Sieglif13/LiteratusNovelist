@@ -220,15 +220,16 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  background: var(--glow-accent);
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
   font-size: 1.2rem;
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.15);
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  transition: background 0.3s ease;
 }
 
 .avatar-btn:hover {
