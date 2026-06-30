@@ -140,6 +140,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
   isAudioPanelOpen: boolean = false;
   currentChapterPlainText: string = '';
   proErrorMessage: string = '';  // Mensaje de error Pro (no usa alert)
+  isFullyRendered: boolean = false; // Bloquea guardado de progreso hasta que todo el DOM exista
 
   // Economía de Tinta: desbloqueo PERMANENTE de Voz Premium
   readonly PREMIUM_VOICE_INK_COST = 200;  // Coste único de desbloqueo
@@ -534,6 +535,8 @@ export class ReaderComponent implements OnInit, OnDestroy {
   }
 
   onCanvasScroll(event: any) {
+    if (!this.isFullyRendered) return; // IGNORAR SCROLL HASTA QUE SE TERMINE DE RENDERIZAR TODO PARA NO SOBRESCRIBIR EL PROGRESO
+    
     const el = event.target;
     const currentScrollTop = el.scrollTop;
     
@@ -1071,15 +1074,22 @@ export class ReaderComponent implements OnInit, OnDestroy {
         // Continuar pintando el resto en el siguiente frame
         if (nextIndex < this.parsedBlocks.length) {
           setTimeout(() => renderChunks(nextIndex), 16);
+        } else {
+          // Finalizado el renderizado total
+          this.isFullyRendered = true;
         }
-      } else if (!lottieDismissed) {
-        lottieDismissed = true;
-        this.isOverlayActive = false;
-        this.checkIfNearEnd();
-        this.cdr.detectChanges();
+      } else {
+        if (!lottieDismissed) {
+          lottieDismissed = true;
+          this.isOverlayActive = false;
+          this.checkIfNearEnd();
+          this.cdr.detectChanges();
+        }
+        this.isFullyRendered = true;
       }
     };
     
+    this.isFullyRendered = false; // Bloquear guardado de scroll
     renderChunks(0);
   }
 
