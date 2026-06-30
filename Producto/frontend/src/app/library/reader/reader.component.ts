@@ -389,7 +389,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
           this.talkingInterval = setInterval(() => {
             this.activeTalkingFrame = Math.floor(Math.random() * 3) + 1;
             this.cdr.detectChanges();
-          }, 200); // Cambia el frame de manga cada 200ms
+          }, 2000); // Cambia el frame de manga cada 2s
         }
       } else {
         if (this.talkingInterval) {
