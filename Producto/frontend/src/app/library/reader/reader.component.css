@@ -1,4 +1,4 @@
-﻿/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    SISTEMA DE TOKENS DE COLOR â€” CSS Variables por tema
    ConvenciÃ³n de nombres:
      --th-bg-*       : fondos (bg = background)
@@ -1749,9 +1749,219 @@
   border-radius: 20px;
   overflow: hidden;
   background: rgba(10, 15, 35, 0.92);
+font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+}
+
+.chapter-name {
+  font-size: 1rem;
+}
+
+/* LIENZO DE LECTURA */
+.reading-canvas {
+  flex: 1;
+  overflow-y: auto;
+  padding: 80px calc((100% - 70ch) / 2) 150px calc((100% - 70ch) / 2);
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  transition: background 0.3s ease;
+}
+
+/* CONFIGURACIÓN DINÁMICA DE FUENTES */
+.reading-canvas.font-serif {
+  font-family: 'Merriweather', 'Georgia', serif;
+}
+.reading-canvas.font-sans {
+  font-family: 'Outfit', 'Montserrat', sans-serif;
+}
+.reading-canvas.font-dyslexic {
+  font-family: 'Comic Neue', 'Comic Sans MS', sans-serif;
+}
+.reading-canvas.font-medieval {
+  font-family: 'Cinzel', 'MedievalSharp', 'Georgia', serif;
+}
+.reading-canvas.font-garamond {
+  font-family: 'EB Garamond', 'Garamond', serif;
+}
+.reading-canvas.font-georgia {
+  font-family: 'Georgia', serif;
+}
+.reading-canvas.font-palatino {
+  font-family: 'Palatino', 'Palatino Linotype', 'Book Antiqua', serif;
+}
+.reading-canvas.font-opensans {
+  font-family: 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+.reading-canvas.font-helvetica {
+  font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+}
+
+.html-reader ::ng-deep p {
+  font-size: var(--font-size-reader);
+  line-height: 1.8;
+  margin-bottom: 0.8em;
+  text-align: justify;
+  text-indent: 2em; /* Sangría de primera línea */
+  font-family: inherit; /* Hereda de la clase del canvas */
+}
+
+.html-reader ::ng-deep h1 + p, 
+.html-reader ::ng-deep h2 + p, 
+.html-reader ::ng-deep h3 + p,
+.chapter-heading + p,
+.chapter-title-main + p {
+  text-indent: 0; /* Remover sangría después de un título (convención editorial) */
+}
+
+.html-reader ::ng-deep img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 3rem auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.html-reader ::ng-deep h1, 
+.html-reader ::ng-deep h2, 
+.html-reader ::ng-deep h3,
+.chapter-heading {
+  margin-top: 3.5rem;
+  margin-bottom: 2rem;
+  font-family: inherit; /* Hereda de la clase del canvas */
+  text-align: center;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.chapter-title-main {
+  font-family: inherit; /* Hereda de la clase del canvas */
+  font-size: calc(var(--font-size-reader) * 1.8);
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 3rem;
+  margin-top: 1rem;
+  letter-spacing: -0.02em;
+  color: inherit;
+}
+
+/* NAVEGACIÓN OVERLAY */
+.navigation-overlay {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 2rem;
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+
+.nav-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: white;
+  cursor: pointer;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  transition: all 0.2s;
+  backdrop-filter: blur(4px);
+}
+
+.nav-btn:hover:not(:disabled) {
+  background: rgba(59, 130, 246, 0.4);
+  transform: scale(1.1);
+}
+
+.nav-btn:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
+/* BOTÓN SIGUIENTE CAPÍTULO (AL FINAL DEL SCROLL) */
+.next-chapter-container {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 1200; /* Por encima de todo: overlay, panels, toolbar */
+  width: max-content;
+  max-width: calc(100vw - 40px);
+}
+
+.next-chapter-container.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.next-chapter-btn {
+  background: linear-gradient(135deg, #3b82f6, #a855f7);
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 30px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 10px 25px rgba(168, 85, 247, 0.4);
+  transition: all 0.3s ease;
+}
+
+.next-chapter-btn:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 15px 35px rgba(168, 85, 247, 0.6);
+}
+
+.next-chapter-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* VENTANA DE CHAT ESTILO WHATSAPP */
+.chat-window {
+  position: fixed;
+  bottom: 2rem;
+  left: calc(50% - 200px);
+  width: 420px;
+  max-height: 65vh;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(10, 15, 35, 0.92);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(168, 85, 247, 0.3);
   box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 30px rgba(168, 85, 247, 0.15);
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--th-border-sidebar);
+}
+
+.sidebar-divider {
+  height: 1px;
+  background-color: var(--th-border-sidebar);
+  margin: 0.5rem 1.5rem;
+  opacity: 0.5;
 }
 
 .chat-header {
@@ -1871,16 +2081,16 @@
 }
 
 .user-bubble {
-  background: linear-gradient(135deg, #6366f1, #3b82f6);
-  color: white;
+  background: var(--th-bg-bubble-user);
+  color: var(--th-text-bubble-user);
   border-bottom-right-radius: 4px;
 }
 
 .ai-bubble {
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--th-bg-bubble-ai);
+  border: 1px solid var(--th-border-sidebar);
   border-bottom-left-radius: 4px;
-  color: #e2e8f0;
+  color: var(--th-text-bubble-ai);
 }
 
 /* Indicador de escritura (typing) */
@@ -1985,7 +2195,7 @@
   border-top: 1px solid rgba(239, 68, 68, 0.2);
 }
 
-/* â”€â”€ OVERLAY DE CARGA DEL LIBRO â”€â”€ */
+/* ——— OVERLAY DE CARGA DEL LIBRO ——— */
 .reader-loading-overlay {
   position: fixed;
   top: 0;
@@ -2100,7 +2310,7 @@
   backdrop-filter: blur(16px);
   border: 1px solid #3f4248;
   border-top: 1px solid #5a5d63;
-  border-radius: 8px; /* Bordes mÃ¡s rectos */
+  border-radius: 8px; /* Bordes más rectos */
   padding: 0.6rem;
   display: flex;
   flex-direction: column;
@@ -2348,7 +2558,7 @@
 
 /* Modo Expandido con Avatar al lado */
 .chat-window.layout-with-avatar {
-  width: 900px; /* Un poco mÃ¡s ancho */
+  width: 900px; /* Un poco más ancho */
   flex-direction: row;
 }
 
@@ -2393,14 +2603,14 @@
   pointer-events: none;
 }
 
-/* Video Avatar Container - RediseÃ±o Circular y Grande */
+/* Video Avatar Container - Rediseño Circular y Grande */
 .video-avatar-container {
   width: 100%;
   height: 320px; /* Aumentamos la altura del contenedor */
-  background: radial-gradient(circle, rgba(126, 87, 194, 0.15) 0%, rgba(15, 23, 42, 0.95) 100%);
+  background: radial-gradient(circle, rgba(126, 87, 194, 0.15) 0%, var(--th-bg-sidebar) 100%);
   overflow: hidden;
   position: relative;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--th-border-sidebar);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -2432,16 +2642,6 @@
     inset 0 0 30px rgba(255, 255, 255, 0.2);
 }
 
-.avatar-video-element.speaking {
-  filter: none;
-  border-color: #9575cd;
-  transform: scale(1.05);
-  box-shadow: 
-    0 0 30px rgba(126, 87, 194, 0.5),
-    0 0 60px rgba(126, 87, 194, 0.3),
-    inset 0 0 20px rgba(255, 255, 255, 0.1);
-}
-
 .voice-option.active {
   border-color: #3b82f6;
   background: rgba(59, 130, 246, 0.1);
@@ -2454,7 +2654,7 @@
   white-space: nowrap;
 }
 
-/* BADGE cuando la Voz Premium ya estÃ¡ desbloqueada */
+/* BADGE cuando la Voz Premium ya está desbloqueada */
 .unlocked-badge {
   color: #22d3ee !important;
   text-shadow: 0 0 8px rgba(34, 211, 238, 0.7);
@@ -2504,13 +2704,7 @@
   cursor: not-allowed;
 }
 
-.unlock-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* IMÃGENES DEL CAPÃTULO */
+/* IMÁGENES DEL CAPÍTULO */
 .chapter-image {
   margin: 2rem 0;
   text-align: center;
@@ -2531,7 +2725,7 @@
   display: block;
 }
 
-/* NEON WORD HIGHLIGHTING â€” EFECTO SPOTIFY */
+/* NEON WORD HIGHLIGHTING — EFECTO SPOTIFY */
 .word {
   transition: color 0.15s ease, text-shadow 0.15s ease, background 0.15s ease;
   display: inline;
@@ -2545,16 +2739,16 @@
   text-shadow: 0 0 4px rgba(34, 211, 238, 0.4);
 }
 
-/* â†“ Resaltado sutil tipo ReadEra (sin distorsiÃ³n ni reflow) */
+/* ↓ Resaltado sutil tipo ReadEra (sin distorsión ni reflow) */
 .active-word {
-  background-color: rgba(234, 179, 8, 0.4) !important; /* Amarillo suave/cÃ¡lido */
+  background-color: rgba(234, 179, 8, 0.4) !important; /* Amarillo suave/cálido */
   border-radius: 3px;
   color: inherit !important;
   transition: background-color 0.1s ease;
-  /* Eliminados padding, font-weight y animaciones de escala para EVITAR saltos de lÃ­nea */
+  /* Eliminados padding, font-weight y animaciones de escala para EVITAR saltos de línea */
 }
 
-/* â†“ Resaltado desactivado para Kokoro TTS a peticiÃ³n del usuario (ya que no tiene tiempos exactos) */
+/* ↓ Resaltado desactivado para Kokoro TTS a petición del usuario (ya que no tiene tiempos exactos) */
 .kokoro-active {
   /* Se elimina el subrayado/resaltado amarillo para evitar desincronizaciones visuales */
 }
@@ -2788,7 +2982,7 @@
   box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 20px rgba(168, 85, 247, 0.25);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  /* AnimaciÃ³n de entrada Pop */
+  /* Animación de entrada Pop */
   animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
   transform-origin: center bottom;
 }
@@ -2798,7 +2992,7 @@
   100% { transform: translate(-50%, -100%) scale(1); opacity: 1; }
 }
 
-/* Variantes de posiciÃ³n (arriba o abajo) */
+/* Variantes de posición (arriba o abajo) */
 .word-action-menu.menu-above {
   transform: translate(-50%, -100%);
   transform-origin: center bottom;
@@ -2821,7 +3015,7 @@
   box-shadow: 0 10px 25px rgba(0,0,0,0.1), 0 0 15px rgba(168, 85, 247, 0.15);
 }
 
-/* Indicador (TriÃ¡ngulo) */
+/* Indicador (Triángulo) */
 .word-action-menu::after {
   content: '';
   position: absolute;
@@ -2830,14 +3024,14 @@
   border-style: solid;
 }
 
-/* TriÃ¡ngulo apuntando hacia abajo (menÃº arriba) */
+/* Triángulo apuntando hacia abajo (menú arriba) */
 .word-action-menu.menu-above::after {
   bottom: -7px;
   border-width: 7px 7px 0;
   border-color: rgba(168, 85, 247, 0.5) transparent transparent transparent;
 }
 
-/* TriÃ¡ngulo apuntando hacia arriba (menÃº abajo) */
+/* Triángulo apuntando hacia arriba (menú abajo) */
 .word-action-menu.menu-below::after {
   top: -7px;
   border-width: 0 7px 7px;
@@ -2857,7 +3051,7 @@
   border: none;
   color: inherit;
   padding: 0 20px;
-  height: 44px; /* Touch target mÃ³vil */
+  height: 44px; /* Touch target móvil */
   text-align: left;
   border-radius: 10px;
   cursor: pointer;
@@ -2999,7 +3193,7 @@
   color: #7c3aed;
 }
 
-/* â”€â”€ ANIMACIONES Y ESTILOS PARA MARCADOR â”€â”€ */
+/* ——— ANIMACIONES Y ESTILOS PARA MARCADOR ——— */
 .bookmark-toast {
   position: fixed;
   top: 100px;
@@ -3251,7 +3445,7 @@
   to { transform: rotate(0); }
 }
 
-/* Resaltado estilo ReadEra por pÃ¡rrafo (INLINE TEXT) */
+/* Resaltado estilo ReadEra por párrafo (INLINE TEXT) */
 .active-paragraph-text {
   background-color: rgba(234, 179, 8, 0.25) !important;
   border-radius: 4px;
@@ -3266,19 +3460,19 @@
   background-color: rgba(234, 179, 8, 0.15) !important;
 }
 
-/* SangrÃ­a y espaciado de pÃ¡rrafos para evitar acoplamiento */
+/* Sangría y espaciado de párrafos para evitar acoplamiento */
 .reader-content p {
   text-indent: 1.5rem;
   margin-bottom: 1.2rem;
   line-height: 1.7;
 }
 
-/* El primer pÃ¡rrafo usualmente no lleva sangrÃ­a en los libros */
+/* El primer párrafo usualmente no lleva sangría en los libros */
 .reader-content p:first-of-type {
   text-indent: 0;
 }
 
-/* â”€â”€ ESTILOS EXCLUSIVOS MANGA / NOVELA VISUAL â”€â”€ */
+/* ——— ESTILOS EXCLUSIVOS MANGA / NOVELA VISUAL ——— */
 .chat-manga-panel {
   position: relative;
   width: 100%;
@@ -3302,7 +3496,7 @@
 }
 
 .chat-manga-panel.immersive-manga {
-  height: 45vh; /* Panel mÃ¡s grande y dramÃ¡tico en Modo Llamada */
+  height: 45vh; /* Panel más grande y dramático en Modo Llamada */
   border-bottom: none;
 }
 
@@ -3330,7 +3524,7 @@
 .chat-manga-panel.immersive-manga .manga-portrait-container {
   width: 260px;
   height: 260px;
-  border-radius: 24px; /* Cuadrado con esquinas redondeadas tipo carta de colecciÃ³n */
+  border-radius: 24px; /* Cuadrado con esquinas redondeadas tipo carta de colección */
   border: 4px solid rgba(168, 85, 247, 0.6);
   box-shadow: 0 12px 48px rgba(168, 85, 247, 0.5);
 }
@@ -3354,7 +3548,7 @@
   50% { transform: scale(1.08); }
 }
 
-/* Pose Pensando: AÃ±adir un suave desenfoque y efecto glow violeta */
+/* Pose Pensando: Añadir un suave desenfoque y efecto glow violeta */
 .chat-manga-img.thinking {
   animation: thinkingPulse 2s infinite ease-in-out;
   filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.8)) brightness(1.1);
@@ -3365,7 +3559,7 @@
   50% { transform: scale(1.06) rotate(1deg); filter: drop-shadow(0 0 18px rgba(168, 85, 247, 0.9)); }
 }
 
-/* Pose Hablando: Pose estÃ¡tica con iluminaciÃ³n y sombreado cian */
+/* Pose Hablando: Pose estática con iluminación y sombreado cian */
 .chat-manga-img.speaking {
   filter: brightness(1.05) drop-shadow(0 4px 12px rgba(6, 182, 212, 0.5));
   border-color: rgba(6, 182, 212, 0.8);
@@ -3480,7 +3674,7 @@
 }
 
 
-/* LECTURA BIÃ“NICA Y COLORES DE CONTRASTE (SIN DESPLAZAMIENTO DE TEXTO) */
+/* LECTURA BIÓNICA Y COLORES DE CONTRASTE (SIN DESPLAZAMIENTO DE TEXTO) */
 .html-reader .bionic-bold {
   display: inline;
   font-weight: normal; /* Mantiene el ancho original de la fuente para que el texto NO salte */
@@ -3490,7 +3684,7 @@
 /* Modo Oscuro */
 .theme-dark .html-reader .bionic-bold {
   color: #60a5fa; /* Azul brillante premium con excelente contraste en fondo oscuro */
-  text-shadow: 0.8px 0 0 currentColor; /* Un poco mÃ¡s de contraste simulado en oscuro */
+  text-shadow: 0.8px 0 0 currentColor; /* Un poco más de contraste simulado en oscuro */
 }
 .theme-dark .html-reader .bionic-muted {
   opacity: 0.55;
@@ -3508,16 +3702,16 @@
 
 /* Modo Sepia */
 .theme-sepia .html-reader .bionic-bold {
-  color: #1e110a; /* MarrÃ³n oscuro muy profundo para contraste */
+  color: #1e110a; /* Marrón oscuro muy profundo para contraste */
 }
 .theme-sepia .html-reader .bionic-muted {
   opacity: 0.55;
   color: #796a5f;
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
    FIXES DE TEMA: sidebars hardcoded ahora respetan el tema activo
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+———————————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 .theme-light .char-sidebar {
   background: #f0f4f8;
@@ -3557,20 +3751,20 @@
   color: rgba(91, 70, 54, 0.6);
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   RESPONSIVE MÃ“VIL â€” Breakpoint principal: 768px
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ————————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+   RESPONSIVE MÓVIL — Breakpoint principal: 768px
+———————————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 
 @media (max-width: 768px) {
 
-  /* â”€â”€ LIENZO DE LECTURA: eliminar scroll horizontal â”€â”€ */
+  /* ——— LIENZO DE LECTURA: eliminar scroll horizontal ——— */
   .reading-canvas {
     overflow-x: hidden;
-    padding: 72px 16px 100px; /* top para toolbar, bottom para botÃ³n siguiente */
+    padding: 72px 16px 100px; /* top para toolbar, bottom para botón siguiente */
     max-width: 100vw;
   }
 
-  /* â”€â”€ TOOLBAR: Colapsar en 2 filas compactas â”€â”€ */
+  /* ——— TOOLBAR: Colapsar en 2 filas compactas ——— */
   .toolbar {
     flex-wrap: wrap;
     padding: 6px 12px;
@@ -3579,13 +3773,13 @@
     min-height: 56px;
   }
 
-  /* Fila 1: volver + tÃ­tulo + personajes (ocupa todo el ancho) */
+  /* Fila 1: volver + título + personajes (ocupa todo el ancho) */
   .toolbar-left {
     flex: 1 1 100%;
     gap: 8px;
   }
 
-  /* Ocultar texto del tÃ­tulo del capÃ­tulo en mÃ³vil para ahorrar espacio */
+  /* Ocultar texto del título del capítulo en móvil para ahorrar espacio */
   .chapter-label {
     font-size: 0.8rem;
     white-space: nowrap;
@@ -3613,45 +3807,45 @@
     display: none; /* Chrome/Safari */
   }
 
-  /* Ocultar selector de fuente en mÃ³vil (es un control secundario) */
+  /* Ocultar selector de fuente en móvil (es un control secundario) */
   .font-family-selector {
     display: none;
   }
 
-  /* Ocultar el selector de "Fijar/Ocultar lÃ­nea" en mÃ³vil */
+  /* Ocultar el selector de "Fijar/Ocultar línea" en móvil */
   .progress-hide-selector {
     display: none;
   }
 
-  /* Tinta mÃ¡s compacta */
+  /* Tinta más compacta */
   .ink-counter {
     padding: 4px 8px;
     font-size: 0.8rem;
   }
 
-  /* Controles de fuente mÃ¡s compactos */
+  /* Controles de fuente más compactos */
   .font-controls button {
     padding: 4px 8px;
     font-size: 0.85rem;
   }
 
-  /* Dropdowns mÃ¡s pequeÃ±os */
+  /* Dropdowns más pequeños */
   .theme-dropdown,
   .font-family-dropdown {
     padding: 4px 8px;
     font-size: 0.8rem;
   }
 
-  /* â”€â”€ BARRA DE PROGRESO: ajustar al alto real de la toolbar en mÃ³vil â”€â”€ */
+  /* ——— BARRA DE PROGRESO: ajustar al alto real de la toolbar en móvil ——— */
   .reading-progress-container {
-    top: 86px; /* toolbar 2 filas â‰ˆ 86px en mÃ³vil */
+    top: 86px; /* toolbar 2 filas ≈ 86px en móvil */
   }
 
   .reading-progress-container.toolbar-hidden {
     top: 0px;
   }
 
-  /* â”€â”€ SIDEBAR DE PERSONAJES: pantalla completa en mÃ³vil â”€â”€ */
+  /* ——— SIDEBAR DE PERSONAJES: pantalla completa en móvil ——— */
   .char-sidebar {
     width: 100vw !important; /* Pantalla completa en lugar de 380px */
     max-width: 100vw;
@@ -3663,14 +3857,14 @@
     width: 100vw !important;
   }
 
-  /* â”€â”€ SIDEBAR TOC: pantalla completa en mÃ³vil â”€â”€ */
+  /* ——— SIDEBAR TOC: pantalla completa en móvil ——— */
   .toc-sidebar {
     width: 100vw !important;
     right: 0;
     left: 0;
   }
 
-  /* â”€â”€ BOTÃ“N SIGUIENTE CAPÃTULO: centrado y con buen tamaÃ±o tÃ¡ctil â”€â”€ */
+  /* ——— BOTÓN SIGUIENTE CAPÍTULO: centrado y con buen tamaño táctil ——— */
   .next-chapter-container {
     bottom: 20px;
     width: calc(100vw - 48px);
@@ -3685,7 +3879,7 @@
     border-radius: 16px;
   }
 
-  /* â”€â”€ PANEL DE AUDIO: adaptado a mÃ³vil â”€â”€ */
+  /* ——— PANEL DE AUDIO: adaptado a móvil ——— */
   .audio-controls-panel {
     width: calc(100vw - 24px) !important;
     left: 12px !important;
@@ -3694,14 +3888,14 @@
     overflow-y: auto;
   }
 
-  /* â”€â”€ IMÃGENES INLINE: no desbordar â”€â”€ */
+  /* ——— IMÁGENES INLINE: no desbordar ——— */
   .inline-img,
   .chapter-image img {
     max-width: 100%;
     height: auto;
   }
 
-  /* â”€â”€ MENÃš FLOTANTE DE PALABRAS: centrado en mÃ³vil â”€â”€ */
+  /* ——— MENÚ FLOTANTE DE PALABRAS: centrado en móvil ——— */
   .word-action-menu {
     left: 50% !important;
     transform: translateX(-50%) !important;
@@ -3710,201 +3904,7 @@
   }
 }
 
-/* Breakpoint extra pequeÃ±o (iPhone SE, 375px) */
-@media (max-width: 400px) {
-  .chapter-label {
-    max-width: 120px;
-  }
-
-  .ink-counter .ink-number {
-    display: none; /* Solo mostrar el icono de tinta para ahorrar espacio */
-  }
-
-  .font-controls button {
-    padding: 4px 6px;
-  }
-}
-
-/* EFECTO DE RESALTADO AL HACER TAP-TO-SCROLL */
-.tap-highlight-fade {
-  animation: highlightFade 2.5s ease-out forwards;
-  border-radius: 4px;
-}
-
-.theme-light .char-name,
-.theme-light .sidebar-title,
-.theme-light .profile-name {
-  color: #1e293b;
-}
-.theme-light .char-role,
-.theme-light .char-status {
-  color: rgba(30, 41, 59, 0.5);
-}
-
-.theme-sepia .char-name,
-.theme-sepia .sidebar-title,
-.theme-sepia .profile-name {
-  color: #3b2a1a;
-}
-.theme-sepia .char-role,
-.theme-sepia .char-status {
-  color: rgba(91, 70, 54, 0.6);
-}
-
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   RESPONSIVE MÃ“VIL â€” Breakpoint principal: 768px
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
-
-@media (max-width: 768px) {
-
-  /* â”€â”€ LIENZO DE LECTURA: eliminar scroll horizontal â”€â”€ */
-  .reading-canvas {
-    overflow-x: hidden;
-    padding: 72px 16px 100px; /* top para toolbar, bottom para botÃ³n siguiente */
-    max-width: 100vw;
-  }
-
-  /* â”€â”€ TOOLBAR: Colapsar en 2 filas compactas â”€â”€ */
-  .toolbar {
-    flex-wrap: wrap;
-    padding: 6px 12px;
-    gap: 6px;
-    height: auto;
-    min-height: 56px;
-  }
-
-  /* Fila 1: volver + tÃ­tulo + personajes (ocupa todo el ancho) */
-  .toolbar-left {
-    flex: 1 1 100%;
-    gap: 8px;
-  }
-
-  /* Ocultar texto del tÃ­tulo del capÃ­tulo en mÃ³vil para ahorrar espacio */
-  .chapter-label {
-    font-size: 0.8rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 180px;
-  }
-
-  .progress-label {
-    font-size: 0.65rem;
-  }
-
-  /* Fila 2: todos los controles de lectura */
-  .reader-settings {
-    flex: 1 1 100%;
-    gap: 6px;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none;  /* IE/Edge */
-    padding-bottom: 2px;
-  }
-
-  .reader-settings::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
-  }
-
-  /* Ocultar selector de fuente en mÃ³vil (es un control secundario) */
-  .font-family-selector {
-    display: none;
-  }
-
-  /* Ocultar el selector de "Fijar/Ocultar lÃ­nea" en mÃ³vil */
-  .progress-hide-selector {
-    display: none;
-  }
-
-  /* Tinta mÃ¡s compacta */
-  .ink-counter {
-    padding: 4px 8px;
-    font-size: 0.8rem;
-  }
-
-  /* Controles de fuente mÃ¡s compactos */
-  .font-controls button {
-    padding: 4px 8px;
-    font-size: 0.85rem;
-  }
-
-  /* Dropdowns mÃ¡s pequeÃ±os */
-  .theme-dropdown,
-  .font-family-dropdown {
-    padding: 4px 8px;
-    font-size: 0.8rem;
-  }
-
-  /* â”€â”€ BARRA DE PROGRESO: ajustar al alto real de la toolbar en mÃ³vil â”€â”€ */
-  .reading-progress-container {
-    top: 86px; /* toolbar 2 filas â‰ˆ 86px en mÃ³vil */
-  }
-
-  .reading-progress-container.toolbar-hidden {
-    top: 0px;
-  }
-
-  /* â”€â”€ SIDEBAR DE PERSONAJES: pantalla completa en mÃ³vil â”€â”€ */
-  .char-sidebar {
-    width: 100vw !important; /* Pantalla completa en lugar de 380px */
-    max-width: 100vw;
-    height: 100vh;
-    height: 100dvh;
-  }
-
-  .char-sidebar.is-chat-active {
-    width: 100vw !important;
-  }
-
-  /* â”€â”€ SIDEBAR TOC: pantalla completa en mÃ³vil â”€â”€ */
-  .toc-sidebar {
-    width: 100vw !important;
-    right: 0;
-    left: 0;
-  }
-
-  /* â”€â”€ BOTÃ“N SIGUIENTE CAPÃTULO: centrado y con buen tamaÃ±o tÃ¡ctil â”€â”€ */
-  .next-chapter-container {
-    bottom: 20px;
-    width: calc(100vw - 48px);
-    max-width: 400px;
-  }
-
-  .next-chapter-btn {
-    width: 100%;
-    justify-content: center;
-    font-size: 1rem;
-    padding: 14px 20px;
-    border-radius: 16px;
-  }
-
-  /* â”€â”€ PANEL DE AUDIO: adaptado a mÃ³vil â”€â”€ */
-  .audio-controls-panel {
-    width: calc(100vw - 24px) !important;
-    left: 12px !important;
-    right: 12px !important;
-    max-height: 70vh;
-    overflow-y: auto;
-  }
-
-  /* â”€â”€ IMÃGENES INLINE: no desbordar â”€â”€ */
-  .inline-img,
-  .chapter-image img {
-    max-width: 100%;
-    height: auto;
-  }
-
-  /* â”€â”€ MENÃš FLOTANTE DE PALABRAS: centrado en mÃ³vil â”€â”€ */
-  .word-action-menu {
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    width: calc(100vw - 32px);
-    max-width: 340px;
-  }
-}
-
-/* Breakpoint extra pequeÃ±o (iPhone SE, 375px) */
+/* Breakpoint extra pequeño (iPhone SE, 375px) */
 @media (max-width: 400px) {
   .chapter-label {
     max-width: 120px;
@@ -3956,8 +3956,8 @@
   margin-bottom: 0.5rem;
 }
 
-/* CHAT TOPBAR â€” Variables unificadas (funciona para todos los temas)
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* CHAT TOPBAR — Variables unificadas (funciona para todos los temas)
+———————————————————————————————————————————————————————————————————————————————————————————————————————————————————————— */
 .chat-topbar,
 .sidebar-chat-header,
 .sidebar-header {

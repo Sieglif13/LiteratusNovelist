@@ -139,10 +139,12 @@
           </div>
           <div class="char-info">
             <span class="char-name">{{ authorAvatar.name }}</span>
-            <span class="char-role">✍️ El Autor</span>
+            <span class="char-role"><span class="material-symbols-rounded" style="font-size: 14px; vertical-align: middle; margin-right: 4px;">history_edu</span>El Autor</span>
           </div>
           <span class="char-arrow">›</span>
         </div>
+
+        <div *ngIf="authorAvatar && characterAvatars.length > 0" class="sidebar-divider"></div>
 
         <!-- Personajes -->
         <div *ngFor="let avatar of characterAvatars"

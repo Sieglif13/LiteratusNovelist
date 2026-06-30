@@ -362,8 +362,8 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
           author: b.author_name || 'Desconocido',
           cover: b.cover_image || 'assets/default_cover.jpg',
           genre: (b.genres && b.genres.length > 0) ? b.genres[0].name : 'Ficción',
-          characterCount: b.ai_character_count
-        }));
+          characterCount: b.ai_character_count || 0
+        })).sort((a: any, b: any) => b.characterCount - a.characterCount);
         console.log("Mapped featuredWithCharacters:", this.featuredWithCharacters);
         this.cdr.detectChanges();
       },
