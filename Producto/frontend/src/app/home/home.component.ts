@@ -351,7 +351,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private loadAIBooks(): void {
-    this.api.get<any>('catalog/books/?has_ai_avatars=true&page_size=10').subscribe({
+    this.api.get<any>('catalog/books/?has_ai_avatars=true&ordering=-ai_character_count&page_size=10').subscribe({
       next: (response: any) => {
         if (this.destroy$.isStopped) return;
         const booksWithCharacters = response.results || response;
