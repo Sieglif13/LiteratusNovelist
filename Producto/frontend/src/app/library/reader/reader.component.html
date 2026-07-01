@@ -66,13 +66,10 @@
         </select>
       </div>
 
-      <!-- Selector de Comportamiento de Barra de Progreso -->
-      <div class="progress-hide-selector">
-        <select class="progress-hide-dropdown" [value]="hideProgressOnScroll ? 'hide' : 'keep'" (change)="setHideProgress($any($event.target).value === 'hide')" title="Comportamiento de barra de progreso">
-          <option value="hide">Ocultar línea</option>
-          <option value="keep">Fijar línea</option>
-        </select>
-      </div>
+      <!-- Toggle de Comportamiento de Barra de Progreso -->
+      <button class="toc-trigger-btn" (click)="setHideProgress(!hideProgressOnScroll)" [title]="hideProgressOnScroll ? 'Fijar línea de progreso' : 'Ocultar línea al leer'" [class.active]="!hideProgressOnScroll">
+        <span class="material-symbols-rounded" style="font-size:1.3rem;">linear_scale</span>
+      </button>
 
       <!-- Toggle de Lectura Biónica -->
       <button class="toc-trigger-btn" (click)="setBionicReading(!bionicReadingActive)" title="Lectura Biónica" [class.active]="bionicReadingActive">

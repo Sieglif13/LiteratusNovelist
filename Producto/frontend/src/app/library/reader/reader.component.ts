@@ -75,7 +75,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
   isTocOpen: boolean = false;
   lastScrollTop: number = 0;
   isToolbarHidden: boolean = false;
-  hideProgressOnScroll: boolean = true;
+  hideProgressOnScroll: boolean = false;
   bionicReadingActive: boolean = false;
   tapToScrollActive: boolean = false;
   showSceneImages: boolean = true;

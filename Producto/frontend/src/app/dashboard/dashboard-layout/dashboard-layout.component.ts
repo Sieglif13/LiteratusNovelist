@@ -11,6 +11,7 @@ import { SettingsService } from '../../core/services/settings.service';
 })
 export class DashboardLayoutComponent implements OnInit {
   sidebarCollapsed = false;
+  mobileSidebarOpen = false;
   pageTitle = 'Visión General';
   currentDate = new Date().toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
 
@@ -31,6 +32,7 @@ export class DashboardLayoutComponent implements OnInit {
       filter(e => e instanceof NavigationEnd)
     ).subscribe((e: any) => {
       this.pageTitle = this.pageTitles[e.urlAfterRedirects] || 'Dashboard';
+      this.mobileSidebarOpen = false; // Close sidebar on navigation
     });
 
     this.settingsService.currentTheme$.subscribe(theme => {
@@ -40,6 +42,10 @@ export class DashboardLayoutComponent implements OnInit {
 
   toggleSidebar(): void {
     this.sidebarCollapsed = !this.sidebarCollapsed;
+  }
+
+  toggleMobileSidebar(): void {
+    this.mobileSidebarOpen = !this.mobileSidebarOpen;
   }
 
   setThemeDirect(theme: string): void {

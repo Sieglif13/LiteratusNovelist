@@ -1,6 +1,6 @@
 <div class="nexus-layout">
   <!-- SIDEBAR -->
-  <aside class="nexus-sidebar" [class.collapsed]="sidebarCollapsed">
+  <aside class="nexus-sidebar" [class.collapsed]="sidebarCollapsed" [class.mobile-open]="mobileSidebarOpen">
     <div class="sidebar-header">
       <div class="logo-container">
         <div class="logo-icon-wrap">
@@ -73,11 +73,17 @@
     </div>
   </aside>
 
+  <!-- MOBILE OVERLAY -->
+  <div class="mobile-sidebar-overlay" *ngIf="mobileSidebarOpen" (click)="toggleMobileSidebar()"></div>
+
   <!-- MAIN CONTENT -->
   <div class="nexus-main">
     <!-- TOPBAR -->
     <header class="nexus-topbar">
       <div class="topbar-left">
+        <button class="mobile-menu-btn" (click)="toggleMobileSidebar()">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
         <div class="breadcrumb-wrap">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
           <span class="breadcrumb-sep">/</span>

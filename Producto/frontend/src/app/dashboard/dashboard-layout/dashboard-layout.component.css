@@ -232,7 +232,21 @@
   gap: 1rem;
 }
 
-.topbar-left { display: flex; align-items: center; }
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+
+.mobile-menu-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: #e2e8f0;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+}
+
+.mobile-menu-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
 
 .breadcrumb-wrap {
   display: flex;
@@ -339,8 +353,23 @@
   .nexus-sidebar.mobile-open {
     left: 0;
   }
+  .mobile-sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    backdrop-filter: blur(2px);
+  }
   .nexus-topbar {
     padding: 0 16px;
+  }
+  .mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .admin-badge, .topbar-date {
     display: none;
