@@ -433,7 +433,7 @@
         Voz de IA
       </label>
       <select class="voice-dropdown"
-              [value]="kokoroVoice.selectedVoiceId"
+              [(ngModel)]="kokoroVoice.selectedVoiceId"
               (change)="kokoroVoice.setVoice($any($event.target).value); stopAudio(true); playAudio()">
         <option *ngFor="let v of kokoroVoice.kokoroVoices" [value]="v.id">
           {{ v.name }}
@@ -533,8 +533,7 @@
               (click)="currentAudioMode === 'kokoro' ? kokoroVoice.stop() : (currentAudioMode === 'native-android' ? stopAudio() : audioService.pause())"
               title="Pausar"
               style="position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-        <span *ngIf="currentAudioMode !== 'kokoro' && currentAudioMode !== 'wasm'">⏸</span>
-        <div *ngIf="currentAudioMode === 'kokoro' || currentAudioMode === 'wasm'" #waveLottie class="lottie-theme-filter" style="position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; transform: translate(-32%, -50%) scale(1.5); display: flex; align-items: center; justify-content: center; transform-origin: 50% 50%;"></div>
+        <span class="material-symbols-rounded">pause</span>
       </button>
     </div>
 

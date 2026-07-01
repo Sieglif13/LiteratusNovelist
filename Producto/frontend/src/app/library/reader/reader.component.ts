@@ -235,23 +235,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
     }
   }
 
-  private _waveAnimation: any = null;
-  @ViewChild('waveLottie') set waveLottie(el: ElementRef) {
-    if (el && !this._waveAnimation) {
-      this._waveAnimation = lottie.loadAnimation({
-        container: el.nativeElement,
-        renderer: 'svg',
-        loop: true,
-        autoplay: true,
-        path: 'assets/lottie/WaveAnimation.json'
-      });
-    } else if (!el && this._waveAnimation) {
-      this._waveAnimation.destroy();
-      this._waveAnimation = null;
-    }
-  }
-
-  // Lottie animation for FAB removed
+  // Lottie animations removed
 
   ngOnInit() {
     this.inventoryId = this.route.snapshot.paramMap.get('id') || '';
