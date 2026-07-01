@@ -739,19 +739,31 @@
   </div>
 
   <!-- CONTROL FLOTANTE DE AUDIO -->
-  <div class="floating-audio-control" *ngIf="showFloatingAudioControl">
+  <div class="floating-audio-control" *ngIf="!isAudioPanelOpen && (
+    (currentAudioMode === 'kokoro' && ((kokoroVoice.isSpeaking$ | async) || isKokoroProcessing)) ||
+    (currentAudioMode === 'native-android' && ((nativeTts.isSpeaking$ | async) || isAudioLoading)) ||
+    (currentAudioMode !== 'kokoro' && currentAudioMode !== 'native-android' && ((audioService.isPlaying$ | async) || isAudioLoading))
+  )">
     <button class="fab-btn play"
             (click)="toggleAudioFromFab()"
             [disabled]="isAudioLoading || isKokoroProcessing"
             style="position: relative; overflow: hidden;">
       <!-- Icono Play: Si no está cargando y NO está reproduciendo -->
-      <span class="material-symbols-rounded" *ngIf="!isAudioLoading && !isKokoroProcessing && (currentAudioMode === 'kokoro' ? !(kokoroVoice.isSpeaking$ | async) : !(audioService.isPlaying$ | async))">play_arrow</span>
+      <span class="material-symbols-rounded" *ngIf="!isAudioLoading && !isKokoroProcessing && (
+        (currentAudioMode === 'kokoro' && !(kokoroVoice.isSpeaking$ | async)) ||
+        (currentAudioMode === 'native-android' && !(nativeTts.isSpeaking$ | async)) ||
+        (currentAudioMode !== 'kokoro' && currentAudioMode !== 'native-android' && !(audioService.isPlaying$ | async))
+      )">play_arrow</span>
       
       <!-- Icono de Pausa -->
       <span class="material-symbols-rounded" *ngIf="!isAudioLoading && !isKokoroProcessing && currentAudioMode === 'native' && (audioService.isPlaying$ | async)">pause</span>
       
       <!-- Spinner -->
-      <div *ngIf="!isAudioLoading && !isKokoroProcessing && ((currentAudioMode === 'kokoro' && (kokoroVoice.isSpeaking$ | async)) || (currentAudioMode === 'wasm' && (audioService.isPlaying$ | async)))" #waveLottieFab class="lottie-theme-filter" style="position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; transform: translate(-32%, -50%) scale(1.5); display: flex; align-items: center; justify-content: center; transform-origin: 50% 50%;"></div>
+      <div *ngIf="!isAudioLoading && !isKokoroProcessing && (
+        (currentAudioMode === 'kokoro' && (kokoroVoice.isSpeaking$ | async)) || 
+        (currentAudioMode === 'native-android' && (nativeTts.isSpeaking$ | async)) || 
+        (currentAudioMode === 'wasm' && (audioService.isPlaying$ | async))
+      )" #waveLottieFab class="lottie-theme-filter" style="position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; transform: translate(-32%, -50%) scale(1.5); display: flex; align-items: center; justify-content: center; transform-origin: 50% 50%;"></div>
     </button>
   </div>
 
