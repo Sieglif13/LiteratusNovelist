@@ -617,11 +617,9 @@ export class ReaderComponent implements OnInit, OnDestroy {
       return; 
     }
 
-    // Sin Toque Fluido: click en espacio vacío alterna el modo inmersivo
-    // (mismo comportamiento que el botón del toolbar)
+    // Sin Toque Fluido: click en espacio vacío alterna solo la visibilidad de la barra
     if (!this.tapToScrollActive) {
       this.isToolbarHidden = !this.isToolbarHidden;
-      this.toggleImmersiveMode(this.isToolbarHidden);
       return;
     }
     
@@ -763,11 +761,6 @@ export class ReaderComponent implements OnInit, OnDestroy {
   private applyTheme() {
     document.body.classList.remove('theme-dark', 'theme-light', 'theme-sepia', 'theme-nocturno');
     document.body.classList.add(`theme-${this.currentTheme}`);
-    const workbench = document.querySelector('.workbench-container');
-    if (workbench) {
-      workbench.classList.remove('theme-dark', 'theme-light', 'theme-sepia', 'theme-nocturno');
-      workbench.classList.add(`theme-${this.currentTheme}`);
-    }
   }
 
   // ── TOC ───────────────────────────────────────────────────────────
@@ -1144,10 +1137,12 @@ export class ReaderComponent implements OnInit, OnDestroy {
     this.tapToScrollActive = !this.tapToScrollActive;
   }
 
-  // Botón dedicado en el toolbar para activar/desactivar el modo inmersivo
+  isFullscreenActive: boolean = false;
+
+  // Botón dedicado en el toolbar para activar/desactivar el modo inmersivo (F11)
   toggleImmersiveButton() {
-    this.isToolbarHidden = !this.isToolbarHidden;
-    this.toggleImmersiveMode(this.isToolbarHidden);
+    this.isFullscreenActive = !this.isFullscreenActive;
+    this.toggleImmersiveMode(this.isFullscreenActive);
   }
 
   // ── ECONOMÍA DE TINTA: desbloqueo permanente de Voz Premium (REMOVED) ──────
