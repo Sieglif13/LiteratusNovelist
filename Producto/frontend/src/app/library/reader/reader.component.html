@@ -755,15 +755,12 @@
         (currentAudioMode !== 'kokoro' && currentAudioMode !== 'native-android' && !(audioService.isPlaying$ | async))
       )">play_arrow</span>
       
-      <!-- Icono de Pausa -->
-      <span class="material-symbols-rounded" *ngIf="!isAudioLoading && !isKokoroProcessing && currentAudioMode === 'native' && (audioService.isPlaying$ | async)">pause</span>
-      
-      <!-- Spinner -->
-      <div *ngIf="!isAudioLoading && !isKokoroProcessing && (
+      <!-- Icono de Pausa: Cuando está reproduciendo -->
+      <span class="material-symbols-rounded" *ngIf="!isAudioLoading && !isKokoroProcessing && (
         (currentAudioMode === 'kokoro' && (kokoroVoice.isSpeaking$ | async)) || 
         (currentAudioMode === 'native-android' && (nativeTts.isSpeaking$ | async)) || 
-        (currentAudioMode === 'wasm' && (audioService.isPlaying$ | async))
-      )" #waveLottieFab class="lottie-theme-filter" style="position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; transform: translate(-32%, -50%) scale(1.5); display: flex; align-items: center; justify-content: center; transform-origin: 50% 50%;"></div>
+        (currentAudioMode !== 'kokoro' && currentAudioMode !== 'native-android' && (audioService.isPlaying$ | async))
+      )">pause</span>
     </button>
   </div>
 

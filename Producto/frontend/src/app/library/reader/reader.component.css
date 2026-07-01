@@ -4055,15 +4055,21 @@ font-family: 'Outfit', sans-serif;
 
 /* FAB (Floating Audio Button) */
 .fab-btn {
-  background: var(--th-fab-bg);
-  color: var(--th-fab-color);
-  border-color: var(--th-border-btn);
+  background: white;
+  color: black;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
 }
 .fab-btn:hover {
   transform: scale(1.05);
-  background: #3b82f6;
-  color: white;
-  border-color: #3b82f6;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
 

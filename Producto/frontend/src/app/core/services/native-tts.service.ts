@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { registerPlugin } from '@capacitor/core';
+import { Capacitor, registerPlugin } from '@capacitor/core';
 import { BehaviorSubject } from 'rxjs';
 
 export interface NativeTtsPlugin {
@@ -32,6 +32,8 @@ export class NativeTtsService {
   }
 
   private initListeners() {
+    if (!Capacitor.isNativePlatform()) return;
+
     NativeTts.addListener('statusChanged', (info) => {
       this.status$.next(info.status);
       if (info.status === 'Ready') {
@@ -48,6 +50,7 @@ export class NativeTtsService {
   }
 
   async speak(fullText: string, startWordIndex: number = 0) {
+    if (!Capacitor.isNativePlatform()) return;
     this.clearSimulation();
     const words = fullText.split(/\s+/).filter(w => w.length > 0);
     
@@ -82,12 +85,14 @@ export class NativeTtsService {
   }
 
   async stop() {
+    if (!Capacitor.isNativePlatform()) return;
     this.clearSimulation();
     this.currentWordIndex$.next(-1);
     await NativeTts.stop();
   }
 
   async setVoice(voiceId: string) {
+    if (!Capacitor.isNativePlatform()) return;
     await NativeTts.setVoice({ voiceId });
   }
 
