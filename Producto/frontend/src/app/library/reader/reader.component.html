@@ -383,8 +383,8 @@
       <!-- VOZ PREMIUM AI (KOKORO) -->
       <div class="voice-option" [class.active]="currentAudioMode === 'kokoro'" (click)="setAudioMode('kokoro')">
         <div class="voice-info">
-          <span>Voz Local</span>
-          <small>Kokoro TTS - Voz Neuronal</small>
+          <span>Voz Kokoro 80M</span>
+          <small>Voz Neuronal API</small>
         </div>
         <span class="ink-cost unlocked-badge">Nuevo</span>
       </div>
@@ -392,9 +392,8 @@
       <!-- VOZ WASM (PIPER) -->
       <div class="voice-option" [class.active]="currentAudioMode === 'wasm'" (click)="setAudioMode('wasm')">
         <div class="voice-info">
-          <span>Voz Web (MMS)</span>
-          <small>Inferencia 100% en Navegador</small>
-          <small style="color: #fbbf24; font-size: 0.7rem; display: block; margin-top: 2px;">⚠️ Alta carga de CPU</small>
+          <span>Voz Web</span>
+          <small>Modelo Local</small>
         </div>
         <span class="ink-cost unlocked-badge" style="background: #2563eb;">WASM</span>
       </div>
@@ -441,7 +440,7 @@
         </option>
       </select>
 
-      <button class="btn-kokoro-local" 
+      <button *ngIf="false" class="btn-kokoro-local" 
               [ngClass]="{'active': (engineMode$ | async) === 'local', 'downloading': kokoroDownloading$ | async}"
               (click)="toggleKokoroEngine()"
               [disabled]="kokoroDownloading$ | async">
