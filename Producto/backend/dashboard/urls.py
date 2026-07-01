@@ -9,6 +9,7 @@ from .views_content import (
     AuthorDetailAdminView,
     AvatarAdminView,
     AvatarListGlobalAdminView,
+    UploadChapterImageView,
 )
 from .views_users import UserListAdminView
 
@@ -21,6 +22,7 @@ urlpatterns = [
     path('books/', BookListAdminView.as_view(), name='dashboard-books'),
     path('books/parse-epub/', EpubParseView.as_view(), name='dashboard-parse-epub'),
     path('books/save/', BookSaveView.as_view(), name='dashboard-save-book'),
+    path('books/upload-image/', UploadChapterImageView.as_view(), name='dashboard-upload-image'),
     path('books/<uuid:pk>/', BookDetailAdminView.as_view(), name='dashboard-book-detail'),
 
     # --- Autores ---

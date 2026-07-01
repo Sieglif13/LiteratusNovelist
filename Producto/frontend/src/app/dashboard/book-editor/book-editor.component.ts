@@ -192,6 +192,45 @@ export class BookEditorComponent implements OnInit {
     }
   }
 
+  onSceneImageSelected(event: any): void {
+    const file = event.target.files[0];
+    if (!file || this.editingChapter === null) return;
+
+    this.loading = true;
+    this.bookService.uploadChapterImage(file).subscribe({
+      next: (res) => {
+        const imgHtml = `\n<img src="${res.url}" class="scene-image" alt="Escena de la novela">\n`;
+        
+        // Obtenemos el textarea y su posición de cursor actual si es posible, 
+        // o simplemente lo añadimos al final.
+        const textarea = document.querySelector('.code-editor') as HTMLTextAreaElement;
+        if (textarea) {
+          const start = textarea.selectionStart;
+          const end = textarea.selectionEnd;
+          const currentContent = this.chapters[this.editingChapter!].content_html || '';
+          this.chapters[this.editingChapter!].content_html = 
+            currentContent.substring(0, start) + imgHtml + currentContent.substring(end);
+            
+          // Mover cursor
+          setTimeout(() => {
+            textarea.focus();
+            textarea.setSelectionRange(start + imgHtml.length, start + imgHtml.length);
+          }, 50);
+        } else {
+          this.chapters[this.editingChapter!].content_html += imgHtml;
+        }
+        
+        this.loading = false;
+        // Limpiar el input file para permitir subir la misma imagen de nuevo
+        event.target.value = '';
+      },
+      error: () => {
+        this.loading = false;
+        alert('Error al subir la imagen de escena.');
+      }
+    });
+  }
+
   saveBook(): void {
     if (this.bookForm.invalid) {
       this.bookForm.markAllAsTouched();

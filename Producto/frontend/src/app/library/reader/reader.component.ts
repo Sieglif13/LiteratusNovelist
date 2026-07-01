@@ -78,6 +78,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
   hideProgressOnScroll: boolean = true;
   bionicReadingActive: boolean = false;
   tapToScrollActive: boolean = false;
+  showSceneImages: boolean = true;
 
   // ── PERSONAJES / CHAT ─────────────────────────────────────────────
   isCharPanelOpen: boolean = false;
@@ -98,6 +99,10 @@ export class ReaderComponent implements OnInit, OnDestroy {
         this.kokoroVoice.downloadLocalEngine();
       }
     }
+  }
+
+  toggleSceneImages() {
+    this.showSceneImages = !this.showSceneImages;
   }
 
   setAudioMode(mode: 'native' | 'pro' | 'kokoro' | 'wasm' | 'native-android') {

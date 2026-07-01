@@ -79,6 +79,11 @@
         <svg lucideEye [size]="20" class="lucide-icon"></svg>
       </button>
 
+      <!-- Toggle de Escenas (Imágenes) -->
+      <button class="toc-trigger-btn" (click)="toggleSceneImages()" title="Mostrar Imágenes de Escena" [class.active]="showSceneImages">
+        <span class="material-symbols-rounded" style="font-size:1.3rem;">image</span>
+      </button>
+
       <!-- Toggle de Avance Táctil (Toque Fluido) -->
       <button class="toc-trigger-btn" (click)="toggleTapToScroll()" title="Toque Fluido (Toque para avanzar)" [class.active]="tapToScrollActive">
         <span class="material-symbols-rounded" style="font-size:1.3rem;">touch_app</span>
@@ -560,7 +565,7 @@
           <ng-container *ngIf="bionicReadingActive"><strong class="bionic-bold">{{ tok.bionicBold }}</strong><span class="bionic-muted">{{ tok.bionicNormal }}</span></ng-container>
         </span>
         <ng-container *ngIf="!tok.isWord && !tok.isImg">{{ tok.text }}</ng-container>
-        <img *ngIf="tok.isImg" [src]="tok.src" [alt]="tok.alt || ''" class="inline-img" loading="lazy" (click)="openImageModal(tok.src)">
+        <img *ngIf="tok.isImg && showSceneImages" [src]="tok.src" [alt]="tok.alt || ''" class="inline-img scene-image" loading="lazy" (click)="openImageModal(tok.src)">
       </ng-container>
       <!-- Fallback si no se encontró el título en el texto original -->
       <ng-container *ngIf="titleTokens.length === 0">{{ chapterTitle }}</ng-container>
@@ -569,8 +574,8 @@
     <ng-container *ngFor="let block of renderedBlocks; trackBy: trackByBlock">
 
       <!-- Imagen a nivel raíz (standalone) -->
-      <figure *ngIf="block.tag === 'img-block'" class="chapter-image">
-        <img [src]="block.tokens[0].src" [alt]="block.tokens[0].alt || ''" loading="lazy" (click)="openImageModal(block.tokens[0].src)">
+      <figure *ngIf="block.tag === 'img-block' && showSceneImages" class="chapter-image scene-image-container">
+        <img [src]="block.tokens[0].src" [alt]="block.tokens[0].alt || ''" loading="lazy" (click)="openImageModal(block.tokens[0].src)" class="scene-image">
       </figure>
 
       <h1 *ngIf="block.tag === 'h1'" class="chapter-heading">
@@ -587,7 +592,7 @@
               </span>
               <ng-container *ngIf="!tok.isWord && !tok.isImg && !tok.isBr">{{ tok.text }}</ng-container>
               <br *ngIf="tok.isBr">
-              <img *ngIf="tok.isImg" [src]="tok.src" [alt]="tok.alt || ''" class="inline-img" loading="lazy" (click)="openImageModal(tok.src)">
+              <img *ngIf="tok.isImg && showSceneImages" [src]="tok.src" [alt]="tok.alt || ''" class="inline-img scene-image" loading="lazy" (click)="openImageModal(tok.src)">
             </ng-container>
           </span>
         </ng-container>
@@ -607,7 +612,7 @@
               </span>
               <ng-container *ngIf="!tok.isWord && !tok.isImg && !tok.isBr">{{ tok.text }}</ng-container>
               <br *ngIf="tok.isBr">
-              <img *ngIf="tok.isImg" [src]="tok.src" [alt]="tok.alt || ''" class="inline-img" loading="lazy" (click)="openImageModal(tok.src)">
+              <img *ngIf="tok.isImg && showSceneImages" [src]="tok.src" [alt]="tok.alt || ''" class="inline-img scene-image" loading="lazy" (click)="openImageModal(tok.src)">
             </ng-container>
           </span>
         </ng-container>
@@ -627,7 +632,7 @@
               </span>
               <ng-container *ngIf="!tok.isWord && !tok.isImg && !tok.isBr">{{ tok.text }}</ng-container>
               <br *ngIf="tok.isBr">
-              <img *ngIf="tok.isImg" [src]="tok.src" [alt]="tok.alt || ''" class="inline-img" loading="lazy" (click)="openImageModal(tok.src)">
+              <img *ngIf="tok.isImg && showSceneImages" [src]="tok.src" [alt]="tok.alt || ''" class="inline-img scene-image" loading="lazy" (click)="openImageModal(tok.src)">
             </ng-container>
           </span>
         </ng-container>

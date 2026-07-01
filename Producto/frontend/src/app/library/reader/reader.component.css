@@ -799,6 +799,32 @@
   flex-wrap: wrap;
 }
 
+/* ─── ESCENAS / IMÁGENES DENTRO DEL TEXTO ─── */
+.scene-image-container {
+  display: flex;
+  justify-content: center;
+  margin: 2.5rem auto;
+  width: 100%;
+}
+
+.scene-image {
+  max-width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  object-fit: cover;
+}
+
+.scene-image:hover {
+  transform: scale(1.02);
+  box-shadow: 0 12px 40px rgba(168, 85, 247, 0.3);
+}
+
+.theme-light .scene-image {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
 .mode-pill {
   background: rgba(255,255,255,0.07);
   border: 1px solid rgba(255,255,255,0.12);

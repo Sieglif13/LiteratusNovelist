@@ -161,4 +161,9 @@ export class DashboardBooksService {
     return this.http.get<any[]>(`${this.apiUrl}/users/`);
   }
     
+  uploadChapterImage(file: File): Observable<{ url: string }> {
+    const formData = new FormData();
+    formData.append('image', file);
+    return this.http.post<{ url: string }>(`${this.apiUrl}/books/upload-image/`, formData);
+  }
 }

@@ -811,3 +811,33 @@ class AvatarListGlobalAdminView(APIView):
             }
             for av in avatars
         ])
+
+from django.core.files.storage import default_storage
+import uuid
+
+class UploadChapterImageView(APIView):
+    """
+    POST /api/dashboard/books/upload-image/
+    Sube una imagen de escena para inyectar en el contenido del capítulo.
+    """
+    permission_classes = [IsAdminUser]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request):
+        img_file = request.FILES.get('image')
+        if not img_file:
+            return Response({'error': 'No image provided'}, status=400)
+            
+        ext = img_file.name.split('.')[-1]
+        filename = f"chapter_scenes/scene_{uuid.uuid4().hex}.{ext}"
+        
+        saved_path = default_storage.save(filename, img_file)
+        
+        # Sincronizar con Supabase si está configurado
+        img_file.seek(0)
+        upload_to_supabase_if_configured(img_file.read(), saved_path, img_file.content_type)
+        
+        # Devolver URL absoluta
+        url = request.build_absolute_uri(f"{settings.MEDIA_URL}{saved_path}")
+        
+        return Response({'url': url}, status=201)

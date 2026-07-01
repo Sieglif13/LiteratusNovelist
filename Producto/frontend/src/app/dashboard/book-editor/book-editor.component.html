@@ -230,13 +230,20 @@
       <div class="split-pane-body">
         <!-- Panel Izquierdo: Código HTML -->
         <div class="pane pane-code">
-          <div class="pane-header">
+          <div class="pane-header" style="display: flex; justify-content: space-between; align-items: center;">
             <span class="pane-label code-label">
               <span class="pane-dot dot-red"></span>
               <span class="pane-dot dot-yellow"></span>
               <span class="pane-dot dot-green"></span>
               &nbsp; HTML Fuente
             </span>
+            <div class="header-actions">
+              <input type="file" #sceneImageInput hidden accept="image/*" (change)="onSceneImageSelected($event)">
+              <button class="add-btn mini-btn" (click)="sceneImageInput.click()" style="display: flex; align-items: center; gap: 4px; padding: 4px 8px; font-size: 12px;" title="Insertar imagen en la posición actual">
+                <span class="material-symbols-outlined" style="font-size: 14px;">add_photo_alternate</span>
+                Insertar Escena
+              </button>
+            </div>
           </div>
           <textarea
             class="code-editor"
