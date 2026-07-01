@@ -103,6 +103,7 @@ export class ReaderComponent implements OnInit, OnDestroy {
 
   toggleSceneImages() {
     this.showSceneImages = !this.showSceneImages;
+    localStorage.setItem('reader-show-images', String(this.showSceneImages));
   }
 
   setAudioMode(mode: 'native' | 'pro' | 'kokoro' | 'wasm' | 'native-android') {
@@ -313,6 +314,11 @@ export class ReaderComponent implements OnInit, OnDestroy {
     const savedBionic = localStorage.getItem('reader-bionic-reading');
     if (savedBionic !== null) {
       this.bionicReadingActive = savedBionic === 'true';
+    }
+
+    const savedShowImages = localStorage.getItem('reader-show-images');
+    if (savedShowImages !== null) {
+      this.showSceneImages = savedShowImages === 'true';
     }
 
     // Auto-abrir chat si venimos redirigidos por un personaje
@@ -617,9 +623,8 @@ export class ReaderComponent implements OnInit, OnDestroy {
       return; 
     }
 
-    // Sin Toque Fluido: click en espacio vacío alterna solo la visibilidad de la barra
+    // Si no está activado el Toque Fluido, no hacer nada al tocar pantalla vacía
     if (!this.tapToScrollActive) {
-      this.isToolbarHidden = !this.isToolbarHidden;
       return;
     }
     
